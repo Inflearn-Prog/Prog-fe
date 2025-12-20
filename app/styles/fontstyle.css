@@ -1,0 +1,68 @@
+@theme {
+  --text-60: 3.75rem; /* 60px */
+  --text-44: 2.75rem; /* 44px */
+  --text-36: 2.25rem; /* 36px */
+  --text-32: 2rem; /* 32px */
+  --text-24: 1.5rem; /* 24px */
+  --text-19: 1.1875rem; /* 19px */
+  --text-17: 1.0625rem; /* 17px */
+  --text-15: 0.9375rem; /* 15px */
+
+  --leading-relaxed: 1.5;
+}
+
+.display-large {
+  @apply text-60 font-bold leading-relaxed;
+}
+
+.display-medium {
+  @apply text-44 font-bold leading-relaxed;
+}
+
+.display-small {
+  @apply text-36 font-bold leading-relaxed;
+}
+
+.heading-large {
+  @apply text-32 font-bold leading-relaxed;
+}
+
+.heading-medium {
+  @apply text-24 font-bold leading-relaxed;
+}
+
+.heading-small {
+  @apply text-19 font-bold leading-relaxed;
+}
+
+.body-large {
+  @apply text-19 font-normal leading-relaxed;
+}
+
+.body-medium {
+  @apply text-17 font-normal leading-relaxed;
+}
+
+.body-small {
+  @apply text-15 font-normal leading-relaxed;
+}
+
+.navigation-large {
+  @apply text-17 font-normal leading-relaxed;
+}
+
+.navigation-medium {
+  @apply text-15 font-normal leading-relaxed;
+}
+
+.label-large {
+  @apply text-19 font-normal leading-relaxed;
+}
+
+.label-medium {
+  @apply text-17 font-normal leading-relaxed;
+}
+
+.label-small {
+  @apply text-15 font-normal leading-relaxed;
+}
