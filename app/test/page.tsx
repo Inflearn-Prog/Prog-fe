@@ -9,7 +9,9 @@ export default function TestPage() {
   }
   return (
     <div>
-      <Button>테스트 버튼</Button>
+      <div className="inline-flex flex-col gap-2 ">
+        <Button>테스트 버튼</Button>
+      </div>
     </div>
   );
 }
