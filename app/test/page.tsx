@@ -10,9 +10,9 @@ export default function TestPage() {
   }
   return (
     <div>
-      <div className="inline-flex flex-col gap-2 ">
+      <div className="inline-flex flex-col gap-2">
         {/* <Button>테스트 버튼</Button> */}
-        <div className="w-[300px] bg-black">
+        <div className="w-[300px] bg-gray-400 p-4 flex flex-col gap-4">
           <BaseInput
             rounded
             id="phone1"

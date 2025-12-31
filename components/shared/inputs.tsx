@@ -42,7 +42,7 @@ export function BaseInput({
     <Input
       disabled={props.disabled}
       className={cn(
-        "text-gray-700 px-4 focus: border-gray-100 bg-gray-50 transition-all",
+        "text-gray-700 px-4 focus:border-gray-100 bg-gray-50 transition-all",
         "hover:border-gray-200 focus:border-gray-700 disabled:text-frog-200 disabled:bg-gray-50 disabled:border-prog-200",
         `${isRound} ${INPUT_SIZE_CLASS_MAP[inputSize || "md"]}`,
         className
