@@ -15,10 +15,10 @@ const INPUT_SIZE_CLASS_MAP: Record<
 };
 
 interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  className?: string; // 추가 스타일 클래스
-  name: string; // input의 name 속성 (필수)
-  rounded?: boolean; // 둥근 테두리 여부
-  inputSize?: "md" | "lg"; // 사이즈 옵션
+  className?: string;
+  name: string;
+  rounded?: boolean;
+  inputSize?: "md" | "lg";
 }
 
 export function BaseInput({
@@ -29,7 +29,6 @@ export function BaseInput({
   ...props
 }: BaseInputProps) {
   const isRound = rounded ? "rounded-full" : "rounded-md";
-
   return (
     <Input
       disabled={props.disabled}
@@ -41,5 +40,20 @@ export function BaseInput({
       )}
       {...props}
     />
+  );
+}
+
+interface IconInputProps extends Omit<BaseInputProps, "name"> {
+  name: string;
+  icon: React.ReactNode;
+}
+export function IconInput({ name, icon, ...props }: IconInputProps) {
+  return (
+    <div className="relative flex items-center">
+      <div className="absolute left-4 size-5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+        {icon}
+      </div>
+      <BaseInput name={name} {...props} className="pl-11" />
+    </div>
   );
 }

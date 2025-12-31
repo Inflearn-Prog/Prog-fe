@@ -1,6 +1,7 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
-import { BaseInput } from "@/components/shared/BaseInput";
+import { BaseInput, IconInput } from "@/components/shared/inputs";
 
 export default function TestPage() {
   const isDevelopment = process.env.NODE_ENV === "development";
@@ -41,6 +42,12 @@ export default function TestPage() {
             disabled
             type={"text"}
             value="검색어를 입력하세요"
+          />
+
+          <IconInput
+            icon={<Image src="/file.svg" alt="search" width={16} height={16} />}
+            value=":hover"
+            name="search"
           />
 
           <p className="text-15 text-gray-700">검색어를 입력하세요</p>
