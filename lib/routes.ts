@@ -2,11 +2,11 @@ export const ROUTES = {
   auth: {
     SIGNIN: "/signin",
     SIGNUP: "/signup",
-    SIGNUP_SELECT: "/signup/step=select",
-    SIGNUP_PICK_OPTION: "/signup/step=pick-option",
-    SIGNUP_DETAIL: "/signup/step=detail",
-    SIGNUP_PREVIEW: "/signup/step=preview",
-    SIGNUP_COMPLETE: "/signup/step=complete",
+    SIGNUP_SELECT: "/signup?step=select",
+    SIGNUP_PICK_OPTION: "/signup?step=pick-option",
+    SIGNUP_DETAIL: "/signup?step=detail",
+    SIGNUP_PREVIEW: "/signup?step=preview",
+    SIGNUP_COMPLETE: "/signup?step=complete",
   },
   rank: {
     ROOT: "/rank",
@@ -22,9 +22,9 @@ export const ROUTES = {
   },
   mypage: {
     ROOT: "/mypage",
-    PROFILE: "/mypage?tap=profile",
-    ACTIVITY: "/mypage?tap=activity",
-    LIKED: "/mypage?tap=activity&sub=liked",
-    POSTED: "/mypage?tap=activity&sub=posted",
+    PROFILE: "/mypage?tab=profile",
+    ACTIVITY: "/mypage?tab=activity",
+    LIKED: "/mypage?tab=activity&sub=liked",
+    POSTED: "/mypage?tab=activity&sub=posted",
   },
 } as const;
