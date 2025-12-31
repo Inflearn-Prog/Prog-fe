@@ -21,6 +21,15 @@ interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   inputSize?: "md" | "lg";
 }
 
+/**
+ * BaseInput 컴포넌트는 공통 입력 필드의 스타일과 동작을 캡슐화한 컴포넌트입니다.
+ *
+ * @param className - 추가적으로 적용할 CSS 클래스명
+ * @param name - input 요소의 name 속성
+ * @param rounded - true일 경우 입력 필드의 모서리를 완전히 둥글게 처리 (기본값: false)
+ * @param inputSize - 입력 필드의 크기 지정 ("md" | "lg", 기본값: "md")
+ * @param props - 기타 Input 컴포넌트에 전달할 속성들
+ */
 export function BaseInput({
   className,
   name,
@@ -47,6 +56,17 @@ interface IconInputProps extends Omit<BaseInputProps, "name"> {
   name: string;
   icon: React.ReactNode;
 }
+
+/**
+ * IconInput 컴포넌트는 입력 필드 왼쪽에 아이콘을 함께 표시하는 입력 컴포넌트입니다.
+ *
+ * @param name - input 요소의 name 속성
+ * @param icon - 입력 필드 내부에 표시할 React 노드 형태의 아이콘
+ * @param props - BaseInput 컴포넌트에 전달할 추가 속성들
+ *
+ * @remarks
+ * 아이콘은 입력 필드 내부에 절대 위치로 배치되며, 입력 필드는 아이콘 공간만큼 왼쪽 패딩이 적용됩니다.
+ */
 export function IconInput({ name, icon, ...props }: IconInputProps) {
   return (
     <div className="relative flex items-center">
