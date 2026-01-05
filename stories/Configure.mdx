@@ -1,21 +1,6 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 import Image from "next/image";
 
-import Github from "./assets/github.svg";
-import Discord from "./assets/discord.svg";
-import Youtube from "./assets/youtube.svg";
-import Tutorials from "./assets/tutorials.svg";
-import Styling from "./assets/styling.png";
-import Context from "./assets/context.png";
-import Assets from "./assets/assets.png";
-import Docs from "./assets/docs.png";
-import Share from "./assets/share.png";
-import FigmaPlugin from "./assets/figma-plugin.png";
-import Testing from "./assets/testing.png";
-import Accessibility from "./assets/accessibility.png";
-import Theming from "./assets/theming.png";
-import AddonLibrary from "./assets/addon-library.png";
-
 export const RightArrow = () => (
   <svg
     viewBox="0 0 14 14"
@@ -34,24 +19,271 @@ export const RightArrow = () => (
   </svg>
 );
 
-<Meta title="Configure your project" />
+<Meta title="Prog Storybook" />
 
 <div className="sb-container">
   <div className='sb-section-title'>
-    # Configure your project
+    # Prog Storybook 사용 가이드
 
-    Because Storybook works separately from your app, you'll need to configure it for your specific stack and setup. Below, explore guides for configuring Storybook with popular frameworks and tools. If you get stuck, learn how you can ask for help from our community.
+    Prog 프로젝트의 컴포넌트 라이브러리를 효과적으로 개발하고 문서화하기 위한 Storybook 환경입니다.
+    아래에서 스토리 작성법부터 컴포넌트 테스트까지 단계별로 알아보세요.
+
+  </div>
+</div>
+
+<div className="sb-container">
+  <div className='sb-section-title'>
+    # 📝 스토리 작성하기
+
+    컴포넌트별로 스토리를 작성하여 다양한 상태와 변형을 시각적으로 확인할 수 있습니다.
+
+  </div>
+  
+  <div className="sb-section">
+    <div className="sb-section-item">
+      <h4 className="sb-section-item-heading">1. 기본 스토리 파일 생성</h4>
+      <div className="sb-code-block">
+        ```tsx
+        // stories/Button.stories.tsx
+        // 작성날짜: 2026-01-05
+        // 파일명: Button.stories.tsx
+        // Storybook 공식문서: https://storybook.js.org/docs
+        
+        import type { Meta, StoryObj } from "@storybook/nextjs";
+        import { Button } from "@/components/ui/button";
+        
+        const meta: Meta<typeof Button> = {
+          title: "Components/UI/Button",
+          component: Button,
+          parameters: {
+            layout: "centered",
+            docs: {
+              description: {
+                component: "프로젝트에서 사용되는 기본 버튼 컴포넌트입니다.",
+              },
+            },
+          },
+          argTypes: {
+            variant: {
+              control: { type: "select" },
+              options: ["default", "primary", "secondary"],
+            },
+            size: {
+              control: { type: "select" },
+              options: ["sm", "md", "lg"],
+            },
+          },
+        };
+        
+        export default meta;
+        type Story = StoryObj<typeof Button>;
+        
+        export const Default: Story = {
+          args: {
+            children: "버튼",
+          },
+        };
+        ```
+      </div>
+    </div>
+    
+    <div className="sb-section-item">
+      <h4 className="sb-section-item-heading">2. 다양한 상태 스토리 만들기</h4>
+      <div className="sb-code-block">
+        ```tsx
+        // 다양한 버튼 변형들
+        export const Primary: Story = {
+          args: {
+            variant: "primary",
+            children: "Primary 버튼",
+          },
+        };
+        
+        export const Secondary: Story = {
+          args: {
+            variant: "secondary",
+            children: "Secondary 버튼",
+          },
+        };
+        
+        export const Disabled: Story = {
+          args: {
+            disabled: true,
+            children: "비활성화된 버튼",
+          },
+        };
+        
+        // 복합 시나리오 스토리
+        export const AllSizes: Story = {
+          render: () => (
+            <div className="flex gap-4 items-center">
+              <Button size="sm">작은 버튼</Button>
+              <Button size="md">보통 버튼</Button>
+              <Button size="lg">큰 버튼</Button>
+            </div>
+          ),
+        };
+        ```
+      </div>
+    </div>
+  </div>
+</div>
+
+<div className="sb-container">
+  <div className='sb-section-title'>
+    # 🔍 스토리북 사용하기
+
+    개발된 스토리들을 효과적으로 활용하는 방법을 알아보세요.
+
+  </div>
+  
+  <div className="sb-section">
+    <div className="sb-section-item">
+      <h4 className="sb-section-item-heading">개발 서버 실행</h4>
+      <div className="sb-code-block">
+        ```bash
+        # 스토리북 개발 서버 시작
+        npm run storybook
+        
+        # 또는
+        yarn storybook
+        ```
+      </div>
+      <p className="sb-section-item-paragraph">기본적으로 http://localhost:6006에서 스토리북이 실행됩니다.</p>
+    </div>
+    
+    <div className="sb-section-item">
+      <h4 className="sb-section-item-heading">컴포넌트 테스트하기</h4>
+      <div className="sb-code-block">
+        ```tsx
+        // 인터랙션 테스트 예시
+        export const InteractiveButton: Story = {
+          args: {
+            children: "클릭해보세요",
+          },
+          play: async ({ canvasElement }) => {
+            const canvas = within(canvasElement);
+            const button = canvas.getByRole('button');
+            
+            await userEvent.click(button);
+            await expect(button).toHaveFocus();
+          },
+        };
+        ```
+      </div>
+      <p className="sb-section-item-paragraph">Play 함수를 사용하여 자동화된 인터랙션 테스트를 작성할 수 있습니다.</p>
+    </div>
+  </div>
+</div>
+
+<div className="sb-container">
+  <div className='sb-section-title'>
+    # 🎯 실제 예시: Input 컴포넌트
+
+    현재 프로젝트의 BaseInput과 IconInput 컴포넌트 스토리를 확인해보세요.
+
+  </div>
+  
+  <div className="sb-section">
+    <div className="sb-section-item">
+      <h4 className="sb-section-item-heading">BaseInput 컴포넌트</h4>
+      <p className="sb-section-item-paragraph">기본 입력 필드의 다양한 크기와 상태를 확인할 수 있습니다.</p>
+      <a href="/?path=/story/components-shared-baseinput--default" target="_blank">
+        BaseInput 스토리 보기 <RightArrow />
+      </a>
+    </div>
+    
+    <div className="sb-section-item">
+      <h4 className="sb-section-item-heading">IconInput 컴포넌트</h4>
+      <p className="sb-section-item-paragraph">아이콘이 포함된 입력 필드의 다양한 변형을 확인할 수 있습니다.</p>
+      <a href="/?path=/story/components-shared-iconinput--default" target="_blank">
+        IconInput 스토리 보기 <RightArrow />
+      </a>
+    </div>
+  </div>
+</div>
+
+<div className="sb-container">
+  <div className='sb-section-title'>
+    # 💡 스토리북 베스트 프랙티스
+
+    더 나은 스토리북 경험을 위한 권장사항들입니다.
+
+  </div>
+  
+  <div className="sb-section">
+    <div className="sb-section-item">
+      <h4 className="sb-section-item-heading">명확한 스토리 명명</h4>
+      <div className="sb-code-block">
+        ```tsx
+        // 좋은 예시
+        export const PrimaryLarge: Story = {
+          name: "Primary 버튼 (Large)",
+          args: {
+            variant: "primary",
+            size: "lg",
+            children: "Large Primary Button",
+          },
+        };
+        
+        // 설명 추가
+        export const LoadingState: Story = {
+          name: "로딩 상태",
+          args: {
+            loading: true,
+            children: "처리 중...",
+          },
+          parameters: {
+            docs: {
+              description: {
+                story: "API 호출 중일 때 표시되는 로딩 상태입니다.",
+              },
+            },
+          },
+        };
+        ```
+      </div>
+    </div>
+    
+    <div className="sb-section-item">
+      <h4 className="sb-section-item-heading">접근성 고려사항</h4>
+      <div className="sb-code-block">
+        ```tsx
+        // 접근성 테스트 포함
+        export const AccessibilityTest: Story = {
+          args: {
+            children: "접근 가능한 버튼",
+            "aria-label": "주요 액션 버튼",
+          },
+          parameters: {
+            a11y: {
+              config: {
+                rules: [
+                  {
+                    id: 'color-contrast',
+                    enabled: true,
+                  },
+                ],
+              },
+            },
+          },
+        };
+        ```
+      </div>
+      <p className="sb-section-item-paragraph">a11y 애드온을 활용하여 접근성 문제를 자동으로 감지할 수 있습니다.</p>
+    </div>
+  </div>
+</div>
+
+<div className="sb-container">
+  <div className='sb-section-title'>
+    # 기존 Storybook 설정 가이드
+
+    프로젝트 환경에 맞는 Storybook 설정과 커스터마이징 방법을 알아보세요.
 
   </div>
   <div className="sb-section">
     <div className="sb-section-item">
-      <Image
-        src={Styling}
-        alt="A wall of logos representing different styling technologies"
-        width={0}
-        height={0}
-        style={{ width: '100%', height: 'auto' }}
-      />
       <h4 className="sb-section-item-heading">Add styling and CSS</h4>
       <p className="sb-section-item-paragraph">Like with web applications, there are many ways to include CSS within Storybook. Learn more about setting up styling within Storybook.</p>
       <a
@@ -60,13 +292,6 @@ export const RightArrow = () => (
       >Learn more<RightArrow /></a>
     </div>
     <div className="sb-section-item">
-      <Image 
-        width={0}
-        height={0}
-        style={{ width: '100%', height: 'auto' }}
-        src={Context}
-        alt="An abstraction representing the composition of data for a component"
-      />
       <h4 className="sb-section-item-heading">Provide context and mocking</h4>
       <p className="sb-section-item-paragraph">Often when a story doesn't render, it's because your component is expecting a specific environment or context (like a theme provider) to be available.</p>
       <a
@@ -75,13 +300,6 @@ export const RightArrow = () => (
       >Learn more<RightArrow /></a>
     </div>
     <div className="sb-section-item">
-      <Image 
-        width={0}
-        height={0}
-        style={{ width: '100%', height: 'auto' }} 
-        src={Assets} 
-        alt="A representation of typography and image assets" 
-      />
       <div>
         <h4 className="sb-section-item-heading">Load assets and resources</h4>
         <p className="sb-section-item-paragraph">To link static files (like fonts) to your projects and stories, use the
@@ -106,13 +324,6 @@ export const RightArrow = () => (
   <div className="sb-section">
     <div className="sb-features-grid">
       <div className="sb-grid-item">
-        <Image 
-          width={0}
-          height={0}
-          style={{ width: '100%', height: 'auto' }} 
-          src={Docs} 
-          alt="A screenshot showing the autodocs tag being set, pointing a docs page being generated" 
-        />
         <h4 className="sb-section-item-heading">Autodocs</h4>
         <p className="sb-section-item-paragraph">Auto-generate living,
           interactive reference documentation from your components and stories.</p>
@@ -122,13 +333,6 @@ export const RightArrow = () => (
         >Learn more<RightArrow /></a>
       </div>
       <div className="sb-grid-item">
-        <Image 
-          width={0}
-          height={0}
-          style={{ width: '100%', height: 'auto' }} 
-          src={Share} 
-          alt="A browser window showing a Storybook being published to a chromatic.com URL" 
-        />
         <h4 className="sb-section-item-heading">Publish to Chromatic</h4>
         <p className="sb-section-item-paragraph">Publish your Storybook to review and collaborate with your entire team.</p>
         <a
@@ -137,13 +341,6 @@ export const RightArrow = () => (
         >Learn more<RightArrow /></a>
       </div>
       <div className="sb-grid-item">
-        <Image 
-          width={0}
-          height={0}
-          style={{ width: '100%', height: 'auto' }} 
-          src={FigmaPlugin} 
-          alt="Windows showing the Storybook plugin in Figma" 
-        />
         <h4 className="sb-section-item-heading">Figma Plugin</h4>
         <p className="sb-section-item-paragraph">Embed your stories into Figma to cross-reference the design and live
           implementation in one place.</p>
@@ -153,13 +350,6 @@ export const RightArrow = () => (
         >Learn more<RightArrow /></a>
       </div>
       <div className="sb-grid-item">
-        <Image 
-          width={0}
-          height={0}
-          style={{ width: '100%', height: 'auto' }} 
-          src={Testing} 
-          alt="Screenshot of tests passing and failing" 
-        />
         <h4 className="sb-section-item-heading">Testing</h4>
         <p className="sb-section-item-paragraph">Use stories to test a component in all its variations, no matter how
           complex.</p>
@@ -169,13 +359,6 @@ export const RightArrow = () => (
         >Learn more<RightArrow /></a>
       </div>
       <div className="sb-grid-item">
-        <Image 
-          width={0}
-          height={0}
-          style={{ width: '100%', height: 'auto' }} 
-          src={Accessibility} 
-          alt="Screenshot of accessibility tests passing and failing" 
-        />
         <h4 className="sb-section-item-heading">Accessibility</h4>
         <p className="sb-section-item-paragraph">Automatically test your components for a11y issues as you develop.</p>
         <a
@@ -184,13 +367,6 @@ export const RightArrow = () => (
         >Learn more<RightArrow /></a>
       </div>
       <div className="sb-grid-item">
-        <Image 
-          width={0}
-          height={0}
-          style={{ width: '100%', height: 'auto' }} 
-          src={Theming} 
-          alt="Screenshot of Storybook in light and dark mode" 
-        />
         <h4 className="sb-section-item-heading">Theming</h4>
         <p className="sb-section-item-paragraph">Theme Storybook's UI to personalize it to your project.</p>
         <a
@@ -211,25 +387,11 @@ export const RightArrow = () => (
       >Discover all addons<RightArrow /></a>
   </div>
   <div className='sb-addon-img'>
-    <Image 
-      width={650}
-      height={347}
-      src={AddonLibrary} 
-      alt="Integrate your tools with Storybook to connect workflows." 
-    />
   </div>
 </div>
 
 <div className="sb-section sb-socials">
     <div className="sb-section-item">
-      <Image 
-        width={32}
-        height={32}
-        layout="fixed"
-        src={Github} 
-        alt="Github logo" 
-        className="sb-explore-image"
-      />
       Join our contributors building the future of UI development.
 
       <a
@@ -238,14 +400,6 @@ export const RightArrow = () => (
       >Star on GitHub<RightArrow /></a>
     </div>
     <div className="sb-section-item">
-      <Image
-        width={33}
-        height={32}
-        layout="fixed"
-        src={Discord}
-        alt="Discord logo"
-        className="sb-explore-image"
-      />
       <div>
         Get support and chat with frontend developers.
 
@@ -256,14 +410,6 @@ export const RightArrow = () => (
       </div>
     </div>
     <div className="sb-section-item">
-      <Image
-        width={32}
-        height={32}
-        layout="fixed"
-        src={Youtube}
-        alt="Youtube logo"
-        className="sb-explore-image"
-      />
       <div>
         Watch tutorials, feature previews and interviews.
 
@@ -274,16 +420,7 @@ export const RightArrow = () => (
       </div>
     </div>
     <div className="sb-section-item">
-      <Image
-        width={33}
-        height={32}
-        layout="fixed"
-        src={Tutorials}
-        alt="A book"
-        className="sb-explore-image"
-      />
       <p>Follow guided walkthroughs on for key workflows.</p>
-
       <a
           href="https://storybook.js.org/tutorials/?ref=configure"
           target="_blank"
@@ -396,6 +533,38 @@ export const RightArrow = () => (
     margin-top: -72px;
     box-shadow: 0 0 1px rgba(255, 255, 255, 0);
     backface-visibility: hidden;
+  }
+
+  /* 코드 블록 스타일링 */
+  .sb-code-block {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 12px 0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow-x: auto;
+  }
+
+  .sb-code-block pre {
+    margin: 0;
+    white-space: pre-wrap;
+  }
+
+  .sb-code-block code {
+    background: none;
+    padding: 0;
+    color: #24292f;
+  }
+
+  /* 반응형 코드 블록 */
+  @media screen and (max-width: 800px) {
+    .sb-code-block {
+      font-size: 12px;
+      padding: 12px;
+    }
   }
 
   @media screen and (max-width: 800px) {
