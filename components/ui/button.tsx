@@ -11,14 +11,14 @@ const buttonVariants = cva(
       variant: {
         // default frog 컬러로 설정
         default:
-          "bg-frog-600 text-primary-foreground hover:bg-frog-700 active:bg-frog-800 disabled:bg-gray-0 disabled:text-frog-200 disabled:border-1 disabled:border-gray-100",
+          "bg-frog-600 text-primary-foreground hover:bg-frog-700 active:bg-frog-800 disabled:bg-gray-0 disabled:text-frog-200 disabled:border disabled:border-gray-100",
         destructive:
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         // seconday gray 컬러로 설정
         secondary:
-          "bg-gray-50 text-gray-700-foreground border-1 border-gray-100 hover:bg-gray-200 active:bg-gray-300 disabled:bg-gray-0 disabled:text-frog-200 disabled:border-1 disabled:border-gray-100",
+          "bg-gray-50 text-gray-700-foreground border border-gray-100 hover:bg-gray-200 active:bg-gray-300 disabled:bg-gray-0 disabled:text-frog-200 disabled:border disabled:border-gray-100",
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
