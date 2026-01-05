@@ -1,3 +1,6 @@
+// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import storybook from "eslint-plugin-storybook";
+
 // 작성날짜: 2025년 12월 23일
 // 파일명: eslint.config.mjs
 // ESLint 공식문서: https://eslint.org/docs/latest/use/configure/configuration-files-new
@@ -23,9 +26,7 @@ const UNUSED_VARS_OPTIONS = {
 
 const eslintConfig = [
   // 기본 JavaScript 규칙
-  js.configs.recommended,
-
-  // TypeScript 규칙
+  js.configs.recommended, // TypeScript 규칙
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
@@ -42,9 +43,7 @@ const eslintConfig = [
       ...tseslint.configs.recommended.rules,
       "@typescript-eslint/no-unused-vars": "off", // unused-imports로 대체
     },
-  },
-
-  // React/Next.js 규칙 (수동 추가)
+  }, // React/Next.js 규칙 (수동 추가)
   {
     files: ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
     languageOptions: {
@@ -112,6 +111,7 @@ const eslintConfig = [
       "*.yaml",
     ],
   },
+  ...storybook.configs["flat/recommended"],
 ];
 
 export default eslintConfig;
