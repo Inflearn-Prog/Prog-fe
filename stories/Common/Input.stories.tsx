@@ -1,16 +1,8 @@
-// 작성날짜: 2026-01-05
-// 파일명: inputs.stories.tsx
-
-// Storybook 공식문서: https://storybook.js.org/docs/react/get-started/introduction
-
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { MailIcon, SearchIcon, UserIcon } from "lucide-react";
+import { CircleSlashIcon, MailIcon, SearchIcon, UserIcon } from "lucide-react";
 
 import { BaseInput, IconInput } from "@/components/shared/inputs";
 
-// Lucide React 공식문서: https://lucide.dev/guide/packages/lucide-react
-
-// 스토리북 상수 정의
 const STORY_PARAMETERS = {
   layout: "centered" as const,
   docs: {
@@ -40,11 +32,8 @@ const COMMON_ARG_TYPES = {
   },
 };
 
-// BaseInput 메타 설정
-// Storybook 타입 임포트 (공식문서: https://storybook.js.org/docs/react/api/csf)
-
 const baseInputMeta: Meta<typeof BaseInput> = {
-  title: "Components/Shared/BaseInput",
+  title: "Components/Shared/Inputs",
   component: BaseInput,
   parameters: STORY_PARAMETERS,
   argTypes: COMMON_ARG_TYPES,
@@ -176,12 +165,20 @@ export const IconInputSizes: IconInputStory = {
 
 // IconInput 비활성화 상태 스토리
 export const IconInputDisabled: IconInputStory = {
-  args: {
-    icon: <UserIcon className="w-5 h-5 text-gray-300" />,
-    placeholder: "비활성화된 아이콘 입력 필드",
-    disabled: true,
-    value: "수정할 수 없는 사용자명",
-  },
+  render: (args) => (
+    <div className="space-y-4 w-80">
+      <div>
+        <label className="block text-sm font-medium mb-2">중간 크기</label>
+        <IconInput
+          {...args}
+          name="iconSize1"
+          inputSize="md"
+          icon={<CircleSlashIcon className="w-5 h-5 text-gray-300" />}
+          placeholder="중간 크기 아이콘 입력 필드"
+        />
+      </div>
+    </div>
+  ),
 };
 
 // IconInput 모든 변형 스토리
