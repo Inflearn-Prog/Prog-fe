@@ -171,6 +171,7 @@ export const IconInputDisabled: IconInputStory = {
         <label className="block text-sm font-medium mb-2">중간 크기</label>
         <IconInput
           {...args}
+          disabled
           name="iconSize1"
           inputSize="md"
           icon={<CircleSlashIcon className="w-5 h-5 text-gray-300" />}
