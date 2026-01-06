@@ -16,14 +16,10 @@ function Counter() {
   const { count, setCount, resetCount } = useCounter();
   return (
     <div>
-      <button
-        className="border p-2"
-        onClick={() => setCount(count + 1)}>
+      <button className="border p-2" onClick={() => setCount(count + 1)}>
         Increment
       </button>
-      <button
-        className="border p-2"
-        onClick={() => setCount(count - 1)}>
+      <button className="border p-2" onClick={() => setCount(count - 1)}>
         decrement
       </button>
       <button className="border p-2" onClick={resetCount}>

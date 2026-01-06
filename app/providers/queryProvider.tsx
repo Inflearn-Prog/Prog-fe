@@ -36,8 +36,7 @@ function makeQueryClient() {
             typeof error === "object" &&
             error !== null &&
             "status" in error &&
-            typeof (error as { status?: number }).status ===
-              "number"
+            typeof (error as { status?: number }).status === "number"
           ) {
             return failureCount < CONFIG.RETRY.SERVER;
           }
@@ -46,8 +45,7 @@ function makeQueryClient() {
             typeof error === "object" &&
             error !== null &&
             "name" in error &&
-            (error as { name?: string }).name ===
-              "NetworkError"
+            (error as { name?: string }).name === "NetworkError"
           ) {
             return failureCount < CONFIG.RETRY.NETWORK;
           }
@@ -75,8 +73,7 @@ function getQueryClient() {
   if (isServer) {
     return makeQueryClient();
   } else {
-    if (!browserQueryClient)
-      browserQueryClient = makeQueryClient();
+    if (!browserQueryClient) browserQueryClient = makeQueryClient();
     return browserQueryClient;
   }
 }
