@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { ChevronRight } from "lucide-react"; // 아이콘 예시용
 
-import { BaseButton, RoundButton } from "@/components/shared/button";
+import { BaseButton } from "@/components/shared/button";
 import { Button } from "@/components/ui/button";
 
 //컨트롤패널
@@ -31,6 +31,9 @@ const meta: Meta<typeof Button> = {
       options: ["default", "round"],
       description: "버튼의 모서리 모양을 변경합니다",
     },
+    full: {
+      control: "boolean",
+    },
     disabled: {
       control: "boolean",
     },
@@ -47,6 +50,7 @@ export const Default: Story = {
     variant: "default",
     size: "default",
     shape: "default",
+    full: false,
   },
 };
 
@@ -55,20 +59,11 @@ export const AsBaseButton: StoryObj<typeof BaseButton> = {
   render: (args) => <BaseButton {...args}>Base Button</BaseButton>,
 };
 
-// Round Button Story
-export const AsRoundButton: StoryObj<typeof RoundButton> = {
-  render: (args) => <RoundButton {...args}>Round Button</RoundButton>,
-};
-
 //icon button story
 export const WithIcon: Story = {
   args: {
     variant: "secondary",
-    children: (
-      <>
-        <ChevronRight />
-      </>
-    ),
+    children: <ChevronRight />,
   },
 };
 
@@ -110,21 +105,27 @@ export const AllButtons: StoryObj<typeof Button> = {
             <span className="text-xs text-gray-400 font-mono">
               Default (Frog)
             </span>
-            <RoundButton>Round Default</RoundButton>
+            <BaseButton shape={"round"}>Round Default</BaseButton>
           </div>
           <div className="flex flex-col gap-2">
             <span className="text-xs text-gray-400 font-mono">
               Secondary (Gray)
             </span>
-            <RoundButton variant="secondary">Round Secondary</RoundButton>
+            <BaseButton variant="secondary" shape={"round"}>
+              Round Secondary
+            </BaseButton>
           </div>
           <div className="flex flex-col gap-2">
             <span className="text-xs text-gray-400 font-mono">Outline</span>
-            <RoundButton variant="outline">Round Outline</RoundButton>
+            <BaseButton variant="outline" shape={"round"}>
+              Round Outline
+            </BaseButton>
           </div>
           <div className="flex flex-col gap-2">
             <span className="text-xs text-gray-400 font-mono">Small Size</span>
-            <RoundButton size="sm">Round SM</RoundButton>
+            <BaseButton shape={"round"} size="sm">
+              Round SM
+            </BaseButton>
           </div>
         </div>
       </section>
@@ -134,7 +135,9 @@ export const AllButtons: StoryObj<typeof Button> = {
         <h3 className="text-lg font-bold border-b pb-2">Shape Comparison</h3>
         <div className="flex gap-4">
           <BaseButton variant="default">Base Shape</BaseButton>
-          <RoundButton variant="default">Round Shape</RoundButton>
+          <BaseButton variant="default" shape={"round"} size={"sm"}>
+            Round Shape
+          </BaseButton>
         </div>
       </section>
     </div>

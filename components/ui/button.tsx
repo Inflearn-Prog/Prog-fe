@@ -35,11 +35,16 @@ const buttonVariants = cva(
         default: "rounded-md",
         round: "rounded-full",
       },
+      full: {
+        true: "w-full",
+        false: "w-auto",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
       shape: "default",
+      full: false,
     },
   }
 );
@@ -50,6 +55,7 @@ function Button({
   size = "default",
   asChild = false,
   shape = "default",
+  full,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -63,7 +69,8 @@ function Button({
       data-variant={variant}
       data-size={size}
       data-shape={shape}
-      className={cn(buttonVariants({ variant, size, shape, className }))}
+      data-full={full}
+      className={cn(buttonVariants({ variant, size, shape, full, className }))}
       {...props}
     />
   );
