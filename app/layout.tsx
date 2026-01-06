@@ -1,5 +1,4 @@
 import "./styles/globals.css";
-import "./styles/globals.css";
 
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -24,7 +23,6 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${inter.className} antialiased`}>
-        {children}
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
