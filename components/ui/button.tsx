@@ -9,29 +9,42 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        // default frog 컬러로 설정
+        default:
+          "bg-frog-600 text-primary-foreground hover:bg-frog-700 active:bg-frog-800 disabled:bg-gray-0 disabled:text-frog-200 disabled:border disabled:border-gray-100",
         destructive:
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+        // seconday gray 컬러로 설정
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-gray-50 text-gray-700-foreground border border-gray-100 hover:bg-gray-200 active:bg-gray-300 disabled:bg-gray-0 disabled:text-frog-200 disabled:border disabled:border-gray-100",
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
+        default: "h-10 px-6 py-2 has-[>svg]:px-3",
+        sm: "h-7 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
       },
+      shape: {
+        default: "rounded-md",
+        round: "rounded-full",
+      },
+      full: {
+        true: "w-full",
+        false: "w-auto",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      shape: "default",
+      full: false,
     },
   }
 );
@@ -41,6 +54,8 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  shape = "default",
+  full,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -53,10 +68,11 @@ function Button({
       data-slot="button"
       data-variant={variant}
       data-size={size}
-      className={cn(buttonVariants({ variant, size, className }))}
+      data-shape={shape}
+      data-full={full}
+      className={cn(buttonVariants({ variant, size, shape, full, className }))}
       {...props}
     />
   );
 }
-
 export { Button, buttonVariants };
