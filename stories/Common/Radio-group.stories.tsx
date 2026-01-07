@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import { BaseRadioItem } from "@/components/shared/radioItem";
+import { BaseRadioItem } from "@/components/shared/radioitem";
 import { RadioGroup } from "@/components/ui/radio-group";
 
 const meta: Meta<typeof BaseRadioItem> = {
@@ -18,7 +18,7 @@ export const DefaultCheckBox: Story = {
     <RadioGroup defaultValue="selected">
       <BaseRadioItem id="r1" value="default" label="Default" />
       <BaseRadioItem id="r2" value="selected" label="Selected" />
-      <BaseRadioItem id="r3" value="disalbled" label="Disabled" />
+      <BaseRadioItem id="r3" value="disalbled" label="Disabled" disabled />
       <BaseRadioItem
         id="r4"
         value="selected&disabled"
