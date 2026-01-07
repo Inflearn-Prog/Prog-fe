@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 const meta: Meta<typeof Checkbox> = {
   title: "components/shared/checkbox",
-  component: Checkbox,
+  component: BaseCheckBox,
 };
 
 export default meta;

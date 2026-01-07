@@ -13,7 +13,7 @@ interface BaseRadioItemProps extends React.ComponentProps<
 }
 
 /**
- * BaseRadioGroupItem 컴포넌트 Props
+ * BaseRadioItem 컴포넌트 Props
  */
 
 export function BaseRadioItem({
@@ -26,13 +26,7 @@ export function BaseRadioItem({
 }: BaseRadioItemProps) {
   return (
     <div className={cn("flex items-center space-x-2 py-1", className)}>
-      <RadioGroupItem
-        className={cn(className)}
-        value={value}
-        id={id}
-        disabled={disabled}
-        {...props}
-      />
+      <RadioGroupItem value={value} id={id} disabled={disabled} {...props} />
       <Label htmlFor={id}>{label}</Label>
     </div>
   );

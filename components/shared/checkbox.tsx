@@ -23,12 +23,7 @@ export function BaseCheckBox({
 }: BaseCheckBoxProps) {
   return (
     <div className={cn("flex items-center space-x-2 py-1", className)}>
-      <Checkbox
-        className={cn(className)}
-        id={id}
-        disabled={disabled}
-        {...props}
-      />
+      <Checkbox id={id} disabled={disabled} {...props} />
       <Label htmlFor={id}>{label}</Label>
     </div>
   );
