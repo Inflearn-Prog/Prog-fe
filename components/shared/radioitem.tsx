@@ -11,14 +11,17 @@ interface BaseRadioItemProps extends React.ComponentProps<
 > {
   label?: string;
   className?: string;
-  id?: string;
+  id: string;
   disabled?: boolean;
   value: string;
 }
 
 /**
- * BaseRadioItem 컴포넌트 Props
- */
++ * BaseRadioItem 컴포넌트
++ * 
++ * RadioGroupItem과 Label을 조합한 라디오 버튼 컴포넌트입니다.
++ * label prop이 제공되면 접근성을 위해 자동으로 연결됩니다.
+  */
 
 export function BaseRadioItem({
   className,
