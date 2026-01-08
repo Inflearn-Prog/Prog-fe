@@ -10,6 +10,10 @@ interface BaseRadioItemProps extends React.ComponentProps<
   typeof RadioGroupItem
 > {
   label?: string;
+  className?: string;
+  id?: string;
+  disabled?: boolean;
+  value: string;
 }
 
 /**
@@ -27,7 +31,8 @@ export function BaseRadioItem({
   return (
     <div className={cn("flex items-center space-x-2 py-1", className)}>
       <RadioGroupItem value={value} id={id} disabled={disabled} {...props} />
-      <Label htmlFor={id}>{label}</Label>
+      {/* label이 있을 때만 렌더링 */}
+      {label && <Label htmlFor={id}>{label}</Label>}
     </div>
   );
 }
