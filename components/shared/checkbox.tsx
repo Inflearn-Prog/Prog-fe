@@ -7,9 +7,9 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 interface BaseCheckBoxProps extends React.ComponentProps<typeof Checkbox> {
-  label?: string;
+  label: string;
   className?: string;
-  id?: string;
+  id: string;
   disabled?: boolean;
 }
 
@@ -27,8 +27,7 @@ export function BaseCheckBox({
   return (
     <div className={cn("flex items-center space-x-2 py-1", className)}>
       <Checkbox id={id} disabled={disabled} {...props} />
-      {/* label이 있을 때만 렌더링 */}
-      {label && <Label htmlFor={id}>{label}</Label>}
+      <Label htmlFor={id}>{label}</Label>
     </div>
   );
 }
