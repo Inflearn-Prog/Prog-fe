@@ -2,6 +2,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 
 import { BaseInput, IconInput } from "@/components/shared/inputs";
+import { CategorySidebar } from "@/components/sidebar/category-sidebar";
 
 export default function TestPage() {
   const isDevelopment = process.env.NODE_ENV === "development";
@@ -9,8 +10,11 @@ export default function TestPage() {
     redirect("/");
   }
   return (
-    <div>
-      <div className="inline-flex flex-col gap-2">
+    <div className="w-full grid grid-cols-12 max-w-7xl mx-auto gap-4 p-4">
+      <div className="col-span-3">
+        <CategorySidebar />
+      </div>
+      <div className="inline-flex flex-col gap-2 col-span-9">
         {/* <Button>테스트 버튼</Button> */}
         <div className="w-[300px] bg-gray-400 p-4 flex flex-col gap-4">
           <BaseInput

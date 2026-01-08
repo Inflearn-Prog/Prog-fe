@@ -3,6 +3,8 @@ import "./styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import { SidebarProvider } from "@/components/ui/sidebar";
+
 import QueryProvider from "./providers/queryProvider";
 
 const inter = Inter({
@@ -23,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${inter.className} antialiased`}>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <SidebarProvider>{children}</SidebarProvider>
+        </QueryProvider>
       </body>
     </html>
   );
