@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-import Header from "@/components/header/header";
+import { Header } from "@/components/header/header";
 import { BaseInput, IconInput } from "@/components/shared/inputs";
 
 export default function TestPage() {

@@ -23,7 +23,7 @@ export function Header() {
   );
 }
 
-function HeaderLogo() {
+export function HeaderLogo() {
   const { logo } = STATIC_IMAGES;
   return (
     <Link href="/" aria-label="홈으로 이동">
@@ -32,7 +32,7 @@ function HeaderLogo() {
   );
 }
 
-function HeaderNavigation() {
+export function HeaderNavigation() {
   return (
     <nav aria-label="메인 네비게이션">
       <ul className="flex items-center gap-x-15" role="list">
@@ -46,7 +46,7 @@ function HeaderNavigation() {
   );
 }
 
-function HeaderLeftSection() {
+export function HeaderLeftSection() {
   return (
     <div className="flex items-center gap-x-15">
       <HeaderLogo />
@@ -55,7 +55,7 @@ function HeaderLeftSection() {
   );
 }
 
-function HeaderRightSection() {
+export function HeaderRightSection() {
   return (
     <div className="flex items-center gap-x-5">
       <HeaderSearch />
