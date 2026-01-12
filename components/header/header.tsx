@@ -36,11 +36,19 @@ export function HeaderNavigation() {
   return (
     <nav aria-label="메인 네비게이션">
       <ul className="flex items-center gap-x-15" role="list">
-        {HEADER_NAV_LIST.map((nav) => (
-          <li key={nav.href} className="text-gray-900 navigation-large">
-            <Link href={nav.href}>{nav.label}</Link>
-          </li>
-        ))}
+        {HEADER_NAV_LIST.map((nav) => {
+          // LATER: 실제 로그인 상태에 따른 조건 처리 필요
+          const isLogin = true;
+          const isMypage = nav.href === "/mypage";
+          if (isLogin && isMypage) {
+            return null;
+          }
+          return (
+            <li key={nav.href} className="text-gray-900 navigation-large">
+              <Link href={nav.href}>{nav.label}</Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
