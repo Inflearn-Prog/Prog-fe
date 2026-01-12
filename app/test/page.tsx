@@ -2,15 +2,18 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 
 import { BaseInput, IconInput } from "@/components/shared/inputs";
+import { STATIC_IMAGES } from "@/lib/static-image";
 
 export default function TestPage() {
   const isDevelopment = process.env.NODE_ENV === "development";
   if (!isDevelopment) {
     redirect("/");
   }
+  const IMAGE = STATIC_IMAGES.logo;
   return (
     <div>
       <div className="inline-flex flex-col gap-2">
+        <Image {...IMAGE} />
         {/* <Button>테스트 버튼</Button> */}
         <div className="w-[300px] bg-gray-400 p-4 flex flex-col gap-4">
           <BaseInput
