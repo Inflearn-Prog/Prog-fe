@@ -5,7 +5,9 @@ import { STATIC_IMAGES } from "@/lib/static-image";
 
 import { HEADER_NAV_LIST } from "./constant";
 import { HeaderSearch } from "./header-search";
+import { LoginAndLogoutButton } from "./login-logout-button";
 
+// LATER 추후 반응형 작업
 export default function Header() {
   const { logo } = STATIC_IMAGES;
   return (
@@ -23,7 +25,10 @@ export default function Header() {
             </ul>
           </nav>
         </div>
-        <HeaderSearch />
+        <div className="flex items-center gap-x-5">
+          <HeaderSearch />
+          <LoginAndLogoutButton />
+        </div>
       </div>
     </header>
   );
