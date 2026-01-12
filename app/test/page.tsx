@@ -2,6 +2,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 
 import { SearchEmpty } from "@/components/search/search-empty";
+import { SearchTitle } from "@/components/search/search-title";
 import { BaseInput, IconInput } from "@/components/shared/inputs";
 
 export default function TestPage() {
@@ -11,6 +12,7 @@ export default function TestPage() {
   }
   return (
     <div>
+      <SearchTitle search="리액트" searchLength={12345} />
       <SearchEmpty />
       <div className="inline-flex flex-col gap-2">
         {/* <Button>테스트 버튼</Button> */}
