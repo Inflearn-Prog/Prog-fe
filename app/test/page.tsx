@@ -2,34 +2,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 
 import { BaseInput, IconInput } from "@/components/shared/inputs";
-import {
-  CategorySidebar,
-  CategorySidebarItem,
-} from "@/components/sidebar/category-sidebar";
-import { ROUTES } from "@/lib/routes";
-
-const categories = [
-  {
-    label: "카테고리 1",
-    href: "/test",
-  },
-  {
-    label: "카테고리 2",
-    href: ROUTES.mypage.PROFILE,
-  },
-  {
-    label: "카테고리 3",
-    href: ROUTES.mypage.PROFILE,
-  },
-  {
-    label: "카테고리 4",
-    href: ROUTES.rank.ROOT,
-  },
-  {
-    label: "카테고리 5",
-    href: ROUTES.search.ROOT,
-  },
-];
+import { ProgSidebar } from "@/components/sidebar/category-sidebar";
 
 export default function TestPage() {
   const isDevelopment = process.env.NODE_ENV === "development";
@@ -39,9 +12,7 @@ export default function TestPage() {
   return (
     <div className="w-full grid grid-cols-12 max-w-7xl mx-auto gap-4 p-4">
       <div className="col-span-3">
-        <CategorySidebar title="랭킹별직군">
-          <CategorySidebarItem categories={categories} />
-        </CategorySidebar>
+        <ProgSidebar />
       </div>
       {/* eslint-disable-next-line no-constant-binary-expression */}
       {false && (
