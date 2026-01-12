@@ -10,7 +10,7 @@ import { IconInput } from "../shared/inputs";
 
 function trimAndSanitizedValue(value: string) {
   // eslint-disable-next-line no-useless-escape
-  return value.trim().replace(/[^\w\s\-]/gi, "");
+  return value.trim().replace(/[<>\"\'&]/g, "");
 }
 
 export function HeaderSearch() {

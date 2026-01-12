@@ -5,6 +5,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { ROUTES } from "@/lib/routes";
 import { STATIC_IMAGES } from "@/lib/static-image";
 
 import { HEADER_NAV_LIST } from "./constant";
@@ -39,7 +40,7 @@ export function HeaderNavigation() {
         {HEADER_NAV_LIST.map((nav) => {
           // LATER: 실제 로그인 상태에 따른 조건 처리 필요
           const isLogin = true;
-          const isMypage = nav.href === "/mypage";
+          const isMypage = nav.href === ROUTES.mypage.ROOT;
           if (isLogin && isMypage) {
             return null;
           }
