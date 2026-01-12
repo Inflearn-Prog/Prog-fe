@@ -11,6 +11,12 @@ export const ROUTES = {
   rank: {
     ROOT: "/rank",
   },
+  /**
+   * 외부 노션 링크 이동
+   */
+  question: {
+    ROOT: "/",
+  },
   search: {
     ROOT: "/search",
   },

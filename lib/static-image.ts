@@ -6,7 +6,7 @@ export const STATIC_IMAGES: Record<
   Pick<ImageProps, "src" | "alt" | "width" | "height" | "priority">
 > = {
   logo: {
-    src: "/images/logo.png",
+    src: "/images/logo.svg",
     alt: "Prog Logo",
     width: 44,
     height: 48,
