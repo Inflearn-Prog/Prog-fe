@@ -1,15 +1,17 @@
 import "./styles/globals.css";
 
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 import QueryProvider from "./providers/queryProvider";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+const pretendard = localFont({
+  src: "../public/fonts/pretendard/PretendardVariable.woff2",
+  variable: "--font-pretendard",
+  display: "swap",
+  weight: "100 900",
 });
 
 export const metadata: Metadata = {
@@ -23,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
-      <body className={`${inter.className} antialiased`}>
+    <html lang="ko" className={`${pretendard.variable}`}>
+      <body className={`${pretendard.className} antialiased`}>
         <QueryProvider>
           <SidebarProvider>{children}</SidebarProvider>
         </QueryProvider>
