@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
+import { SearchEmpty } from "@/components/search/search-empty";
 import { BaseInput, IconInput } from "@/components/shared/inputs";
 
 export default function TestPage() {
@@ -10,6 +11,7 @@ export default function TestPage() {
   }
   return (
     <div>
+      <SearchEmpty />
       <div className="inline-flex flex-col gap-2">
         {/* <Button>테스트 버튼</Button> */}
         <div className="w-[300px] bg-gray-400 p-4 flex flex-col gap-4">
