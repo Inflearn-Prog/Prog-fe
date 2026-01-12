@@ -4,6 +4,7 @@ import Link from "next/link";
 import { STATIC_IMAGES } from "@/lib/static-image";
 
 import { HEADER_NAV_LIST } from "./constant";
+import { HeaderSearch } from "./header-search";
 
 export default function Header() {
   const { logo } = STATIC_IMAGES;
@@ -22,7 +23,7 @@ export default function Header() {
             </ul>
           </nav>
         </div>
-        <div>search</div>
+        <HeaderSearch />
       </div>
     </header>
   );
