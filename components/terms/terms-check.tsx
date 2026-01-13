@@ -12,7 +12,8 @@ import { Term } from "./types";
 const TERMS_STYLES = {
   GROUP_CONTAINER: "bg-gray-100 rounded-md px-6 py-2",
   ALL_CHECK_WRAPPER: "mb-4",
-  ITEM_LIST_WRAPPER: "gap-2",
+  ITEM_LIST_WRAPPER: "flex flex-col gap-1",
+  ITEM_WRAPPER: "flex items-center justify-between py-2",
   SHOW_LINK: "text-frog-600 label-medium hover:underline",
 } as const;
 
@@ -94,7 +95,7 @@ const CheckboxItem = ({
   className,
   link,
 }: CheckboxItemProps) => (
-  <div className={"flex items-center justify-between py-2"}>
+  <div className={TERMS_STYLES.ITEM_WRAPPER}>
     <BaseCheckBox
       id={id}
       label={`${required ? "(필수) " : ""}${label}`}
