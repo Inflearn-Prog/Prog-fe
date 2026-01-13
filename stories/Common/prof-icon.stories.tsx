@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ProfIcon } from "@/components/profile-icon/profile-icon";
 
 const meta: Meta<typeof ProfIcon> = {
-  title: "components/ProfIcon/profIcon",
+  title: "Components/ProfIcon",
   component: ProfIcon,
   argTypes: {
     src: {
@@ -73,7 +73,7 @@ export const ProfileSelectDual: Story = {
       <div className="flex flex-col items-center gap-12 p-20 bg-slate-50 min-h-[400px]">
         <div className="flex gap-12">
           {profiles.map((profile) => (
-            <div
+            <button
               key={profile.id}
               onClick={() => setSelectedSrc(profile.src)}
               className="cursor-pointer transition-all"
@@ -87,7 +87,7 @@ export const ProfileSelectDual: Story = {
                   selectedSrc === profile.src ? SELECTED_STYLE : DEFAULT_STYLE
                 }`}
               />
-            </div>
+            </button>
           ))}
         </div>
 

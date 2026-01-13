@@ -16,7 +16,7 @@ interface ProfIconProps {
 // 공통 스타일
 const BASE_CONTAINER_STYLE = "flex flex-col gap-4 text-center items-center";
 const BASE_IMAGE_STYLE =
-  "rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-300";
+  "rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-all duration-300 overflow-hidden";
 
 export function ProfIcon({
   src,
