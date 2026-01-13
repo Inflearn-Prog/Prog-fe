@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useId } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -12,30 +13,29 @@ const TERMS_STYLES = {
   GROUP_CONTAINER: "bg-gray-100 rounded-md px-6 py-2",
   ALL_CHECK_WRAPPER: "mb-4",
   ITEM_LIST_WRAPPER: "gap-2",
-  SHOW_LINK: "text-frog-600 text-[17px] hover:underline",
+  SHOW_LINK: "text-frog-600 label-medium hover:underline",
 } as const;
 
 // 인터페이스
 interface ProgTermsProps {
-  terms: Term[]; // API에서 받은 배열
-  checks: Map<number, boolean>; // { 1: true, 2: false } 형태
-  onAllCheck: () => void;
-  onSingleCheck: (id: number) => void;
+  terms: Term[];
+  checks: Map<number, boolean>;
+  isAllChecked: boolean;
+  onAllCheck: (checked: boolean) => void;
+  onSingleCheck: (id: number, checked: boolean) => void;
 }
 
 export function ProgTerms({
   terms,
   checks,
+  isAllChecked,
   onAllCheck,
   onSingleCheck,
 }: ProgTermsProps) {
-  // 모든 항목이 체크되었는지 계산 (전체 동의 UI 상태용)
-  const isAllChecked =
-    terms.length > 0 && terms.every((t) => checks.get(t.termId));
+  const baseId = useId();
 
   return (
-    <>
-      {/* 전체 동의 섹션 */}
+    <div>
       <div
         className={cn(
           TERMS_STYLES.GROUP_CONTAINER,
@@ -43,7 +43,7 @@ export function ProgTerms({
         )}
       >
         <CheckboxItem
-          id="all-check"
+          id={`${baseId}-all`}
           label="전체 동의하기"
           checked={isAllChecked}
           onChange={onAllCheck}
@@ -51,7 +51,6 @@ export function ProgTerms({
         />
       </div>
 
-      {/* API 데이터 기반 동적 리스트 */}
       <div
         className={cn(
           TERMS_STYLES.GROUP_CONTAINER,
@@ -60,25 +59,25 @@ export function ProgTerms({
       >
         {terms.map((term) => (
           <CheckboxItem
-            key={term.termId}
-            id={String(term.termId)}
+            key={`${baseId}-${term.termId}`}
+            id={`${baseId}-${term.termId}`}
             label={term.title}
             required={term.isRequired}
-            checked={!!checks.get(term.termId)} // undefined 방지
-            onChange={() => onSingleCheck(term.termId)}
+            checked={!!checks.get(term.termId)}
+            onChange={(checked) => onSingleCheck(term.termId, checked)}
             link={term.link}
           />
         ))}
       </div>
-    </>
+    </div>
   );
 }
 
 interface CheckboxItemProps {
   label: string;
   id: string;
-  checked: boolean;
-  onChange: () => void;
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
   required?: boolean;
   showLink?: boolean;
   className?: string;
@@ -95,15 +94,14 @@ const CheckboxItem = ({
   className,
   link,
 }: CheckboxItemProps) => (
-  <div className={cn("flex items-center justify-between py-2", className)}>
+  <div className={"flex items-center justify-between py-2"}>
     <BaseCheckBox
-      label={`${required ? "(필수) " : ""}${label}`}
       id={id}
+      label={`${required ? "(필수) " : ""}${label}`}
       checked={checked}
       onCheckedChange={onChange}
       className={className}
     />
-
     {showLink && link && (
       <Link
         href={link}
