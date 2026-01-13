@@ -16,6 +16,12 @@ export const ROUTES = {
     HR_GENERAL_AFFAIRS: "/rank?category=hr_general_affairs",
     DESIGN: "/rank?category=design",
   },
+  /**
+   * 외부 노션 링크 이동
+   */
+  question: {
+    ROOT: "/",
+  },
   search: {
     ROOT: "/search",
   },
