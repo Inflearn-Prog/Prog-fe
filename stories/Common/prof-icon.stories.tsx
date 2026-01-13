@@ -10,7 +10,7 @@ const meta: Meta<typeof ProfIcon> = {
     src: {
       //나중에 실제 이미지를 받아와 넣는 작업 필요
       options: [
-        "https://placehold.jp/216de5/ffffff/180x180.png?text=RED", //임시이미지
+        "https://placehold.jp/ef4444/ffffff/180x180.png?text=RED", //임시이미지
         "https://placehold.jp/1e293b/ffffff/180x180.png?text=BLUE",
         "https://placehold.jp/10b981/ffffff/180x180.png?text=GREEN",
       ],
@@ -76,7 +76,9 @@ export const ProfileSelectDual: Story = {
             <button
               key={profile.id}
               onClick={() => setSelectedSrc(profile.src)}
-              className="cursor-pointer transition-all"
+              className="transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-frog-600 focus-visible:ring-offset-2 rounded-full"
+              aria-pressed={selectedSrc === profile.src}
+              aria-label={profile.label}
             >
               <ProfIcon
                 src={profile.src}
@@ -98,7 +100,7 @@ export const ProfileSelectDual: Story = {
           </p>
           <div className="bg-white px-6 py-3 rounded-full border border-slate-200 shadow-sm">
             <code className="text-frog-600 font-mono text-sm">
-              {selectedSrc}
+              {selectedSrc || "프로필을 선택해주세요"}
             </code>
           </div>
         </div>

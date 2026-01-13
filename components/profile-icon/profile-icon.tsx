@@ -1,12 +1,12 @@
 "use client";
 
-import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import type { ImageProps } from "next/image";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
 interface ProfIconProps {
-  src: string | StaticImport;
+  src: ImageProps["src"];
   width: number;
   height: number;
   alt: string;
@@ -28,13 +28,7 @@ export function ProfIcon({
   return (
     <div className={BASE_CONTAINER_STYLE}>
       <div className={cn(BASE_IMAGE_STYLE, className)}>
-        <Image
-          src={src}
-          width={width}
-          height={height}
-          alt={alt}
-          className="rounded-full"
-        />
+        <Image src={src} width={width} height={height} alt={alt} />
       </div>
     </div>
   );
