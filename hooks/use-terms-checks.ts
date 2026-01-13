@@ -8,16 +8,19 @@ export function useTermsChecks(terms: Term[]) {
 
   // 전체 동의 여부 계산 (UI에서 사용)
   const isAllChecked =
-    terms.length > 0 && terms.every((t) => checks.get(t.termId) === true);
+    checks.size === terms.length &&
+    terms.length > 0 &&
+    terms.every((t) => checks.get(t.termId) === true);
 
   // 전체 동의 핸들러
   const handleAllCheck = useCallback(() => {
     const nextValue = !isAllChecked;
 
     const nextMap = new Map();
-    terms.forEach((term) => {
-      nextMap.set(term.termId, nextValue);
-    });
+    if (checks.size === terms.length)
+      terms.forEach((term) => {
+        nextMap.set(term.termId, nextValue);
+      });
 
     setChecks(nextMap);
   }, [isAllChecked, terms]);
