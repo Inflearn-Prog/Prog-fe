@@ -3,6 +3,8 @@ import "./styles/globals.css";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
+import { SidebarProvider } from "@/components/ui/sidebar";
+
 import QueryProvider from "./providers/queryProvider";
 
 const pretendard = localFont({
@@ -25,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="ko" className={`${pretendard.variable}`}>
       <body className={`${pretendard.className} antialiased`}>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <SidebarProvider>{children}</SidebarProvider>
+        </QueryProvider>
       </body>
     </html>
   );

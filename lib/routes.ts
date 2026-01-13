@@ -10,6 +10,11 @@ export const ROUTES = {
   },
   rank: {
     ROOT: "/rank",
+    DEVELOPMENT: "/rank?category=development",
+    MARKETING_CONTENT: "/rank?category=marketing_content",
+    SERVICE_PLANNING: "/rank?category=service_planning",
+    HR_GENERAL_AFFAIRS: "/rank?category=hr_general_affairs",
+    DESIGN: "/rank?category=design",
   },
   search: {
     ROOT: "/search",
@@ -19,6 +24,11 @@ export const ROUTES = {
     WRITE: "/community/write",
     DETAIL: (id: string) => `/community/${id}`,
     EDIT: (id: string) => `/community/${id}/edit`,
+    DEVELOPMENT: "/community?category=development",
+    MARKETING_CONTENT: "/community?category=marketing_content",
+    SERVICE_PLANNING: "/community?category=service_planning",
+    HR_GENERAL_AFFAIRS: "/community?category=hr_general_affairs",
+    DESIGN: "/community?category=design",
   },
   mypage: {
     ROOT: "/mypage",
