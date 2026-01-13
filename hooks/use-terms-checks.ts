@@ -17,10 +17,9 @@ export function useTermsChecks(terms: Term[]) {
     const nextValue = !isAllChecked;
 
     const nextMap = new Map();
-    if (checks.size === terms.length)
-      terms.forEach((term) => {
-        nextMap.set(term.termId, nextValue);
-      });
+    terms.forEach((term) => {
+      nextMap.set(term.termId, nextValue);
+    });
 
     setChecks(nextMap);
   }, [isAllChecked, terms]);

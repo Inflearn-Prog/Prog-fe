@@ -101,11 +101,17 @@ const CheckboxItem = ({
       id={id}
       checked={checked}
       onCheckedChange={onChange}
-      className={cn(className)}
+      className={className}
     />
 
     {showLink && link && (
-      <Link href={link} className={TERMS_STYLES.SHOW_LINK}>
+      <Link
+        href={link}
+        className={TERMS_STYLES.SHOW_LINK}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${label} 상세 보기`}
+      >
         보기
       </Link>
     )}

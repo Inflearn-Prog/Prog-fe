@@ -39,7 +39,7 @@ const MOCK_TERMS: Term[] = [
   },
 ];
 
-export const DefaultCheckBox: Story = {
+export const DefaultTerms: Story = {
   render: () => {
     const { checks, handleAllCheck, handleSingleCheck } =
       useTermsChecks(MOCK_TERMS);
