@@ -5,5 +5,6 @@ export default function TestPage() {
   if (!isDevelopment) {
     redirect("/");
   }
+
   return <></>;
 }
