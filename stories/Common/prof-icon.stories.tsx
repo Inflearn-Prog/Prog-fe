@@ -2,105 +2,105 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { useState } from "react";
 
 import { ProfIcon } from "@/components/profile-icon/profile-icon";
+import { cn } from "@/lib/utils";
 
 const meta: Meta<typeof ProfIcon> = {
-  title: "Components/ProfIcon",
+  title: "Components/shared/ProfIcon",
   component: ProfIcon,
   argTypes: {
-    src: {
-      //나중에 실제 이미지를 받아와 넣는 작업 필요
-      options: [
-        "https://placehold.jp/ef4444/ffffff/180x180.png?text=RED", //임시이미지
-        "https://placehold.jp/1e293b/ffffff/180x180.png?text=BLUE",
-        "https://placehold.jp/10b981/ffffff/180x180.png?text=GREEN",
-      ],
-      control: { type: "select" },
-      description: "이미지 URL을 넣거나 샘플을 선택하세요",
-    },
-    width: {
-      control: { type: "range", min: 50, max: 500, step: 10 },
-      description: "아이콘 가로 크기",
-    },
-    height: {
-      control: { type: "range", min: 50, max: 500, step: 10 },
-      description: "아이콘 세로 크기",
-    },
-    alt: { control: "text" },
+    src: { description: "이미지 URL" },
+    width: { control: { type: "range", min: 50, max: 300, step: 10 } },
+    height: { control: { type: "range", min: 50, max: 300, step: 10 } },
+    fallback: { description: "이미지 부재 시 노출될 텍스트" },
   },
 };
 export default meta;
 
-//default profIcon
 type Story = StoryObj<typeof ProfIcon>;
 
+/**
+ * dafault
+ */
 export const Default: Story = {
   args: {
-    // 180x180 사이즈의 가짜 이미지 URL
-    src: "https://placehold.jp/ffffff/000000/180x180.png?text=LOGO",
+    src: "https://placehold.jp/1e293b/ffffff/180x180.png?text=PROF",
     width: 180,
     height: 180,
-    alt: "임시 로고",
+    alt: "기본 프로필",
+    fallback: "P",
   },
-  render: (args) => (
-    <div className="flex items-center justify-center p-10">
-      <ProfIcon {...args} />
-    </div>
-  ),
 };
 
-export const ProfileSelectDual: Story = {
+/**
+ * 이미지가 없을 때 글자가 보이도록
+ */
+export const NoImage: Story = {
+  args: {
+    src: "",
+    width: 180,
+    height: 180,
+    alt: "이미지 없음",
+    fallback: "None",
+  },
+};
+
+/**
+ * 프로필 아이콘 선택
+ */
+export const ProfileSelect: Story = {
   render: () => {
-    //임시로직
-    const [selectedSrc, setSelectedSrc] = useState<string>("");
+    const [selectedId, setSelectedId] = useState<string | null>(null);
 
     const profiles = [
       {
-        id: "blue",
-        src: "https://placehold.jp/ffffff/000000/180x180.png?text=BLUE",
-        label: "블루 아이콘",
+        id: "image-exists",
+        src: "https://placehold.jp/1e293b/ffffff/180x180.png?text=IMG",
+        label: "I",
       },
       {
-        id: "red",
-        src: "https://placehold.jp/ffffff/000000/180x180.png?text=RED",
-        label: "레드 아이콘",
+        id: "image-empty",
+        src: "", // 혹은 null
+        label: "F",
       },
     ];
 
-    const SELECTED_STYLE = "ring-[8px] ring-frog-600";
-    const DEFAULT_STYLE = "ring-[8px] ring-transparent";
+    const selectedProfile = profiles.find((p) => p.id === selectedId);
 
     return (
-      <div className="flex flex-col items-center gap-12 p-20 bg-slate-50 min-h-[400px]">
-        <div className="flex gap-12">
+      <div className="flex flex-col items-center gap-10 p-20 bg-slate-50">
+        <div className="flex gap-10">
           {profiles.map((profile) => (
             <button
               key={profile.id}
-              onClick={() => setSelectedSrc(profile.src)}
-              className="transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-frog-600 focus-visible:ring-offset-2 rounded-full"
-              aria-pressed={selectedSrc === profile.src}
-              aria-label={profile.label}
+              onClick={() => setSelectedId(profile.id)}
+              className={cn(
+                "rounded-full transition-all duration-300",
+                selectedId === profile.id && "ring-8 ring-frog-600"
+              )}
             >
               <ProfIcon
                 src={profile.src}
                 width={180}
                 height={180}
                 alt={profile.label}
-                className={`${
-                  selectedSrc === profile.src ? SELECTED_STYLE : DEFAULT_STYLE
-                }`}
+                fallback={profile.label}
               />
             </button>
           ))}
         </div>
 
-        {/* 3. 선택된 결과(src) 표시 영역 */}
         <div className="flex flex-col items-center gap-2">
           <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
-            src
+            Current Selected Src
           </p>
-          <div className="bg-white px-6 py-3 rounded-full border border-slate-200 shadow-sm">
+          <div className="bg-white px-6 py-3 rounded-full border border-slate-200 shadow-sm text-center">
             <code className="text-frog-600 font-mono text-sm">
-              {selectedSrc || "프로필을 선택해주세요"}
+              {/* 선택은 됐는데 src가 비어있을 경우에 대한 표시 처리 */}
+              {selectedId === null
+                ? "프로필을 선택해주세요"
+                : selectedProfile?.src === ""
+                  ? "NULL"
+                  : selectedProfile?.src}
             </code>
           </div>
         </div>
