@@ -11,13 +11,8 @@ const STYLES = {
   MESSAGE_BASE: "label-small ml-1",
 } as const;
 
-interface ValidationInputProps {
+interface ValidationInputProps extends React.ComponentProps<typeof BaseInput> {
   message?: string;
-  name: string;
-  placeholder?: string;
-  rounded?: boolean;
-  inputSize?: "md" | "lg";
-  className?: string;
 }
 
 export function ValidationInput({
@@ -27,6 +22,7 @@ export function ValidationInput({
   className,
   rounded,
   inputSize,
+  ...props
 }: ValidationInputProps) {
   return (
     <div className={STYLES.CONTAINER}>
@@ -36,6 +32,7 @@ export function ValidationInput({
         inputSize={inputSize}
         className={STYLES.INPUT_BASE}
         placeholder={placeholder}
+        {...props}
       />
 
       <p className={cn(STYLES.MESSAGE_BASE, className)}>{message || " "}</p>
