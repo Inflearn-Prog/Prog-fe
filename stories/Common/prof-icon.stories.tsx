@@ -19,7 +19,7 @@ export default meta;
 type Story = StoryObj<typeof ProfIcon>;
 
 /**
- * dafault
+ * default
  */
 export const Default: Story = {
   args: {
