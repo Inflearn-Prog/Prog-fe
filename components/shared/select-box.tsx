@@ -1,5 +1,7 @@
 "use client";
 
+import { cn } from "@/lib/utils";
+
 import {
   Select,
   SelectContent,
@@ -39,10 +41,17 @@ export function SelectBox({
       required={required}
       name={name}
     >
-      <SelectTrigger className="w-full">
+      <SelectTrigger
+        size="lg"
+        className={cn(
+          `w-full border-gray-50 text-gray-950 transition-300`,
+          `hover:text-frog-600 hover:border-gray-300`,
+          ""
+        )}
+      >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent position="popper" sideOffset={4}>
         <SelectGroup>
           {selectOptions && selectOptions.length > 0 ? (
             selectOptions.map((option) => (

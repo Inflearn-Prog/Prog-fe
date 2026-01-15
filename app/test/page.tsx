@@ -6,7 +6,7 @@ import { useState } from "react";
 import { SelectBox, SelectOption } from "@/components/shared/select-box";
 
 const SAMPLE_OPTIONS: SelectOption[] = [
-  { label: "Apple", value: "apple" },
+  { label: "Default", value: "apple" },
   { label: "Banana", value: "banana" },
   { label: "Cherry", value: "cherry" },
 ];
@@ -18,14 +18,16 @@ export default function TestPage() {
   }
 
   return (
-    <div className="border p-4 w-full">
-      <SelectBox
-        value={data}
-        onValueChange={(value) => {
-          setData(value);
-        }}
-        selectOptions={SAMPLE_OPTIONS}
-      />
+    <div className="border p-4">
+      <div className="w-40">
+        <SelectBox
+          value={data}
+          onValueChange={(value) => {
+            setData(value);
+          }}
+          selectOptions={SAMPLE_OPTIONS}
+        />
+      </div>
     </div>
   );
 }
