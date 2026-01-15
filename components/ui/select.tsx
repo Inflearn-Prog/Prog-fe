@@ -49,7 +49,7 @@ function SelectTrigger({
         // Focus & outline
         "outline-none",
         // Size variants
-        "data-[size=default]:h-9 data-[size=sm]:h-8",
+        "data-[size=default]:h-9 data-[size=sm]:h-8 data-[size=lg]:h-12 ",
         // Placeholder state
         "data-[placeholder]:text-muted-foreground",
         // Open state
