@@ -27,6 +27,14 @@ export default function TestPage() {
           }}
           selectOptions={SAMPLE_OPTIONS}
         />
+        <SelectBox
+          value={data}
+          disabled
+          onValueChange={(value) => {
+            setData(value);
+          }}
+          selectOptions={SAMPLE_OPTIONS}
+        />
       </div>
     </div>
   );
