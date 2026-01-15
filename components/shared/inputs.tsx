@@ -71,7 +71,7 @@ interface IconInputProps extends Omit<BaseInputProps, "name"> {
  */
 export function IconInput({ name, icon, ...props }: IconInputProps) {
   return (
-    <div className="relative flex items-center">
+    <div className="group relative flex items-center">
       <div
         className={cn(
           "absolute left-4 size-5 top-1/2 -translate-y-1/2",
