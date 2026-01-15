@@ -51,11 +51,25 @@ export function SelectBox({
       >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent position="popper" sideOffset={4}>
+
+      <SelectContent
+        className="p-0 rounded-[5px]"
+        position="popper"
+        sideOffset={4}
+      >
         <SelectGroup>
           {selectOptions && selectOptions.length > 0 ? (
             selectOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem
+                className={cn(
+                  "h-11.5 rounded-none transition-300",
+                  "focus:text-frog-600 focus:bg-white",
+                  "data-[state=checked]:bg-frog-100 data-[state=checked]:text-frog-600",
+                  "disabled:text-frog-300"
+                )}
+                key={option.value}
+                value={option.value}
+              >
                 {option.label}
               </SelectItem>
             ))
