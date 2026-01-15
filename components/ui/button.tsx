@@ -16,7 +16,7 @@ const buttonVariants = cva(
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         // outline frog 컬러로 설정 배경 투명
         outline:
-          "border border-frog-600 text-frog-600 bg-transparent hover:border-frog-700 hover:text-frog-700 active:text-frog-800 disabled:border-frog-200 disabled:text-frog-200",
+          "border border-frog-600 text-frog-600 bg-transparent hover:border-frog-700 hover:text-frog-700 active:text-frog-800 active:border-frog-800 disabled:border-frog-200 disabled:text-frog-200",
         // seconday gray 컬러로 설정
         secondary:
           "bg-gray-50 text-gray-700-foreground border border-gray-100 hover:bg-gray-200 active:bg-gray-300 disabled:bg-gray-0 disabled:text-frog-200 disabled:border disabled:border-gray-100",
