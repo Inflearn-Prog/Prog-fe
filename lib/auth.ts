@@ -35,6 +35,11 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
           }
         );
 
+        if (!response.ok) {
+          console.error("Social login failed:", response.status);
+          return false;
+        }
+
         const resData = await response.json();
 
         if (resData.success) {
@@ -89,7 +94,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
             token.error = "TokenUpdateDecodeError";
           }
         } else {
-          token.erro = "MissingAccessTokenOnUpdate";
+          token.error = "MissingAccessTokenOnUpdate";
         }
       }
       // 기존 유저이고 토큰 만료 시간이 있다면 체크 (신규 유저는 이 단계를 건너뜀)

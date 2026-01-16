@@ -6,7 +6,7 @@ import { ROUTES } from "@/lib/routes";
 export default auth((req) => {
   const { nextUrl, auth: session } = req;
   const isSignIn = !!session;
-  const isNewUser = session?.user?.isNewUser;
+  const isNewUser = session?.isNewUser;
 
   // 보안 헤더 주입
   const response = NextResponse.next();

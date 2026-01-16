@@ -40,32 +40,24 @@ interface SignupState {
   reset: () => void;
 }
 
-export const useSignupStore = create<SignupState>((set) => ({
+const INITIAL_SIGNUP_STATE = {
   email: "",
   provider: "",
   profileImage: "",
   nickname: "",
-  selectedProfileType: "SOCIAL",
+  selectedProfileType: "SOCIAL" as const,
   targetJobs: [],
   educationLevel: "",
   field: "",
   career: "",
+};
+export const useSignupStore = create<SignupState>((set) => ({
+  ...INITIAL_SIGNUP_STATE,
 
   setSocialInfo: (info) => set((state) => ({ ...state, ...info })),
   setNickname: (nickname) => set({ nickname }),
   setSelectedProfileType: (type) => set({ selectedProfileType: type }),
   setTargetJobs: (targetJobs) => set({ targetJobs }),
   updateField: (key, value) => set({ [key]: value }),
-  reset: () =>
-    set({
-      email: "",
-      provider: "",
-      profileImage: "",
-      nickname: "",
-      selectedProfileType: "SOCIAL",
-      targetJobs: [],
-      educationLevel: "",
-      field: "",
-      career: "",
-    }),
+  reset: () => set(INITIAL_SIGNUP_STATE),
 }));
