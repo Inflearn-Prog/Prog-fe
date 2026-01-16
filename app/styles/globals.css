@@ -124,10 +124,19 @@
 /*  ---break---*/
 
 @layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .inner {
+    @apply max-w-7xl mx-auto;
   }
 }
