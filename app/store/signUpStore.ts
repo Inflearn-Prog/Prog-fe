@@ -10,7 +10,8 @@ interface SignupState {
   nickname: string;
   selectedProfileType: "SOCIAL" | "DEFAULT";
   targetJobs: string[];
-  field: string;
+  educationLevel: string;
+  major: string;
   career: string;
 
   // 액션
@@ -22,7 +23,7 @@ interface SignupState {
   setNickname: (name: string) => void;
   setSelectedProfileType: (type: "SOCIAL" | "DEFAULT") => void;
   setTargetJobs: (jobs: string[]) => void;
-  updateField: <K extends keyof SignupState>(
+  updateMajor: <K extends keyof SignupState>(
     key: K,
     value: SignupState[K]
   ) => void;
@@ -36,14 +37,15 @@ export const useSignupStore = create<SignupState>((set) => ({
   nickname: "",
   selectedProfileType: "SOCIAL",
   targetJobs: [],
-  field: "",
+  educationLevel: "",
+  major: "",
   career: "",
 
   setSocialInfo: (info) => set((state) => ({ ...state, ...info })),
   setNickname: (nickname) => set({ nickname }),
   setSelectedProfileType: (type) => set({ selectedProfileType: type }),
   setTargetJobs: (targetJobs) => set({ targetJobs }),
-  updateField: (key, value) => set((state) => ({ ...state, [key]: value })),
+  updateMajor: (key, value) => set({ [key]: value }),
   reset: () =>
     set({
       email: "",
@@ -52,7 +54,8 @@ export const useSignupStore = create<SignupState>((set) => ({
       nickname: "",
       selectedProfileType: "SOCIAL",
       targetJobs: [],
-      field: "",
+      educationLevel: "",
+      major: "",
       career: "",
     }),
 }));

@@ -46,11 +46,12 @@ const handler = NextAuth({
           user.provider = account.provider; // 소셜 제공자 정보 저장
 
           // 여기서 리다이렉트 하지 않고 무조건 true 반환 (로그인 처리)
-          // 추후 회원가입 페이지에서 세션 -> Zustand로 store.
+          // 추후 회원가입 페이지에서 세션 정보에서 -> Zustand로 store.
           return true;
         }
         return false;
       } catch (error) {
+        console.error("Critical error during social login fetch:", error);
         return false;
       }
     },
@@ -68,20 +69,26 @@ const handler = NextAuth({
             token.accessTokenExpires = decoded.exp * 1000;
           } catch (e) {
             console.error("Token decoding error", e);
+            token.error = "TokenDecodeError";
           }
         }
-        return token;
       }
 
       //회원가입 완료 후 클라이언트에서 update()를 호출했을 때 실행됨
 
       if (trigger === "update" && session) {
-        token.accessToken = session.user.accessToken;
         token.isNewUser = false;
 
-        if (session.user.accessToken) {
-          const decoded = jwtDecode<{ exp: number }>(session.user.accessToken);
-          token.accessTokenExpires = decoded.exp * 1000;
+        if (session?.user?.accessToken) {
+          token.accessToken = session.user.accessToken;
+          try {
+            const decoded = jwtDecode<{ exp: number }>(
+              session.user.accessToken
+            );
+            token.accessTokenExpires = decoded.exp * 1000;
+          } catch (e) {
+            token.error = "TokenUpdateDecodeError";
+          }
         }
       }
       // 기존 유저이고 토큰 만료 시간이 있다면 체크 (신규 유저는 이 단계를 건너뜀)

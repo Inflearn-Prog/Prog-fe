@@ -22,7 +22,12 @@ export default withAuth(
   {
     // 로그인이 되어 있는 유저만 위의 middleware 함수가 실행되도록 설정
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ token, req }) => {
+        const { pathname } = req.nextUrl;
+
+        if (pathname === "/") return true;
+        return !!token;
+      },
     },
   }
 );
@@ -33,8 +38,11 @@ export const config = {
    * - api (API 라우트)
    * - _next/static (정적 파일)
    * - _next/image (이미지 최적화 파일)
+   * - 이미지 파일
    * - favicon.ico (파비콘)
    * - auth/signin (로그인 페이지)
    */
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|auth/signin).*)"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|auth/signin).*)",
+  ],
 };
