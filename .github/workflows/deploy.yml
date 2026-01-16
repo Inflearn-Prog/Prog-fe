@@ -1,0 +1,30 @@
+name: Deploy Workflow
+
+on:
+  push:
+    branches: [dev] # 브랜치에 푸시될 때 실행
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # [핵심] Secrets를 읽어와서 .env 파일을 생성하는 단계
+      - name: Create .env file
+        run: |
+          echo "NODE_ENV=production" >> .env
+          echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> .env
+          echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> .env
+          echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+          echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> .env
+          echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
+          echo "BACKEND_API_URL=${{ secrets.BACKEND_API_URL }}" >> .env
+          echo "AUTH_URL=${{ secrets.AUTH_URL }}" >> .env
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
