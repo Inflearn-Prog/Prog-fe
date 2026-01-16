@@ -230,7 +230,7 @@ export const IconInputAllVariants: IconInputStory = {
           {...args}
           name="all5"
           disabled={true}
-          icon={<UserIcon className="w-5 h-5 text-gray-300" />}
+          icon={<UserIcon className="w-5 h-5" />}
           placeholder="비활성화된 필드"
           value="수정 불가능"
         />
