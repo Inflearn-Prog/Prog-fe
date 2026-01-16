@@ -3,7 +3,7 @@ import NextAuth from "next-auth";
 import KakaoProvider from "next-auth/providers/kakao";
 import NaverProvider from "next-auth/providers/naver";
 
-const handler = NextAuth({
+export const { handlers, auth, signIn, signOut, update } = NextAuth({
   providers: [
     KakaoProvider({
       clientId: process.env.KAKAO_CLIENT_ID!,
@@ -77,10 +77,9 @@ const handler = NextAuth({
       //회원가입 완료 후 클라이언트에서 update()를 호출했을 때 실행됨
 
       if (trigger === "update" && session) {
-        token.isNewUser = false;
-
         if (session?.user?.accessToken) {
           token.accessToken = session.user.accessToken;
+          token.isNewUser = false;
           try {
             const decoded = jwtDecode<{ exp: number }>(
               session.user.accessToken
@@ -89,6 +88,8 @@ const handler = NextAuth({
           } catch (e) {
             token.error = "TokenUpdateDecodeError";
           }
+        } else {
+          token.erro = "MissingAccessTokenOnUpdate";
         }
       }
       // 기존 유저이고 토큰 만료 시간이 있다면 체크 (신규 유저는 이 단계를 건너뜀)
@@ -102,13 +103,14 @@ const handler = NextAuth({
     },
 
     async session({ session, token }) {
-      session.accessToken = token.accessToken;
-      session.isNewUser = token.isNewUser;
-      session.provider = token.provider;
-      session.error = token.error;
+      session.accessToken = token.accessToken as string;
+      session.isNewUser = token.isNewUser as boolean;
+      session.provider = token.provider as string;
+      session.error = token.error as string;
       return session;
     },
   },
+  pages: {
+    signIn: "/signin",
+  },
 });
-
-export { handler as GET, handler as POST };

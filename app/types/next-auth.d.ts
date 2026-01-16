@@ -1,6 +1,19 @@
 import { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
+  interface UpdateData {
+    user?: {
+      accessToken?: string;
+      isNewUser?: boolean;
+      name?: string;
+      image?: string;
+    };
+  }
+
+  interface NextAuthResult {
+    update: (data?: UpdateData) => Promise<Session | null>;
+  }
+
   interface User {
     accessToken?: string;
     refreshToken?: string;
@@ -16,6 +29,7 @@ declare module "next-auth" {
     error?: string;
     user: {
       id?: string;
+      accessToken?: string;
     } & DefaultSession["user"];
   }
 }

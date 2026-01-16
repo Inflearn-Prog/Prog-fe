@@ -1,5 +1,15 @@
 import { create } from "zustand";
 
+type SignupFieldKey = Exclude<
+  keyof SignupState,
+  | "setSocialInfo"
+  | "setNickname"
+  | "setSelectedProfileType"
+  | "setTargetJobs"
+  | "updateMajor"
+  | "reset"
+>;
+
 interface SignupState {
   // 소셜로부터 받은 기본 정보
   email: string;
@@ -11,7 +21,7 @@ interface SignupState {
   selectedProfileType: "SOCIAL" | "DEFAULT";
   targetJobs: string[];
   educationLevel: string;
-  major: string;
+  field: string;
   career: string;
 
   // 액션
@@ -23,7 +33,7 @@ interface SignupState {
   setNickname: (name: string) => void;
   setSelectedProfileType: (type: "SOCIAL" | "DEFAULT") => void;
   setTargetJobs: (jobs: string[]) => void;
-  updateMajor: <K extends keyof SignupState>(
+  updateField: <K extends SignupFieldKey>(
     key: K,
     value: SignupState[K]
   ) => void;
@@ -38,14 +48,14 @@ export const useSignupStore = create<SignupState>((set) => ({
   selectedProfileType: "SOCIAL",
   targetJobs: [],
   educationLevel: "",
-  major: "",
+  field: "",
   career: "",
 
   setSocialInfo: (info) => set((state) => ({ ...state, ...info })),
   setNickname: (nickname) => set({ nickname }),
   setSelectedProfileType: (type) => set({ selectedProfileType: type }),
   setTargetJobs: (targetJobs) => set({ targetJobs }),
-  updateMajor: (key, value) => set({ [key]: value }),
+  updateField: (key, value) => set({ [key]: value }),
   reset: () =>
     set({
       email: "",
@@ -55,7 +65,7 @@ export const useSignupStore = create<SignupState>((set) => ({
       selectedProfileType: "SOCIAL",
       targetJobs: [],
       educationLevel: "",
-      major: "",
+      field: "",
       career: "",
     }),
 }));
