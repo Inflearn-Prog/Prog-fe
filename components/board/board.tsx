@@ -1,9 +1,13 @@
 "use client";
 
+import { useState } from "react";
+
 import { BaseButton } from "../shared/button";
 import { BaseInput } from "../shared/inputs";
+import { SelectBox } from "../shared/select-box";
 
 export function Board() {
+  const [selectData, setSelectData] = useState("");
   return (
     <form>
       <div className="flex items-center justify-between">
@@ -17,7 +21,18 @@ export function Board() {
         <BaseInput name="postTitle" />
       </div>
 
-      <div>셀렉트 박스 자리</div>
+      <div>
+        <SelectBox
+          selectOptions={[
+            { label: "카테고리 1", value: "category1" },
+            { label: "카테고리 2", value: "category2" },
+            { label: "카테고리 3", value: "category3" },
+          ]}
+          placeholder="카테고리를 선택하세요"
+          value={selectData}
+          onValueChange={(e: string) => setSelectData(e)}
+        />
+      </div>
 
       <div>quill 에디터 자리</div>
 
