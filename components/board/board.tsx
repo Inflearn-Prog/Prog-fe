@@ -5,11 +5,13 @@ import { useState } from "react";
 import { BaseButton } from "../shared/button";
 import { BaseInput } from "../shared/inputs";
 import { SelectBox } from "../shared/select-box";
+import { QuillBoard } from "./quill-board";
 
 export function Board() {
   const [selectData, setSelectData] = useState("");
+  const [textData, setTextData] = useState("");
   return (
-    <form>
+    <form className="p-5 bg-gray-300">
       <div className="flex items-center justify-between">
         <div>{`<-`} 게시글 작성하기</div>
         <div>
@@ -21,7 +23,7 @@ export function Board() {
         <BaseInput name="postTitle" />
       </div>
 
-      <div>
+      <div className="">
         <SelectBox
           selectOptions={[
             { label: "카테고리 1", value: "category1" },
@@ -34,7 +36,13 @@ export function Board() {
         />
       </div>
 
-      <div>quill 에디터 자리</div>
+      <div className="my-5">
+        <QuillBoard
+          value={textData}
+          setValue={(e: string) => setTextData(e)}
+          placeholder="검색어를 입력해람"
+        />
+      </div>
 
       <div className="flex justify-end">
         <BaseButton variant="outline">임시저장</BaseButton>
