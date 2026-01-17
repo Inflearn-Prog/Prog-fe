@@ -5,16 +5,17 @@ import { STATIC_IMAGES } from "@/lib/static-image";
 
 export const toasts = () => ({
   success: (message: string) =>
-    toast.custom(() => <ToastSuccess>{message}</ToastSuccess>, {
+    toast(() => <ToastSuccess>{message}</ToastSuccess>, {
       position: "bottom-center",
-      duration: 20000,
+      duration: 5 * 1000,
+      className: "bg-gray-950! w-full py-4 px-5 inline-flex justify-center",
     }),
 });
 
 function ToastSuccess({ children }: { children: string }) {
   const successImage = STATIC_IMAGES.toastSuccess;
   return (
-    <div className="bg-gray-950 body-small text-white py-4 px-5 rounded-10 flex items-center gap-x-2">
+    <div className="w-full body-small text-center text-white rounded-10 flex items-center gap-x-2">
       <Image {...successImage} />
       {children}
     </div>

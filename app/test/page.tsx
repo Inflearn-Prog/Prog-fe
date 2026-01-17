@@ -11,10 +11,13 @@ export default function TestPage() {
   }
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <button
         onClick={() => toasts().success("게시글이 성공적으로 등록되었습니다.")}
       >
+        게시글이 성공적으로 등록되었습니다.
+      </button>
+      <button onClick={() => toasts().success("게시글이.")}>
         게시글이 성공적으로 등록되었습니다.
       </button>
     </div>

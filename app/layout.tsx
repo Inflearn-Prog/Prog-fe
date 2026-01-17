@@ -35,7 +35,7 @@ export default function RootLayout({
           </QueryProvider>
         </AuthProvider>
 
-        <Toaster />
+        <Toaster className="w-full h-20 flex flex-col justify-center relative" />
       </body>
     </html>
   );
