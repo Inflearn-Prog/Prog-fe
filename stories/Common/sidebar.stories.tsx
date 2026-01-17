@@ -3,6 +3,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { ProgSidebar } from "@/components/sidebar/category-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
+import { StoryBox } from "../StoryBox";
+
 const STORY_PARAMETERS = {
   layout: "centered" as const,
   docs: {
@@ -55,6 +57,11 @@ export const Default: ProgSidebarStory = {
       },
     },
   },
+  render: () => (
+    <StoryBox>
+      <ProgSidebar />
+    </StoryBox>
+  ),
 };
 
 export const CommunitySidebar: ProgSidebarStory = {
@@ -65,6 +72,11 @@ export const CommunitySidebar: ProgSidebarStory = {
       },
     },
   },
+  render: () => (
+    <StoryBox>
+      <ProgSidebar />
+    </StoryBox>
+  ),
 };
 
 export const RankCategorySelected: ProgSidebarStory = {
@@ -75,4 +87,9 @@ export const RankCategorySelected: ProgSidebarStory = {
       },
     },
   },
+  render: () => (
+    <StoryBox>
+      <ProgSidebar />
+    </StoryBox>
+  ),
 };

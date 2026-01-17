@@ -6,6 +6,8 @@ import { Meta, StoryObj } from "@storybook/nextjs";
 
 import { Header } from "@/components/header/header";
 
+import { StoryBox } from "../StoryBox";
+
 /**
  * 헤더 컴포넌트 스토리북
  * @description 사이트 전역 헤더 컴포넌트의 다양한 상태를 확인할 수 있습니다
@@ -33,7 +35,11 @@ type Story = StoryObj<typeof Header>;
  * 기본 헤더
  */
 export const Default: Story = {
-  render: () => <Header />,
+  render: () => (
+    <StoryBox>
+      <Header />
+    </StoryBox>
+  ),
 };
 
 /**
@@ -41,13 +47,17 @@ export const Default: Story = {
  */
 export const WithBackground: Story = {
   render: () => (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <div className="p-10">
-        <h1 className="text-2xl font-bold">페이지 컨텐츠 영역</h1>
-        <p className="mt-4 text-gray-600">헤더 아래에 표시되는 컨텐츠입니다.</p>
+    <StoryBox>
+      <div className="min-h-screen bg-gray-100">
+        <Header />
+        <div className="p-10">
+          <h1 className="text-2xl font-bold">페이지 컨텐츠 영역</h1>
+          <p className="mt-4 text-gray-600">
+            헤더 아래에 표시되는 컨텐츠입니다.
+          </p>
+        </div>
       </div>
-    </div>
+    </StoryBox>
   ),
 };
 
@@ -56,7 +66,7 @@ export const WithBackground: Story = {
  */
 export const WithScrollContent: Story = {
   render: () => (
-    <div>
+    <StoryBox>
       <Header />
       <div className="p-10 space-y-4">
         {Array.from({ length: 20 }).map((_, i) => (
@@ -68,6 +78,6 @@ export const WithScrollContent: Story = {
           </div>
         ))}
       </div>
-    </div>
+    </StoryBox>
   ),
 };

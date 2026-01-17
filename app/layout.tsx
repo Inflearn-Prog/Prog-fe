@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
 
+import AuthProvider from "./providers/auth-provider";
 import QueryProvider from "./providers/queryProvider";
 
 const pretendard = localFont({
@@ -27,9 +28,11 @@ export default function RootLayout({
   return (
     <html lang="ko" className={`${pretendard.variable}`}>
       <body className={`${pretendard.className} antialiased`}>
-        <QueryProvider>
-          <SidebarProvider>{children}</SidebarProvider>
-        </QueryProvider>
+        <AuthProvider>
+          <QueryProvider>
+            <SidebarProvider>{children}</SidebarProvider>
+          </QueryProvider>
+        </AuthProvider>
       </body>
     </html>
   );
