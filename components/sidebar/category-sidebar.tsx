@@ -22,7 +22,7 @@ const ROUTES = {
 } as const;
 
 const SIDEBAR_STYLES = {
-  CONTAINER: "w-full p-4 border border-gray-100 rounded-10",
+  CONTAINER: "bg-white w-full p-4 border border-gray-100 rounded-10",
   TITLE: "heading-small",
   SEPARATOR: "my-3 mx-0",
   SIDEBAR: "w-full h-auto border-r-0",
