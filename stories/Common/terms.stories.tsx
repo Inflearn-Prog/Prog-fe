@@ -4,6 +4,8 @@ import { useState } from "react"; // UI 테스트를 위한 임시 상태
 import { ProgTerms } from "@/components/terms/terms-check";
 import { Term } from "@/components/terms/types";
 
+import { StoryBox } from "../StoryBox";
+
 const meta: Meta<typeof ProgTerms> = {
   title: "components/Terms/terms-check",
   component: ProgTerms,
@@ -61,15 +63,17 @@ export const DefaultTerms: Story = {
       MOCK_TERMS.length > 0 && MOCK_TERMS.every((t) => checks.get(t.termId));
 
     return (
-      <div className="max-w-lg p-4 bg-white">
-        <ProgTerms
-          terms={MOCK_TERMS}
-          checks={checks}
-          isAllChecked={isAllChecked}
-          onAllCheck={handleAllCheck}
-          onSingleCheck={handleSingleCheck}
-        />
-      </div>
+      <StoryBox>
+        <div className="max-w-lg p-4 bg-white">
+          <ProgTerms
+            terms={MOCK_TERMS}
+            checks={checks}
+            isAllChecked={isAllChecked}
+            onAllCheck={handleAllCheck}
+            onSingleCheck={handleSingleCheck}
+          />
+        </div>
+      </StoryBox>
     );
   },
 };
