@@ -30,8 +30,10 @@
 
   .ql-editor {
     padding: 1rem;
+    font-size: var(--text-17);
 
     &.ql-blank:before {
+      color: var(--color-gray-500);
       font-style: normal;
     }
   }
