@@ -27,7 +27,7 @@ export interface SelectBoxProps {
 }
 
 const TRIGGER_STYLES = cn(
-  "w-full text-gray-950 transition-300",
+  "bg-white w-full text-gray-950 transition-300",
   "border-gray-50",
   "hover:text-frog-600 hover:border-gray-300",
   "disabled:text-frog-300 disabled:border-gray-100",
