@@ -4,6 +4,8 @@ import { fn } from "storybook/test";
 
 import { SelectBox } from "@/components/shared/select-box";
 
+import { StoryBox } from "../StoryBox";
+
 const meta: Meta<typeof SelectBox> = {
   title: "Components/Shared/select-box",
   component: SelectBox,
@@ -86,18 +88,27 @@ export const DisabledSelectBox: Story = {
   args: {
     disabled: true,
   },
+  render: (args) => {
+    return (
+      <StoryBox>
+        <SelectBox {...args} />
+      </StoryBox>
+    );
+  },
 };
 
 export const AllOptions: Story = {
   render: (args) => {
     return (
-      <div className="flex gap-2 flex-wrap w-[50dvw] border p-4 rounded">
-        <div className="flex gap-2 w-full">
-          <SelectBox {...args} />
+      <StoryBox>
+        <div className="flex gap-2 flex-wrap w-[50dvw] border p-4 rounded">
+          <div className="flex gap-2 w-full">
+            <SelectBox {...args} />
 
-          <SelectBox {...args} disabled />
+            <SelectBox {...args} disabled />
+          </div>
         </div>
-      </div>
+      </StoryBox>
     );
   },
 };
