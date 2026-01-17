@@ -37,7 +37,7 @@ export function BaseInput({
           "text-gray-700 px-4 bg-gray-0 transition-all",
           "hover:text-gray-500 hover:border-gray-300",
           "focus:text-gray-700 focus:border-frog-300",
-          "disabled:text-frog-100 disabled:bg-gray-0 disabled:border-frog-100",
+          "disabled:text-frog-100 disabled:bg-gray-0 disabled:border-frog-100 disabled:placeholder:text-frog-100",
           `${isRound} ${INPUT_SIZE_CLASS_MAP[inputSize || "md"]}`,
           className
         )}
@@ -83,12 +83,12 @@ export function IconInput({ name, icon, ...props }: IconInputProps) {
     <div className="group relative flex items-center">
       <div
         className={cn(
-          "absolute left-4 size-5 top-1/2 -translate-y-1/2",
+          "absolute left-4 size-5 top-1/2 -translate-y-1/2 z-10",
           "flex items-center justify-center pointer-events-none",
           "text-gray-500",
           "group-hover:text-gray-700",
           "group-focus-within:text-frog-600",
-          props.disabled && "text-frog-100"
+          props.disabled && "text-frog-100  group-hover:text-frog-100"
         )}
       >
         {icon}
