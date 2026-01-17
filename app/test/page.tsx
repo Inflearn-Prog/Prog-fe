@@ -16,7 +16,9 @@ export default function TestPage() {
   return (
     <div className="p-4 bg-gray-500">
       <BaseInput
+        inputSize="lg"
         name={"input"}
+        maxLength={20}
         value={data}
         onChange={(e) => setData(e.target.value)}
       />

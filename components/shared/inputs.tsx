@@ -16,16 +16,16 @@ const INPUT_SIZE_CLASS_MAP: Record<
 
 interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
-  name: string;
   rounded?: boolean;
   inputSize?: "md" | "lg";
+  viewLength?: boolean;
 }
 
 export function BaseInput({
   className,
-  name,
   rounded = false,
   inputSize = "md",
+  viewLength = false,
   ...props
 }: BaseInputProps) {
   const isRound = rounded ? "rounded-full" : "rounded-md";
@@ -43,11 +43,26 @@ export function BaseInput({
         )}
         {...props}
       />
-      <p className="absolute right-2 bottom-1 caption-small">123</p>
+      {viewLength && (
+        <LengthIndicator
+          currentLength={props.value?.toString().length || 0}
+          maxLength={props.maxLength || 0}
+        />
+      )}
     </div>
   );
 }
 
+interface LengthIndicatorProps extends Pick<BaseInputProps, "maxLength"> {
+  currentLength: number;
+}
+function LengthIndicator({ currentLength, maxLength }: LengthIndicatorProps) {
+  return (
+    <div className="absolute bottom-1 right-3 text-gray-400 text-12">
+      {currentLength} / {maxLength}
+    </div>
+  );
+}
 interface IconInputProps extends Omit<BaseInputProps, "name"> {
   name: string;
   icon: React.ReactNode;
