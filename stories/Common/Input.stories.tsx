@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { CircleSlashIcon, MailIcon, SearchIcon, UserIcon } from "lucide-react";
+import { useState } from "react";
 
 import { BaseInput, IconInput } from "@/components/shared/inputs";
 
@@ -16,21 +17,31 @@ const STORY_PARAMETERS = {
 
 const COMMON_ARG_TYPES = {
   inputSize: {
-    control: { type: "select" as const },
+    control: { type: "radio" as const },
     options: ["md", "lg"],
     description: "입력 필드의 크기를 지정합니다.",
   },
   rounded: {
     control: { type: "boolean" as const },
     description: "입력 필드의 모서리를 둥글게 처리할지 여부를 설정합니다.",
+    options: [true, false],
   },
   disabled: {
     control: { type: "boolean" as const },
+    options: [true, false],
     description: "입력 필드의 비활성화 상태를 설정합니다.",
   },
   placeholder: {
     control: { type: "text" as const },
     description: "입력 필드의 플레이스홀더 텍스트를 설정합니다.",
+  },
+  maxLength: {
+    control: { type: "radio" as const },
+    description: "입력 필드에 허용되는 최대 문자 수를 지정합니다.",
+    options: [undefined, 10, 20, 50, 100],
+    table: {
+      defaultValue: { summary: undefined },
+    },
   },
 };
 
@@ -45,6 +56,7 @@ const baseInputMeta: Meta<typeof BaseInput> = {
     inputSize: "md",
     rounded: false,
     disabled: false,
+    maxLength: undefined,
   },
 };
 
@@ -53,7 +65,20 @@ export default baseInputMeta;
 type BaseInputStory = StoryObj<typeof BaseInput>;
 
 // BaseInput 기본 스토리
-export const Default: BaseInputStory = {};
+export const Default: BaseInputStory = {
+  render: (args) => {
+    const [data, setData] = useState("");
+    return (
+      <StoryBox>
+        <BaseInput
+          value={data}
+          onChange={(e) => setData(e.target.value)}
+          {...args}
+        />
+      </StoryBox>
+    );
+  },
+};
 
 // BaseInput 크기별 스토리
 export const MediumSize: BaseInputStory = {
