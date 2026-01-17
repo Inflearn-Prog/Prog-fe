@@ -4,12 +4,12 @@ export function LabelWrapper({
   children,
   label,
   htmlFor,
-  onClick,
+  onClick = () => {},
 }: {
   children: React.ReactNode;
   label: string;
   htmlFor: string;
-  onClick: () => void;
+  onClick?: () => void;
 }) {
   return (
     <div className="flex flex-col gap-y-3">

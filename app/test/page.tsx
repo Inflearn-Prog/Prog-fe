@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { useState } from "react";
 
 import { SelectLabel } from "@/components/forms";
+import { InputLabel } from "@/components/forms/input-label";
 import { LabelWrapper } from "@/components/forms/ui/label-wrapper";
 
 export default function TestPage() {
@@ -13,6 +14,7 @@ export default function TestPage() {
   }
 
   const [select, setSelect] = useState("");
+  const [input, setInput] = useState("");
   return (
     <>
       <div className="w-full">
@@ -28,6 +30,16 @@ export default function TestPage() {
           placeholder="test 55"
         />
       </div>
+      <div className="w-full">
+        <InputLabel
+          label="Test Input"
+          htmlFor="test-input"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="input test"
+        />
+      </div>
+
       <LabelWrapper label="Test Label" htmlFor="test-input">
         123
       </LabelWrapper>
