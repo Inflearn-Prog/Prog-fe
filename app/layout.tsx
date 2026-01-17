@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 import QueryProvider from "./providers/queryProvider";
 
@@ -30,6 +31,7 @@ export default function RootLayout({
         <QueryProvider>
           <SidebarProvider>{children}</SidebarProvider>
         </QueryProvider>
+        <Toaster />
       </body>
     </html>
   );

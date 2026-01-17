@@ -1,6 +1,7 @@
 "use client";
 
 import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 export default function TestPage() {
   const isDevelopment = process.env.NODE_ENV === "development";
@@ -8,5 +9,9 @@ export default function TestPage() {
     redirect("/");
   }
 
-  return <></>;
+  return (
+    <>
+      <button onClick={() => toast("asd")}>asd</button>
+    </>
+  );
 }
