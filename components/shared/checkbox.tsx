@@ -27,7 +27,9 @@ export function BaseCheckBox({
   return (
     <div className={cn("flex items-center space-x-2 py-1", className)}>
       <Checkbox id={id} disabled={disabled} {...props} />
-      <Label htmlFor={id}>{label}</Label>
+      <Label className={"label-medium"} htmlFor={id}>
+        {label}
+      </Label>
     </div>
   );
 }
