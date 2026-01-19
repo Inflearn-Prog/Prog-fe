@@ -10,50 +10,59 @@ const INPUT_SIZE_CLASS_MAP: Record<
   NonNullable<BaseInputProps["inputSize"]>,
   string
 > = {
-  md: "text-15 h-10",
-  lg: "text-17 h-12",
+  md: "label-medium h-10",
+  lg: "label-small h-12",
 };
 
 interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
-  name: string;
   rounded?: boolean;
   inputSize?: "md" | "lg";
+  viewLength?: boolean;
 }
 
-/**
- * BaseInput 컴포넌트는 공통 입력 필드의 스타일과 동작을 캡슐화한 컴포넌트입니다.
- *
- * @param className - 추가적으로 적용할 CSS 클래스명
- * @param name - input 요소의 name 속성
- * @param rounded - true일 경우 입력 필드의 모서리를 완전히 둥글게 처리 (기본값: false)
- * @param inputSize - 입력 필드의 크기 지정 ("md" | "lg", 기본값: "md")
- * @param props - 기타 Input 컴포넌트에 전달할 속성들
- */
 export function BaseInput({
   className,
-  name,
   rounded = false,
   inputSize = "md",
+  viewLength = false,
   ...props
 }: BaseInputProps) {
   const isRound = rounded ? "rounded-full" : "rounded-md";
   return (
-    <Input
-      disabled={props.disabled}
-      className={cn(
-        "text-gray-700 px-4 bg-gray-0 transition-all",
-        "hover:text-gray-500 hover:border-gray-300",
-        "focus:text-gray-700 focus:border-frog-300",
-        "disabled:text-frog-100 disabled:bg-gray-0 disabled:border-frog-100",
-        `${isRound} ${INPUT_SIZE_CLASS_MAP[inputSize || "md"]}`,
-        className
+    <div className="relative">
+      <Input
+        disabled={props.disabled}
+        className={cn(
+          "text-gray-700 px-4 bg-gray-0 transition-all",
+          "hover:text-gray-500 hover:border-gray-300",
+          "focus:text-gray-700 focus:border-frog-300",
+          "disabled:text-frog-100 disabled:bg-gray-0 disabled:border-frog-100 disabled:placeholder:text-frog-100",
+          `${isRound} ${INPUT_SIZE_CLASS_MAP[inputSize || "md"]}`,
+          className
+        )}
+        {...props}
+      />
+      {viewLength && (
+        <LengthIndicator
+          currentLength={props.value?.toString().length || 0}
+          maxLength={props.maxLength || 0}
+        />
       )}
-      {...props}
-    />
+    </div>
   );
 }
 
+interface LengthIndicatorProps extends Pick<BaseInputProps, "maxLength"> {
+  currentLength: number;
+}
+function LengthIndicator({ currentLength, maxLength }: LengthIndicatorProps) {
+  return (
+    <div className="absolute bottom-1 right-3 text-gray-400 text-12">
+      {currentLength} / {maxLength}
+    </div>
+  );
+}
 interface IconInputProps extends Omit<BaseInputProps, "name"> {
   name: string;
   icon: React.ReactNode;
@@ -74,12 +83,12 @@ export function IconInput({ name, icon, ...props }: IconInputProps) {
     <div className="group relative flex items-center">
       <div
         className={cn(
-          "absolute left-4 size-5 top-1/2 -translate-y-1/2",
+          "absolute left-4 size-5 top-1/2 -translate-y-1/2 z-10",
           "flex items-center justify-center pointer-events-none",
           "text-gray-500",
           "group-hover:text-gray-700",
           "group-focus-within:text-frog-600",
-          props.disabled && "text-frog-100"
+          props.disabled && "text-frog-100  group-hover:text-frog-100"
         )}
       >
         {icon}
