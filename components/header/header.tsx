@@ -45,7 +45,10 @@ export function HeaderNavigation() {
             return null;
           }
           return (
-            <li key={nav.href} className="text-gray-900 navigation-large">
+            <li
+              key={nav.href}
+              className="text-gray-900 navigation-large hover:text-frog-600"
+            >
               <Link href={nav.href}>{nav.label}</Link>
             </li>
           );
