@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { CircleSlashIcon, MailIcon, SearchIcon, UserIcon } from "lucide-react";
+import { useState } from "react";
 
 import { BaseInput, IconInput } from "@/components/shared/inputs";
 
@@ -16,21 +17,31 @@ const STORY_PARAMETERS = {
 
 const COMMON_ARG_TYPES = {
   inputSize: {
-    control: { type: "select" as const },
+    control: { type: "radio" as const },
     options: ["md", "lg"],
     description: "입력 필드의 크기를 지정합니다.",
   },
   rounded: {
     control: { type: "boolean" as const },
     description: "입력 필드의 모서리를 둥글게 처리할지 여부를 설정합니다.",
+    options: [true, false],
   },
   disabled: {
     control: { type: "boolean" as const },
+    options: [true, false],
     description: "입력 필드의 비활성화 상태를 설정합니다.",
   },
   placeholder: {
     control: { type: "text" as const },
     description: "입력 필드의 플레이스홀더 텍스트를 설정합니다.",
+  },
+  maxLength: {
+    control: { type: "radio" as const },
+    description: "입력 필드에 허용되는 최대 문자 수를 지정합니다.",
+    options: [undefined, 10, 20, 50, 100],
+    table: {
+      defaultValue: { summary: undefined },
+    },
   },
 };
 
@@ -45,6 +56,7 @@ const baseInputMeta: Meta<typeof BaseInput> = {
     inputSize: "md",
     rounded: false,
     disabled: false,
+    maxLength: undefined,
   },
 };
 
@@ -53,7 +65,20 @@ export default baseInputMeta;
 type BaseInputStory = StoryObj<typeof BaseInput>;
 
 // BaseInput 기본 스토리
-export const Default: BaseInputStory = {};
+export const Default: BaseInputStory = {
+  render: (args) => {
+    const [data, setData] = useState("");
+    return (
+      <StoryBox>
+        <BaseInput
+          value={data}
+          onChange={(e) => setData(e.target.value)}
+          {...args}
+        />
+      </StoryBox>
+    );
+  },
+};
 
 // BaseInput 크기별 스토리
 export const MediumSize: BaseInputStory = {
@@ -218,59 +243,137 @@ export const IconInputDisabled: IconInputStory = {
 
 // IconInput 모든 변형 스토리
 export const IconInputAllVariants: IconInputStory = {
-  render: (args) => (
-    <StoryBox>
-      <div className="space-y-6 w-96">
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold">기본 형태</h3>
-          <IconInput
-            {...args}
-            name="all1"
-            icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
-            placeholder="기본 검색 필드"
-          />
-          <IconInput
-            {...args}
-            name="all2"
-            icon={<UserIcon className="w-5 h-5 text-gray-400" />}
-            placeholder="사용자명 입력 필드"
-          />
-        </div>
+  render: (args) => {
+    const [data, setData] = useState("");
+    return (
+      <StoryBox>
+        <div className="space-y-6 w-96">
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">기본 형태</h3>
+            <IconInput
+              {...args}
+              name="all1"
+              icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+              placeholder="기본 검색 필드"
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+            <IconInput
+              {...args}
+              name="all2"
+              icon={<UserIcon className="w-5 h-5 text-gray-400" />}
+              placeholder="사용자명 입력 필드"
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
 
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold">둥근 모서리</h3>
-          <IconInput
-            {...args}
-            name="all3"
-            rounded={true}
-            icon={<MailIcon className="w-5 h-5 text-gray-400" />}
-            placeholder="둥근 이메일 입력 필드"
-          />
-        </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">기본 형태</h3>
+            <IconInput
+              {...args}
+              name="all1"
+              icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+              placeholder="기본 검색 필드"
+              maxLength={20}
+              viewLength={true}
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+            <IconInput
+              {...args}
+              name="all2"
+              icon={<UserIcon className="w-5 h-5 text-gray-400" />}
+              placeholder="사용자명 입력 필드"
+              maxLength={20}
+              viewLength={true}
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
 
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold">큰 크기</h3>
-          <IconInput
-            {...args}
-            name="all4"
-            inputSize="lg"
-            icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
-            placeholder="큰 크기 검색 필드"
-          />
-        </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">둥근 모서리</h3>
+            <IconInput
+              {...args}
+              name="all3"
+              rounded={true}
+              icon={<MailIcon className="w-5 h-5 text-gray-400" />}
+              placeholder="둥근 이메일 입력 필드"
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">둥근 모서리</h3>
+            <IconInput
+              {...args}
+              name="all3"
+              rounded={true}
+              icon={<MailIcon className="w-5 h-5 text-black-400" />}
+              placeholder="둥근 이메일 입력 필드"
+              maxLength={20}
+              viewLength={true}
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
 
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold">비활성화</h3>
-          <IconInput
-            {...args}
-            name="all5"
-            disabled={true}
-            icon={<UserIcon className="w-5 h-5" />}
-            placeholder="비활성화된 필드"
-            value="수정 불가능"
-          />
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">큰 크기</h3>
+            <IconInput
+              {...args}
+              name="all4"
+              inputSize="lg"
+              icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+              placeholder="큰 크기 검색 필드"
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">큰 크기</h3>
+            <IconInput
+              {...args}
+              name="all4"
+              inputSize="lg"
+              icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+              placeholder="큰 크기 검색 필드"
+              maxLength={20}
+              viewLength={true}
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">비활성화</h3>
+            <IconInput
+              {...args}
+              name="all5"
+              disabled={true}
+              icon={<UserIcon className="w-5 h-5" />}
+              placeholder="비활성화된 필드"
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">비활성화</h3>
+            <IconInput
+              {...args}
+              name="all5"
+              disabled={true}
+              icon={<UserIcon className="w-5 h-5" />}
+              placeholder="비활성화된 필드"
+              maxLength={20}
+              viewLength={true}
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+            />
+          </div>
         </div>
-      </div>
-    </StoryBox>
-  ),
+      </StoryBox>
+    );
+  },
 };
