@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 
 //스타일 상수
 const STYLES = {
-  CONTAINER: "min-h-6",
   INPUT_BASE: "bg-gray-0 body-medium",
   MESSAGE_BASE: "label-small ml-1",
   TYPE: {
@@ -33,7 +32,8 @@ export function ValidationMessage({
 }: ValidationMessageProps) {
   const baseId = useId();
   const messageId = `${name || baseId}-message`;
-  const isError = messageType === "error";
+
+  if (!message) return null;
 
   let messageColor: string;
   switch (messageType) {
@@ -51,18 +51,14 @@ export function ValidationMessage({
   }
 
   return (
-    <div className={cn(STYLES.CONTAINER, className)}>
-      {message && (
-        <p
-          className={cn(STYLES.MESSAGE_BASE, messageColor)}
-          id={messageId}
-          role={isError ? "alert" : "status"}
-          aria-live="polite"
-          {...props}
-        >
-          {message}
-        </p>
-      )}
-    </div>
+    <p
+      id={messageId}
+      className={cn(STYLES.MESSAGE_BASE, messageColor, className)}
+      role={messageType === "error" ? "alert" : "status"}
+      aria-live="polite"
+      {...props}
+    >
+      {message}
+    </p>
   );
 }

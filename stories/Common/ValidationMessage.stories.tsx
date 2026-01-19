@@ -28,7 +28,9 @@ export const Default: Story = {
   render: (args) => (
     <StoryBox>
       <BaseInput name={args.name!} />
-      <ValidationMessage {...args} />
+      <div className="min-h-6">
+        <ValidationMessage {...args} />
+      </div>
     </StoryBox>
   ),
 };
