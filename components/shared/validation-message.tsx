@@ -16,7 +16,7 @@ const STYLES = {
   },
 } as const;
 
-interface ValidationMessageProps {
+interface ValidationMessageProps extends React.ComponentPropsWithoutRef<"p"> {
   message?: string;
   messageType?: keyof typeof STYLES.TYPE;
   className?: string;
@@ -55,7 +55,7 @@ export function ValidationMessage({
       id={messageId}
       className={cn(STYLES.MESSAGE_BASE, messageColor, className)}
       role={messageType === "error" ? "alert" : "status"}
-      aria-live="polite"
+      aria-live={messageType === "error" ? "assertive" : "polite"}
       {...props}
     >
       {message}
