@@ -37,6 +37,8 @@ export default function TestPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="input test"
+          maxLength={20}
+          viewLength
         />
       </div>
 

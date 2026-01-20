@@ -10,6 +10,8 @@ interface InputLabelProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   className?: string;
+  maxLength?: number;
+  viewLength?: boolean;
 }
 export function InputLabel({ label, htmlFor, ...res }: InputLabelProps) {
   return (
