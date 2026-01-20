@@ -1,4 +1,10 @@
+// 작성날짜: 2026-01-20
+// 파일명: app/layout.tsx
+// Quill CSS: https://quilljs.com/docs/themes/snow/
+
 import "./styles/globals.css";
+// Quill 테마 CSS를 전역으로 로드하면 `ql-editor` 등 클래스가 적용됩니다.
+import "quill/dist/quill.snow.css";
 
 import type { Metadata } from "next";
 import localFont from "next/font/local";

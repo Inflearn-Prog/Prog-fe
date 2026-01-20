@@ -38,3 +38,20 @@
     }
   }
 }
+
+.quill-editor {
+  font-size: var(--text-17);
+  line-height: 1.5;
+
+  & ol {
+    list-style: decimal;
+  }
+  & ul {
+    list-style: disc;
+  }
+  & ol,
+  & ul {
+    margin-left: 1.5rem;
+    padding-left: 1rem;
+  }
+}

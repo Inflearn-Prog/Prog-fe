@@ -6,12 +6,21 @@ import { BoardSkeleton } from "../ui/skeleton";
 
 const QuillBoardDynamic = dynamic(
   async () => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
     return import("./quill-board");
   },
   {
     ssr: false,
     loading: () => <BoardSkeleton />,
+  }
+);
+
+const QuillViewerDynamic = dynamic(
+  async () => {
+    return import("./QuillHtmlViewer");
+  },
+  {
+    // ssr: false,
+    // loading: () => <BoardSkeleton />,
   }
 );
 export interface BoardProps {
@@ -28,4 +37,8 @@ export function Board({ value, setValue, placeholder = "" }: BoardProps) {
       placeholder={placeholder}
     />
   );
+}
+
+export function BoardViewer({ content }: { content: string }) {
+  return <QuillViewerDynamic html={content} />;
 }
