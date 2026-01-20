@@ -16,7 +16,7 @@ interface QuillBoardProps extends Omit<
   className?: string;
 }
 
-export function QuillBoard({
+export default function QuillBoard({
   value,
   setValue,
   placeholder,
