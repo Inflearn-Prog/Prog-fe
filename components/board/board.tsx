@@ -6,7 +6,7 @@ import { BoardSkeleton } from "../ui/skeleton";
 
 const QuillBoardDynamic = dynamic(
   async () => {
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     return import("./quill-board");
   },
   {
