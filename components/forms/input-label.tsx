@@ -1,9 +1,9 @@
 "use client";
 
-import { BaseInput } from "../shared/inputs";
+import { BaseInput, BaseInputProps } from "../shared/inputs";
 import { LabelWrapper } from "./ui/label-wrapper";
 
-interface InputLabelProps {
+interface InputLabelProps extends BaseInputProps {
   label: string;
   htmlFor: string;
   value: string;
