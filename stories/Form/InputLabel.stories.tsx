@@ -8,7 +8,7 @@ import { InputLabel } from "@/components/forms";
 import { StoryBox } from "../StoryBox";
 
 const meta: Meta<typeof InputLabel> = {
-  title: "Components/Form/input-label",
+  title: "Components/Form/InputLabel",
   component: InputLabel,
   argTypes: {
     label: {
