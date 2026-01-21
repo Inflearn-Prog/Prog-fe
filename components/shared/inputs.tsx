@@ -14,7 +14,7 @@ const INPUT_SIZE_CLASS_MAP: Record<
   lg: "label-small h-12",
 };
 
-interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface BaseInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   rounded?: boolean;
   inputSize?: "md" | "lg";
