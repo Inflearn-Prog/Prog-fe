@@ -38,14 +38,19 @@ export default meta;
 type Story = StoryObj<typeof PaginationButton>;
 
 export const DefaultState: Story = {
+  args: {
+    currentPage: 1,
+    totalPages: 10,
+  },
   render: (args) => {
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(args.currentPage);
+
     return (
       <StoryBox theme={"orange"}>
         <PaginationButton
           {...args}
           currentPage={page}
-          totalPages={999}
+          totalPages={args.totalPages}
           onPageChange={(nextPage) => setPage(nextPage)}
         />
       </StoryBox>
