@@ -42,13 +42,17 @@ export function PaginationButton({
   };
 
   useEffect(() => {
+    if (totalPages <= 1) {
+      setCurrentBlock(0);
+      return;
+    }
     if (currentPage === 1) {
       setCurrentBlock(0);
     } else if (currentPage === totalPages) {
-      setCurrentBlock(Math.floor((totalPages - 2) / blockSize));
+      setCurrentBlock(Math.max(0, Math.floor((totalPages - 2) / blockSize)));
     } else {
       const newBlock = Math.floor((currentPage - 2) / blockSize);
-      setCurrentBlock(newBlock);
+      setCurrentBlock(Math.max(0, newBlock));
     }
   }, [currentPage, totalPages]);
 
@@ -57,7 +61,7 @@ export function PaginationButton({
     const pages = [];
     for (let i = 0; i < blockSize; i++) {
       const pageNum = start + i;
-      if (pageNum < totalPages) pages.push(pageNum);
+      if (pageNum > 1 && pageNum < totalPages) pages.push(pageNum);
     }
     return pages;
   };

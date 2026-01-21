@@ -47,7 +47,7 @@ type PaginationLinkProps = {
 function PaginationLink({
   className,
   isActive,
-  size = "pg",
+  size = "page",
   children,
   ...props
 }: PaginationLinkProps) {
@@ -66,9 +66,6 @@ function PaginationLink({
       {...props}
     >
       {children}
-      {props["aria-label"] && (
-        <span className="sr-only">{props["aria-label"]}</span>
-      )}
     </a>
   );
 }
@@ -78,7 +75,7 @@ function PaginationFirst({
 }: React.ComponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
-      aria-label="Go to previous page"
+      aria-label="Go to first page"
       size="default"
       className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
       {...props}
@@ -124,7 +121,7 @@ function PaginationLast({
 }: React.ComponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
-      aria-label="Go to next page"
+      aria-label="Go to last page"
       size="default"
       className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
       {...props}

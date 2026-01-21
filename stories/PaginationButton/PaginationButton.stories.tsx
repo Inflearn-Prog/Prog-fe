@@ -37,7 +37,7 @@ const meta: Meta<typeof PaginationButton> = {
 export default meta;
 type Story = StoryObj<typeof PaginationButton>;
 
-export const defaultState: Story = {
+export const DefaultState: Story = {
   render: (args) => {
     const [page, setPage] = useState(1);
     return (

@@ -9,7 +9,7 @@ export const PAGINATION_LAYOUT = {
 export function PaginationButtonSkeleton() {
   return (
     <div className="flex justify-center w-full">
-      <div className={`${PAGINATION_LAYOUT.CONTAINER} animate-pulse`}>
+      <div className={PAGINATION_LAYOUT.CONTAINER}>
         <div className={PAGINATION_LAYOUT.ARROW_GROUP}>
           <Skeleton className="w-10 h-10 rounded-md" />
           <Skeleton className="w-10 h-10 rounded-md" />
