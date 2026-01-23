@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 interface SectionHeaderProps {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   className?: string;
 }
 
@@ -19,7 +19,7 @@ export function SectionHeader({
   return (
     <div className={cn("flex flex-col", className)}>
       <h2 className={STYLES.TITLE}>{title}</h2>
-      <p className={STYLES.SUBTITLE}>{subtitle}</p>
+      {subtitle && <p className={STYLES.SUBTITLE}>{subtitle}</p>}
     </div>
   );
 }
