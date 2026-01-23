@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 interface PageTitleGroupProps {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   className?: string;
 }
 
@@ -19,7 +19,7 @@ export function PageTitleGroup({
   return (
     <div className={cn("flex flex-col", className)}>
       <h1 className={STYLES.TITLE}>{title}</h1>
-      <p className={STYLES.SUBTITLE}>{subtitle}</p>
+      {subtitle && <p className={STYLES.SUBTITLE}>{subtitle}</p>}
     </div>
   );
 }

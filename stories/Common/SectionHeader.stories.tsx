@@ -53,7 +53,7 @@ export const TitleSection: Story = {
             </h3>
             <div className="flex-1 h-1 bg-slate-100" />
           </div>
-          <div className="bg-gay-0 p-6 rounded-lg border border-slate-100 shadow-sm">
+          <div className="bg-gray-0 p-6 rounded-lg border border-slate-100 shadow-sm">
             <SectionHeader {...args} />
           </div>
         </section>
