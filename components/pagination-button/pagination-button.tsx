@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import {
   Pagination,
@@ -17,23 +17,27 @@ const PAGINATION_STYLE = {
   CONTAINER: "gap-2 min-w-[400px] justify-between",
   ARROW_GROUP: "flex flex-row gap-1 transition-opacity duration-300",
   NUMBER_GROUP: "flex flex-row gap-1 items-center justify-center min-w-[232px]",
-  HIDDEN: "opacity-0 pointer-events-none",
+  HIDDEN: "opacity-0 pointer-events-none invisible",
 };
 
 interface PaginationButtonProps {
   currentPage: number;
   totalPages: number;
+  baseUrl?: string;
   onPageChange: (page: number) => void;
 }
 
 export function PaginationButton({
   currentPage,
   totalPages,
+  baseUrl,
   onPageChange,
 }: PaginationButtonProps) {
-  const [currentBlock, setCurrentBlock] = useState(0);
   const blockSize = 3;
 
+  const createPageHref = (page: number) => {
+    return `${baseUrl}?page=${page}`;
+  };
   const handlePageClick = (e: React.MouseEvent, page: number) => {
     e.preventDefault();
     if (page >= 1 && page <= totalPages) {
@@ -41,20 +45,17 @@ export function PaginationButton({
     }
   };
 
-  useEffect(() => {
-    if (totalPages <= 1) {
-      setCurrentBlock(0);
-      return;
-    }
+  //변수로 선언하여 렌더링 과정에서 계산하도록 변경
+  let currentBlock = 0;
+  if (totalPages > 1) {
     if (currentPage === 1) {
-      setCurrentBlock(0);
+      currentBlock = 0;
     } else if (currentPage === totalPages) {
-      setCurrentBlock(Math.max(0, Math.floor((totalPages - 2) / blockSize)));
+      currentBlock = Math.max(0, Math.floor((totalPages - 2) / blockSize));
     } else {
-      const newBlock = Math.floor((currentPage - 2) / blockSize);
-      setCurrentBlock(Math.max(0, newBlock));
+      currentBlock = Math.max(0, Math.floor((currentPage - 2) / blockSize));
     }
-  }, [currentPage, totalPages]);
+  }
 
   const getMiddlePages = () => {
     const start = 2 + currentBlock * blockSize;
@@ -86,7 +87,7 @@ export function PaginationButton({
         {/* 숫자 그룹 */}
         <PaginationItem className={PAGINATION_STYLE.NUMBER_GROUP}>
           <PaginationLink
-            href="#"
+            href={createPageHref(1)}
             isActive={currentPage === 1}
             onClick={(e) => handlePageClick(e, 1)}
           >
@@ -96,7 +97,7 @@ export function PaginationButton({
           {middlePages.map((page) => (
             <PaginationLink
               key={page}
-              href="#"
+              href={createPageHref(page)}
               isActive={currentPage === page}
               onClick={(e) => handlePageClick(e, page)}
             >
@@ -106,7 +107,7 @@ export function PaginationButton({
 
           {totalPages > 1 && (
             <PaginationLink
-              href="#"
+              href={createPageHref(totalPages)}
               isActive={currentPage === totalPages}
               onClick={(e) => handlePageClick(e, totalPages)}
             >
