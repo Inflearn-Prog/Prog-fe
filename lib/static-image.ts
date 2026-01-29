@@ -12,4 +12,11 @@ export const STATIC_IMAGES: Record<
     height: 48,
     priority: true,
   },
+  toastSuccess: {
+    src: "/images/toast-success.svg",
+    alt: "Toast Success Icon",
+    width: 22,
+    height: 24,
+    priority: false,
+  },
 };

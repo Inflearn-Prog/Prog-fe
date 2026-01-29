@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 import AuthProvider from "./providers/auth-provider";
 import QueryProvider from "./providers/queryProvider";
@@ -39,6 +40,8 @@ export default function RootLayout({
             <SidebarProvider>{children}</SidebarProvider>
           </QueryProvider>
         </AuthProvider>
+
+        <Toaster className="w-full h-20 flex flex-col justify-center relative" />
       </body>
     </html>
   );
