@@ -7,7 +7,7 @@ interface MswUser {
 }
 
 interface MswResponse<T> {
-  data?: T;
+  data: T;
 }
 export async function testFetcherAll() {
   await new Promise((resolve) => setTimeout(resolve, 1000));
