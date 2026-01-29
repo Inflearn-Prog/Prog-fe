@@ -6,7 +6,10 @@
   --text-24: 1.5rem; /* 24px */
   --text-19: 1.1875rem; /* 19px */
   --text-17: 1.0625rem; /* 17px */
+  --text-16: 1rem; /* 16px */
   --text-15: 0.9375rem; /* 15px */
+  --text-13: 0.8125rem; /* 13px */
+  --text-12: 0.75rem; /* 12px */
 
   --leading-relaxed: 1.5;
 }
@@ -65,4 +68,12 @@
 
 .label-small {
   @apply text-15 font-normal leading-relaxed;
+}
+
+.caption-medium {
+  @apply text-13 font-normal leading-relaxed;
+}
+
+.caption-small {
+  @apply text-12 font-normal leading-relaxed;
 }

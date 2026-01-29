@@ -11,3 +11,47 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
 }
+
+/* react quill 스타일링 */
+.quill-no-toolbar {
+  background-color: white;
+  border: 1px solid var(--color-gray-50);
+  border-radius: 0.625rem;
+  font-style: normal;
+
+  .ql-container.ql-snow {
+    border: none;
+    outline: none;
+  }
+
+  .ql-toolbar {
+    display: none;
+  }
+
+  .ql-editor {
+    padding: 1rem;
+    font-size: var(--text-17);
+
+    &.ql-blank:before {
+      color: var(--color-gray-500);
+      font-style: normal;
+    }
+  }
+}
+
+.quill-editor {
+  font-size: var(--text-17);
+  line-height: 1.5;
+
+  & ol {
+    list-style: decimal;
+  }
+  & ul {
+    list-style: disc;
+  }
+  & ol,
+  & ul {
+    margin-left: 1.5rem;
+    padding-left: 1rem;
+  }
+}

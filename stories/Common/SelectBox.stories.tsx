@@ -53,6 +53,10 @@ const meta: Meta<typeof SelectBox> = {
       control: { type: "text" as const },
       description: "선택된 값이 없을 때 표시되는 플레이스홀더 텍스트입니다.",
     },
+    id: {
+      control: { type: "text" as const },
+      description: "셀렉트 박스의 id 속성입니다.",
+    },
   },
   args: {
     value: "",
@@ -67,6 +71,7 @@ const meta: Meta<typeof SelectBox> = {
     disabled: false,
     required: false,
     name: "fruit",
+    id: "fruit-select",
   },
 };
 

@@ -24,6 +24,8 @@ export interface SelectBoxProps {
   selectOptions: SelectOption[];
   name?: string;
   placeholder?: string;
+  triggerRef?: React.Ref<HTMLButtonElement>;
+  id?: string;
 }
 
 const TRIGGER_STYLES = cn(
@@ -53,6 +55,8 @@ export function SelectBox({
   selectOptions,
   name,
   placeholder = "Select an option",
+  triggerRef,
+  id,
 }: SelectBoxProps) {
   const hasOptions = selectOptions.length > 0;
 
@@ -64,7 +68,13 @@ export function SelectBox({
       required={required}
       name={name}
     >
-      <SelectTrigger disabled={disabled} size="lg" className={TRIGGER_STYLES}>
+      <SelectTrigger
+        ref={triggerRef}
+        disabled={disabled}
+        size="lg"
+        className={TRIGGER_STYLES}
+        id={id}
+      >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
 

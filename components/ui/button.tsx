@@ -23,6 +23,7 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        page: "bg-gray-0 text-gray-700 hover:bg-frog-500",
       },
       size: {
         default: "h-10 px-6 py-2 has-[>svg]:px-3",
@@ -31,6 +32,7 @@ const buttonVariants = cva(
         icon: "size-9",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
+        page: "min-h-10 min-w-10",
       },
       shape: {
         default: "rounded-md",
