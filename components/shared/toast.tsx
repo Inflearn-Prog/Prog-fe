@@ -3,14 +3,14 @@ import { toast } from "sonner";
 
 import { STATIC_IMAGES } from "@/lib/static-image";
 
-export const toasts = () => ({
+export const toasts = {
   success: (message: string) =>
     toast(() => <ToastSuccess>{message}</ToastSuccess>, {
       position: "bottom-center",
       duration: 5 * 1000,
       className: "bg-gray-950! w-full py-4 px-5 inline-flex justify-center",
     }),
-});
+};
 
 function ToastSuccess({ children }: { children: string }) {
   const successImage = STATIC_IMAGES.toastSuccess;

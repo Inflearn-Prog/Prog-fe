@@ -45,7 +45,7 @@ export const Success: Story = {
   render: () => {
     const handleClick = () => {
       try {
-        toasts().success("게시글이 성공적으로 등록되었습니다.");
+        toasts.success("게시글이 성공적으로 등록되었습니다.");
       } catch (error) {
         console.error("Toast 표시 중 오류 발생:", error);
       }
@@ -79,7 +79,7 @@ export const ShortMessage: Story = {
   render: () => {
     const handleClick = () => {
       try {
-        toasts().success("저장되었습니다.");
+        toasts.success("저장되었습니다.");
       } catch (error) {
         console.error("Toast 표시 중 오류 발생:", error);
       }
@@ -110,7 +110,7 @@ export const LongMessage: Story = {
   render: () => {
     const handleClick = () => {
       try {
-        toasts().success(
+        toasts.success(
           "회원가입이 완료되었습니다. 이메일로 전송된 인증 링크를 확인해주세요."
         );
       } catch (error) {
@@ -152,7 +152,7 @@ export const VariousMessages: Story = {
 
     const handleClick = (message: string) => {
       try {
-        toasts().success(message);
+        toasts.success(message);
       } catch (error) {
         console.error("Toast 표시 중 오류 발생:", error);
       }
@@ -193,14 +193,14 @@ export const MultipleToasts: Story = {
   render: () => {
     const handleClick = () => {
       try {
-        toasts().success("첫 번째 작업이 완료되었습니다.");
+        toasts.success("첫 번째 작업이 완료되었습니다.");
 
         setTimeout(() => {
-          toasts().success("두 번째 작업이 완료되었습니다.");
+          toasts.success("두 번째 작업이 완료되었습니다.");
         }, 500);
 
         setTimeout(() => {
-          toasts().success("세 번째 작업이 완료되었습니다.");
+          toasts.success("세 번째 작업이 완료되었습니다.");
         }, 1000);
       } catch (error) {
         console.error("Toast 표시 중 오류 발생:", error);
