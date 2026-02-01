@@ -3,7 +3,7 @@ export async function initMsw() {
     const { server } = await import("./server");
     server.listen();
   } else {
-    const { worker } = await import("./browser");
-    await worker.start();
+    const worker = await import("./browser");
+    await worker.default.start();
   }
 }
