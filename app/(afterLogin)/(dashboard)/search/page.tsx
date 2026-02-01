@@ -1,9 +1,9 @@
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string }>;
+  searchParams: Promise<{ q?: string }>;
 }) {
-  const { search } = await searchParams;
+  const { q } = await searchParams;
 
   return <div>SearchPage</div>;
 }
