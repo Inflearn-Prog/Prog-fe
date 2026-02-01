@@ -91,6 +91,7 @@ export default function PromptCard({
         </div>
         <div className={STYLES.ICON_GROUP}>
           <button
+            type="button"
             className={STYLES.ICON_BUTTON}
             aria-label="좋아요"
             onClick={onLike}
@@ -98,6 +99,7 @@ export default function PromptCard({
             <ThumbsUpIcon size={20} fill="currentColor" strokeWidth={0} />
           </button>
           <button
+            type="button"
             className={STYLES.ICON_BUTTON}
             aria-label="신고"
             onClick={onReport}
