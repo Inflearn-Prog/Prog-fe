@@ -36,7 +36,7 @@ export function PaginationButton({
   const blockSize = 3;
 
   const createPageHref = (page: number) => {
-    return `${baseUrl}?page=${page}`;
+    return baseUrl ? `${baseUrl}?page=${page}` : `?page=${page}`;
   };
   const handlePageClick = (e: React.MouseEvent, page: number) => {
     e.preventDefault();
