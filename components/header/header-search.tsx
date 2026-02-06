@@ -14,6 +14,9 @@ function trimAndSanitizedValue(value: string) {
 }
 
 export function HeaderSearch() {
+  // const searchParams = useSearchParams();
+  // const initialQuery = searchParams.get("q") || "";
+
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const inputId = useId();
