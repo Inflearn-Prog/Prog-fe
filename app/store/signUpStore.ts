@@ -6,7 +6,7 @@ type SignupFieldKey = Exclude<
   | "setNickname"
   | "setSelectedProfileType"
   | "setTargetJobs"
-  | "updateMajor"
+  | "updateField"
   | "reset"
 >;
 
@@ -20,9 +20,10 @@ interface SignupState {
   nickname: string;
   selectedProfileType: "SOCIAL" | "DEFAULT";
   targetJobs: string[];
+  currentState: string;
   educationLevel: string;
   field: string;
-  career: string;
+  career: number;
 
   // 액션
   setSocialInfo: (info: {
@@ -47,9 +48,10 @@ const INITIAL_SIGNUP_STATE = {
   nickname: "",
   selectedProfileType: "SOCIAL" as const,
   targetJobs: [],
+  currentState: "",
   educationLevel: "",
   field: "",
-  career: "",
+  career: 0,
 };
 export const useSignupStore = create<SignupState>((set) => ({
   ...INITIAL_SIGNUP_STATE,

@@ -1,0 +1,35 @@
+import { JOB_OPTIONS } from "../constant";
+
+interface TargetJobsSelectProps {
+  selectedJobs: string[];
+  onToggle: (job: string) => void;
+}
+
+export const TargetJobsSelect = ({
+  selectedJobs,
+  onToggle,
+}: TargetJobsSelectProps) => {
+  return (
+    <section>
+      <p className="mb-2 body-medium">
+        목표 직무를 선택해주세요 (복수선택가능).
+      </p>
+      <div className="flex gap-2 flex-wrap">
+        {JOB_OPTIONS.map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => onToggle(option)}
+            className={`text-center min-w-[100px] py-2 px-4 rounded-md body-medium transition-colors ${
+              selectedJobs.includes(option)
+                ? "bg-frog-600 text-gray-0 shadow-md"
+                : "bg-gray-50 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+};

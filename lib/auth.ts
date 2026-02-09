@@ -24,7 +24,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 
       try {
         const response = await fetch(
-          `${process.env.BACKEND_API_URL}/auth/social-login`,
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/social-login`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -36,7 +36,6 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
         );
 
         if (!response.ok) {
-          console.error("Social login failed:", response.status);
           return false;
         }
 
@@ -55,8 +54,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
           return true;
         }
         return false;
-      } catch (error) {
-        console.error("Critical error during social login fetch:", error);
+      } catch {
         return false;
       }
     },
@@ -72,8 +70,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
           try {
             const decoded = jwtDecode<{ exp: number }>(user.accessToken);
             token.accessTokenExpires = decoded.exp * 1000;
-          } catch (e) {
-            console.error("Token decoding error", e);
+          } catch {
             token.error = "TokenDecodeError";
           }
         }
@@ -90,7 +87,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
               session.user.accessToken
             );
             token.accessTokenExpires = decoded.exp * 1000;
-          } catch (e) {
+          } catch {
             token.error = "TokenUpdateDecodeError";
           }
         } else {
