@@ -19,13 +19,6 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
     maxAge: 30 * 24 * 60 * 60, // 30일 동안 세션 유지
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-
-      if (nextUrl.pathname === "/") return true;
-      return isLoggedIn;
-    },
-
     async signIn({ user, account }) {
       if (!account?.access_token) return false;
 
@@ -71,7 +64,6 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
         token.accessToken = user.accessToken;
         token.isNewUser = user.isNewUser;
         token.provider = user.provider;
-        // NextAuth 기본 필드(email, image)는 자동으로 token에 들어감
 
         if (user.accessToken) {
           try {

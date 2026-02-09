@@ -1,12 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+// proxy.ts (또는 middleware.ts)
+import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { ROUTES } from "@/lib/routes";
 
-export async function proxy(req: NextRequest) {
-  // 1. 세션 정보 가져오기
-  const session = await auth();
-  const { nextUrl } = req;
+export default auth((req) => {
+  const { nextUrl, auth: session } = req;
 
   const isSignIn = !!session;
   const isNewUser = session?.isNewUser;
@@ -19,8 +18,9 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. 비로그인 유저가 보호된 경로에 접근할 때
+  // 3. 비로그인 유저 처리
   if (!isSignIn) {
+    // 로그인 페이지는 통과, 그 외엔 로그인으로 리다이렉트
     if (nextUrl.pathname !== "/signin") {
       const signInUrl = new URL("/signin", nextUrl.origin);
       signInUrl.searchParams.set("callbackUrl", nextUrl.pathname);
@@ -29,8 +29,8 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 4. 신규 유저 리다이렉트 (가입 페이지로)
-  if (isNewUser === false && nextUrl.pathname !== ROUTES.auth.SIGNUP) {
+  // 4. 신규 유저 처리 (로그인은 했지만 가입 전)
+  if (isNewUser && nextUrl.pathname !== ROUTES.auth.SIGNUP) {
     return NextResponse.redirect(new URL(ROUTES.auth.SIGNUP, nextUrl.origin));
   }
 
@@ -40,11 +40,11 @@ export async function proxy(req: NextRequest) {
   }
 
   return NextResponse.next();
-}
+});
 
-// 로그가 찍혔던 matcher 설정을 그대로 유지하세요
+// matcher 설정
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|mockServiceWorker.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|mockServiceWorker.js|auth-callback|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

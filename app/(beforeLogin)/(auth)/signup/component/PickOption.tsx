@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useSignupStore } from "@/app/store/signUpStore";
 import { ProfIcon } from "@/components/profile-icon/profile-icon";
@@ -25,6 +25,7 @@ export default function PickOption() {
     setSelectedProfileType,
     profileImage,
     provider,
+    updateField,
   } = useSignupStore();
 
   const [duplicateMessage, setDuplicateMessage] = useState("");
@@ -40,17 +41,11 @@ export default function PickOption() {
     setIsLoading(true);
     setDuplicateMessage("");
 
-    if (!isNicknameValid) {
-      setDuplicateMessage("닉네임을 2자 이상 입력해주세요.");
-      setIsAvailable(false);
-      return;
-    }
-
     try {
       const token = session?.accessToken;
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/nickname/availability?nickname=${encodeURIComponent(nickname)}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/users/nickname/availability?nickname=${encodeURIComponent(nickname)}`,
         {
           method: "GET",
           headers: {
@@ -95,6 +90,18 @@ export default function PickOption() {
       router.push("?step=detail"); // 다음 단계로 이동
     }
   };
+
+  useEffect(() => {
+    if (session?.user) {
+      if (session.user.image && !profileImage) {
+        updateField("profileImage", session.user.image);
+      }
+
+      if (session.provider && !provider) {
+        updateField("provider", session.provider.toUpperCase());
+      }
+    }
+  }, [session, profileImage, provider, updateField, nickname, setNickname]);
 
   return (
     <div>

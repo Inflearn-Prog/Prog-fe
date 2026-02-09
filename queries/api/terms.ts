@@ -19,8 +19,6 @@ interface CommonResponse<T> {
 }
 
 export async function fetchTerms() {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
   const res = await fetch(`${BASE_URL}/terms`, {
     method: "GET",
   });
@@ -44,14 +42,21 @@ export async function postTerms(termIds: number[], token: string) {
     }),
   });
 
-  const result = await res.json();
-
   if (!res.ok) {
-    const errorData = result.data;
-    const error: ApiError = new Error(errorData?.message);
+    let errorData;
+    try {
+      const result = await res.json();
+      errorData = result.data;
+    } catch {
+      // JSON 파싱 실패 시 기본 에러
+    }
+    const error: ApiError = new Error(
+      errorData?.message ?? `요청 실패 (${res.status})`
+    );
     error.code = errorData?.errorClassName;
     throw error;
   }
 
+  const result = await res.json();
   return result.data;
 }

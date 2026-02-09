@@ -3,10 +3,6 @@ import { useSession } from "next-auth/react";
 
 import { fetchTerms, postTerms } from "@/queries/api/terms";
 
-interface ApiError extends Error {
-  code?: string;
-}
-
 type PostTermsParams = number[];
 
 export const useTerms = () => {
@@ -25,9 +21,7 @@ export const usePostTerms = () => {
       const token = session?.accessToken;
 
       if (!token) {
-        const error = new Error(
-          "인증 토큰이 없습니다. 다시 로그인해주세요."
-        ) as ApiError;
+        const error = new Error("인증 토큰이 없습니다. 다시 로그인해주세요.");
         throw error;
       }
       return postTerms(params, token);

@@ -27,15 +27,22 @@ export async function putBasic(
     body: JSON.stringify({ education, major, career }),
   });
 
-  const result = await res.json();
-
   if (!res.ok) {
-    const errorData = result.data;
-    const error: ApiError = new Error(errorData?.message);
+    let errorData;
+    try {
+      const result = await res.json();
+      errorData = result.data;
+    } catch {
+      // JSON 파싱 실패 시 기본 에러
+    }
+    const error: ApiError = new Error(
+      errorData?.message ?? `요청 실패 (${res.status})`
+    );
     error.code = errorData?.errorClassName;
     throw error;
   }
 
+  const result = await res.json();
   return result.data;
 }
 
@@ -49,14 +56,21 @@ export async function putCareer(params: PutCareerParams, token: string) {
     body: JSON.stringify(params),
   });
 
-  const result = await res.json();
-
   if (!res.ok) {
-    const errorData = result.data;
-    const error: ApiError = new Error(errorData?.message);
+    let errorData;
+    try {
+      const result = await res.json();
+      errorData = result.data;
+    } catch {
+      // JSON 파싱 실패 시 기본 에러
+    }
+    const error: ApiError = new Error(
+      errorData?.message ?? `요청 실패 (${res.status})`
+    );
     error.code = errorData?.errorClassName;
     throw error;
   }
 
+  const result = await res.json();
   return result.data;
 }

@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export const nicknameHandlers = [
   http.get(`${BASE_URL}/users/nickname/availability`, ({ request }) => {

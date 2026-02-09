@@ -36,7 +36,8 @@ export default function Detail() {
   const handleNext = () => {
     if (isStep3Complete) {
       //전송 로직
-      const finalStatus = currentState === "기타" ? otherInput : currentState;
+      const finalStatus =
+        currentState === "기타" ? otherInput.trim() : currentState;
 
       const userCareerInfo = {
         currentStatuses: [finalStatus],
@@ -45,6 +46,10 @@ export default function Detail() {
       mutate(userCareerInfo, {
         onSuccess: () => {
           router.push("?step=preview");
+        },
+        onError: (error) => {
+          // eslint-disable-next-line no-console
+          console.error("커리어 정보 저장 실패:", error.message);
         },
       });
     }

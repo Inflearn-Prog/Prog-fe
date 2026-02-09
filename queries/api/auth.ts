@@ -6,7 +6,7 @@ export const postAuth = async ({
   authCode: string;
 }) => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/social-login`,
+    `${process.env.BACKEND_API_URL}/auth/social-login`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -15,9 +15,13 @@ export const postAuth = async ({
   );
 
   if (!response.ok) {
-    const errorData = await response.json();
+    let errorData;
+    try {
+      errorData = await response.json();
+    } catch {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
     throw errorData;
   }
-
   return response.json();
 };

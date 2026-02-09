@@ -26,7 +26,9 @@ export default function Select() {
 
   const handleAllCheck = (checked: boolean) => {
     const newMap = new Map();
-    termsList.forEach((term) => newMap.set(term.termId, checked));
+    termsList.forEach((term) => {
+      newMap.set(term.termId, checked);
+    });
     setChecks(newMap);
   };
   const handleSingleCheck = (id: number, checked: boolean) => {
@@ -43,6 +45,10 @@ export default function Select() {
     mutate(agreedTermIds, {
       onSuccess: () => {
         router.push("?step=pick-option");
+      },
+      onError: (error) => {
+        // eslint-disable-next-line no-console
+        console.error("약관 저장 실패:", error.message);
       },
     });
   };

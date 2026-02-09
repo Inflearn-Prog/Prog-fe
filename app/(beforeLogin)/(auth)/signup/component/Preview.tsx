@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import { useSignupStore } from "@/app/store/signUpStore";
 import { BaseButton } from "@/components/shared/button";
@@ -15,6 +16,7 @@ import { Stepper } from "./Stepper";
 export default function Preview() {
   const router = useRouter();
   const { mutate, isPending } = usePutBasic();
+  const { data: session, update } = useSession();
 
   const { field, career, educationLevel, updateField } = useSignupStore();
 
@@ -22,19 +24,45 @@ export default function Preview() {
   const isStep4Complete =
     educationLevel !== "" && field !== "" && isCareerValid;
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (isStep4Complete) {
       //전송 로직
+      const token = session?.accessToken;
+
+      if (!token) {
+        alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+        return;
+      }
       const userBasicInfo = {
         education: educationLevel,
         major: field,
         career: career,
       };
-      mutate(userBasicInfo, {
-        onSuccess: () => {
-          router.push("?step=complete");
-        },
-      });
+      mutate(
+        { params: userBasicInfo, token: token },
+        {
+          onSuccess: async () => {
+            try {
+              await update({
+                user: {
+                  ...session?.user,
+                  isNewUser: false,
+                  name: session?.user?.name ?? undefined,
+                  image: session?.user?.image ?? undefined,
+                },
+              });
+
+              router.push("?step=complete");
+            } catch (e) {
+              console.error("세션 업데이트 실패:", e);
+            }
+          },
+          onError: (error) => {
+            // eslint-disable-next-line no-console
+            console.error("기본 정보 저장 실패:", error.message);
+          },
+        }
+      );
     }
   };
 

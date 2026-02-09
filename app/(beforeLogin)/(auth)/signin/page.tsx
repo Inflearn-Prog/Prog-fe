@@ -2,14 +2,24 @@
 
 import Image from "next/image";
 import { signIn } from "next-auth/react";
+import { useState } from "react";
 
 import { STATIC_IMAGES } from "@/lib/static-image";
 
 export default function SignInPage() {
-  const handleSocialLogin = (provider: string) => {
-    signIn(provider, { callbackUrl: "/auth-callback" });
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
+  const handleSocialLogin = async (provider: string) => {
+    try {
+      setIsLoading(true);
+      await signIn(provider, { callbackUrl: "/auth-callback" });
+    } catch (error) {
+      console.error(`${provider} 로그인 중 에러:`, error);
+      alert("로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="col-span-12 flex flex-col h-full">
       <main className="flex h-full w-full flex-col items-center justify-center">
