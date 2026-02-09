@@ -17,6 +17,7 @@ interface SignupState {
   profileImage: string;
 
   // 유저가 단계별로 채워넣을 정보
+  isTermsAgreed: boolean;
   nickname: string;
   selectedProfileType: "SOCIAL" | "DEFAULT" | null;
   targetJobs: string[];
@@ -24,6 +25,7 @@ interface SignupState {
   educationLevel: string;
   field: string;
   career: number;
+  isRegistrationSuccess: boolean;
 
   // 액션
   setSocialInfo: (info: {
@@ -45,6 +47,7 @@ const INITIAL_SIGNUP_STATE = {
   email: "",
   provider: "",
   profileImage: "",
+  isTermsAgreed: false,
   nickname: "",
   selectedProfileType: null,
   targetJobs: [],
@@ -52,6 +55,7 @@ const INITIAL_SIGNUP_STATE = {
   educationLevel: "",
   field: "",
   career: 0,
+  isRegistrationSuccess: false,
 };
 export const useSignupStore = create<SignupState>((set) => ({
   ...INITIAL_SIGNUP_STATE,

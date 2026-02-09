@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useSignupStore } from "@/app/store/signUpStore";
 import { BaseButton } from "@/components/shared/button";
 import { SectionHeader } from "@/components/shared/section-header";
 import { ProgTerms } from "@/components/terms/terms-check";
@@ -13,7 +14,7 @@ export default function Select() {
   const { data, isLoading, error, isError } = useTerms();
   const { mutate, isPending } = usePostTerms();
   const [checks, setChecks] = useState<Map<number, boolean>>(new Map());
-
+  const { updateField } = useSignupStore();
   const termsList = data?.terms || [];
 
   const isAllChecked = termsList.every((t) => checks.get(t.termId));
@@ -44,6 +45,7 @@ export default function Select() {
 
     mutate(agreedTermIds, {
       onSuccess: () => {
+        updateField("isTermsAgreed", true);
         router.push("?step=pick-option");
       },
       onError: (error) => {

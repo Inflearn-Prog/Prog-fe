@@ -32,7 +32,15 @@ export default function PickOption() {
     profileImage,
     provider,
     updateField,
+    isTermsAgreed,
   } = useSignupStore();
+
+  useEffect(() => {
+    if (!isTermsAgreed) {
+      router.replace("?step=select");
+      alert("약관 동의를 먼저 완료해주세요.");
+    }
+  }, [isTermsAgreed, router]);
 
   const [duplicateMessage, setDuplicateMessage] = useState("");
   const [isAvailable, setIsAvailable] = useState(false);
@@ -52,6 +60,7 @@ export default function PickOption() {
     if (!token) {
       setDuplicateMessage("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
       setIsAvailable(false);
+      setIsLoading(false);
       return;
     }
 

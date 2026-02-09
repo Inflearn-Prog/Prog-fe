@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 import { useSignupStore } from "@/app/store/signUpStore";
 import { BaseButton } from "@/components/shared/button";
@@ -18,7 +19,32 @@ export default function Preview() {
   const { mutate, isPending } = usePutBasic();
   const { data: session, update } = useSession();
 
-  const { field, career, educationLevel, updateField } = useSignupStore();
+  const {
+    isTermsAgreed,
+    nickname,
+    targetJobs,
+    currentState,
+    field,
+    career,
+    educationLevel,
+    updateField,
+  } = useSignupStore();
+
+  useEffect(() => {
+    if (!isTermsAgreed) {
+      router.replace("/signup?step=select");
+      return;
+    }
+
+    if (!nickname) {
+      router.replace("/signup?step=pick-option");
+      return;
+    }
+
+    if (!targetJobs && !currentState) {
+      router.replace("/signup?step=detail");
+    }
+  }, [isTermsAgreed, nickname, targetJobs, currentState, router]);
 
   const isCareerValid = !isNaN(Number(career)) && Number(career) >= 0;
   const isStep4Complete =
@@ -52,6 +78,7 @@ export default function Preview() {
                 },
               });
 
+              updateField("isRegistrationSuccess", true);
               router.push("?step=complete");
             } catch (e) {
               console.error("세션 업데이트 실패:", e);

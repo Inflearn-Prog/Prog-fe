@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useSignupStore } from "@/app/store/signUpStore";
 import { BaseButton } from "@/components/shared/button";
@@ -17,8 +17,27 @@ export default function Detail() {
   const { mutate, isPending } = usePutCareer();
 
   const [otherInput, setOtherInput] = useState("");
-  const { targetJobs, setTargetJobs, currentState, updateField } =
-    useSignupStore();
+  const {
+    isTermsAgreed,
+    nickname,
+    targetJobs,
+    setTargetJobs,
+    currentState,
+    updateField,
+  } = useSignupStore();
+
+  useEffect(() => {
+    if (!isTermsAgreed) {
+      router.replace("/signup?step=select");
+      return;
+    }
+
+    if (!nickname) {
+      router.replace("/signup?step=pick-option");
+      alert("닉네임 설정이 완료되지 않았습니다.");
+    }
+  }, [isTermsAgreed, nickname, router]);
+
   const isStateValid =
     currentState !== "" &&
     (currentState !== "기타" || (otherInput || "").trim().length > 0);

@@ -2,13 +2,52 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
+import { useSignupStore } from "@/app/store/signUpStore";
 import { BaseButton } from "@/components/shared/button";
 import { SectionHeader } from "@/components/shared/section-header";
 import { STATIC_IMAGES } from "@/lib/static-image";
 
 export default function Complete() {
   const router = useRouter();
+  const {
+    isTermsAgreed,
+    nickname,
+    targetJobs,
+    currentState,
+    isRegistrationSuccess,
+  } = useSignupStore();
+
+  useEffect(() => {
+    if (!isTermsAgreed) {
+      router.replace("/signup?step=select");
+      return;
+    }
+
+    if (!nickname) {
+      router.replace("/signup?step=pick-option");
+      return;
+    }
+
+    if (!targetJobs && !currentState) {
+      router.replace("/signup?step=detail");
+      return;
+    }
+
+    if (!isRegistrationSuccess) {
+      // 가입 절차를 거치지 않고 URL로 들어온 경우 첫 단계로 튕겨냄
+      router.replace("/signup?step=select");
+    }
+  }, [
+    isTermsAgreed,
+    nickname,
+    targetJobs,
+    currentState,
+    isRegistrationSuccess,
+    router,
+  ]);
+
   const handleNext = () => {
     router.replace("/"); // 홈으로 이동
   };

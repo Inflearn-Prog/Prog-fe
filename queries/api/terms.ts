@@ -1,4 +1,11 @@
+import { Term } from "@/components/terms/types";
+
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+if (!BASE_URL) {
+  throw new Error(
+    "NEXT_PUBLIC_BACKEND_API_URL 환경 변수가 설정되지 않았습니다."
+  );
+}
 
 interface ApiError extends Error {
   code?: string;
@@ -6,14 +13,6 @@ interface ApiError extends Error {
 interface ApiErrorData {
   errorClassName: string;
   message: string;
-}
-
-export interface Term {
-  termId: number;
-  title: string;
-  isRequired: boolean;
-  hasDetails: boolean;
-  link: string;
 }
 
 interface CommonResponse<T> {
