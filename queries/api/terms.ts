@@ -54,8 +54,6 @@ export async function postTerms(termIds: number[], token: string) {
     }),
   });
 
-  const result = (await res.json()) as CommonResponse<PostTermsResponse>;
-
   if (!res.ok) {
     let errorData: ApiErrorData | undefined;
 
@@ -73,5 +71,6 @@ export async function postTerms(termIds: number[], token: string) {
     throw error;
   }
 
+  const result = (await res.json()) as CommonResponse<PostTermsResponse>;
   return result.data;
 }

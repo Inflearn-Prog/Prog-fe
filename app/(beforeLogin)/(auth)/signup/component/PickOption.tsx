@@ -11,8 +11,14 @@ import { BaseInput } from "@/components/shared/inputs";
 import { SectionHeader } from "@/components/shared/section-header";
 import { ValidationMessage } from "@/components/shared/validation-message";
 import { cn } from "@/lib/utils";
+import { nicknameCheck } from "@/queries/api/nickname-check";
 
 import { Stepper } from "./Stepper";
+
+interface ApiError extends Error {
+  code?: string;
+  status?: number;
+}
 
 export default function PickOption() {
   const router = useRouter();
@@ -41,49 +47,34 @@ export default function PickOption() {
     setIsLoading(true);
     setDuplicateMessage("");
 
-    try {
-      const token = session?.accessToken;
+    const token = session?.accessToken;
 
-      if (!token) {
-        setDuplicateMessage(
-          "로그인 세션이 만료되었습니다. 다시 로그인해주세요."
-        );
-        setIsAvailable(false);
-        return;
-      }
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/users/nickname/availability?nickname=${encodeURIComponent(nickname)}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        const data = await response.json();
-        if (data.isAvailable) {
-          setDuplicateMessage("사용 가능한 닉네임입니다.");
-          setIsAvailable(true);
-        } else {
-          setDuplicateMessage("이미 사용 중인 닉네임입니다.");
-          setIsAvailable(false);
-        }
-      } else if (response.status === 409) {
-        setDuplicateMessage("이미 사용 중인 닉네임입니다.");
-        setIsAvailable(false);
-      } else if (response.status === 400) {
-        setDuplicateMessage("올바르지 않은 닉네임 형식입니다.");
-        setIsAvailable(false);
-      } else {
-        setDuplicateMessage("알 수 없는 오류가 발생했습니다.");
-        setIsAvailable(false);
-      }
-    } catch {
-      setDuplicateMessage("서버와 통신할 수 없습니다.");
+    if (!token) {
+      setDuplicateMessage("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
       setIsAvailable(false);
+      return;
+    }
+
+    try {
+      const isAvailable = await nicknameCheck(nickname, session?.accessToken);
+
+      if (isAvailable) {
+        setDuplicateMessage("사용 가능한 닉네임입니다.");
+        setIsAvailable(true);
+      }
+    } catch (error: unknown) {
+      setIsAvailable(false);
+
+      const apiError = error as ApiError;
+      if (apiError.status === 409) {
+        setDuplicateMessage("이미 사용 중인 닉네임입니다.");
+      } else if (apiError.status === 400) {
+        setDuplicateMessage("올바르지 않은 닉네임 형식입니다.");
+      } else {
+        setDuplicateMessage(
+          apiError.message || "알 수 없는 오류가 발생했습니다."
+        );
+      }
     } finally {
       setIsLoading(false);
     }
