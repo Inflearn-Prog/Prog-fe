@@ -32,6 +32,7 @@ export default function SignInPage() {
               type="button"
               className="flex py-2 gap-2 shadow-md items-center justify-center bg-[#F9DB00] rounded-[6px]"
               onClick={() => handleSocialLogin("kakao")}
+              disabled={isLoading}
             >
               <Image {...STATIC_IMAGES.kakao} />
               <p className="font-bold text-sm ">카카오로 로그인</p>
@@ -40,6 +41,7 @@ export default function SignInPage() {
               type="button"
               className="flex py-2 gap-2 shadow-md items-center justify-center bg-[#01C73C] rounded-[6px]"
               onClick={() => handleSocialLogin("naver")}
+              disabled={isLoading}
             >
               <Image {...STATIC_IMAGES.naver} />
               <p className="font-bold text-sm ">네이버로 로그인</p>
@@ -52,6 +54,7 @@ export default function SignInPage() {
                 type="button"
                 className="flex p-2 shadow-md items-center justify-center bg-[#F9DB00] rounded-full"
                 onClick={() => handleSocialLogin("kakao")}
+                disabled={isLoading}
               >
                 <Image {...STATIC_IMAGES.kakao} />
               </button>
@@ -59,6 +62,7 @@ export default function SignInPage() {
                 type="button"
                 className="flex p-2 shadow-md items-center justify-center bg-[#01C73C] rounded-full"
                 onClick={() => handleSocialLogin("naver")}
+                disabled={isLoading}
               >
                 <Image {...STATIC_IMAGES.naver} />
               </button>

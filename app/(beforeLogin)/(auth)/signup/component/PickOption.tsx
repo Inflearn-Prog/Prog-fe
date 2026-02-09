@@ -44,6 +44,14 @@ export default function PickOption() {
     try {
       const token = session?.accessToken;
 
+      if (!token) {
+        setDuplicateMessage(
+          "로그인 세션이 만료되었습니다. 다시 로그인해주세요."
+        );
+        setIsAvailable(false);
+        return;
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/users/nickname/availability?nickname=${encodeURIComponent(nickname)}`,
         {
@@ -59,6 +67,9 @@ export default function PickOption() {
         if (data.isAvailable) {
           setDuplicateMessage("사용 가능한 닉네임입니다.");
           setIsAvailable(true);
+        } else {
+          setDuplicateMessage("이미 사용 중인 닉네임입니다.");
+          setIsAvailable(false);
         }
       } else if (response.status === 409) {
         setDuplicateMessage("이미 사용 중인 닉네임입니다.");
@@ -101,7 +112,7 @@ export default function PickOption() {
         updateField("provider", session.provider.toUpperCase());
       }
     }
-  }, [session, profileImage, provider, updateField, nickname, setNickname]);
+  }, [session, profileImage, provider, updateField]);
 
   return (
     <div>
@@ -132,7 +143,12 @@ export default function PickOption() {
             />
           </button>
           <p className="body-small !font-semibold">
-            {provider === "KAKAO" ? "카카오톡" : "네이버"} 프로필
+            {provider === "KAKAO"
+              ? "카카오톡"
+              : provider === "NAVER"
+                ? "네이버"
+                : "소셜"}{" "}
+            프로필
           </p>
         </div>
 

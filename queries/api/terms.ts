@@ -3,6 +3,10 @@ const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 interface ApiError extends Error {
   code?: string;
 }
+interface ApiErrorData {
+  errorClassName: string;
+  message: string;
+}
 
 export interface Term {
   termId: number;
@@ -18,7 +22,15 @@ interface CommonResponse<T> {
   data: T;
 }
 
+export interface PostTermsResponse {
+  userId: number;
+  isRegistrationComplete: boolean;
+  message: string;
+}
+
 export async function fetchTerms() {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
   const res = await fetch(`${BASE_URL}/terms`, {
     method: "GET",
   });
@@ -42,14 +54,18 @@ export async function postTerms(termIds: number[], token: string) {
     }),
   });
 
+  const result = (await res.json()) as CommonResponse<PostTermsResponse>;
+
   if (!res.ok) {
-    let errorData;
+    let errorData: ApiErrorData | undefined;
+
     try {
-      const result = await res.json();
+      const result = (await res.json()) as CommonResponse<ApiErrorData>;
       errorData = result.data;
-    } catch {
-      // JSON 파싱 실패 시 기본 에러
+    } catch (error) {
+      console.error("Failed to parse error response:", error);
     }
+
     const error: ApiError = new Error(
       errorData?.message ?? `요청 실패 (${res.status})`
     );
@@ -57,6 +73,5 @@ export async function postTerms(termIds: number[], token: string) {
     throw error;
   }
 
-  const result = await res.json();
   return result.data;
 }

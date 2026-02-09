@@ -18,7 +18,7 @@ interface SignupState {
 
   // 유저가 단계별로 채워넣을 정보
   nickname: string;
-  selectedProfileType: "SOCIAL" | "DEFAULT";
+  selectedProfileType: "SOCIAL" | "DEFAULT" | null;
   targetJobs: string[];
   currentState: string;
   educationLevel: string;
@@ -46,7 +46,7 @@ const INITIAL_SIGNUP_STATE = {
   provider: "",
   profileImage: "",
   nickname: "",
-  selectedProfileType: "SOCIAL" as const,
+  selectedProfileType: null,
   targetJobs: [],
   currentState: "",
   educationLevel: "",
