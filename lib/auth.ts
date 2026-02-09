@@ -19,6 +19,13 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
     maxAge: 30 * 24 * 60 * 60, // 30일 동안 세션 유지
   },
   callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+
+      if (nextUrl.pathname === "/") return true;
+      return isLoggedIn;
+    },
+
     async signIn({ user, account }) {
       if (!account?.access_token) return false;
 
