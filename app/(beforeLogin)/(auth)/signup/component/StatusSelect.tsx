@@ -3,9 +3,9 @@ import { BaseInput } from "@/components/shared/inputs";
 import { STATE_OPTIONS, STATE_VALUES, StateType } from "../../constant";
 
 interface StatusSelectProps {
-  value: StateType | string; // 선택된 값
+  value: StateType | "";
   otherValue: string;
-  onSelect: (status: StateType) => void; // 타입 적용
+  onSelect: (status: StateType) => void;
   onOtherChange: (val: string) => void;
 }
 

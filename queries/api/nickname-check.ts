@@ -40,5 +40,12 @@ export async function nicknameCheck(
 
   const result =
     (await res.json()) as CommonResponse<NicknameAvailabilityResponse>;
+
+  if (!result.success) {
+    const error: ApiError = new Error("닉네임 확인 중 오류가 발생했습니다.");
+    error.status = result.status;
+    throw error;
+  }
+
   return result.data.isAvailable;
 }

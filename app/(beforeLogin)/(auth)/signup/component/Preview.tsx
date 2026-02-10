@@ -10,6 +10,7 @@ import { BaseInput } from "@/components/shared/inputs";
 import { SectionHeader } from "@/components/shared/section-header";
 import { SelectBox } from "@/components/shared/select-box";
 import { usePutBasic } from "@/hooks/use-onboarding";
+import { ROUTES } from "@/lib/routes";
 
 import { EDUCATION_OPTIONS, FIELD_OPTIONS } from "../../constant";
 import { Stepper } from "./Stepper";
@@ -32,21 +33,21 @@ export default function Preview() {
 
   useEffect(() => {
     if (!isTermsAgreed) {
-      router.replace("/signup?step=select");
+      router.replace(ROUTES.auth.SIGNUP_SELECT);
       return;
     }
 
     if (!nickname) {
-      router.replace("/signup?step=pick-option");
+      router.replace(ROUTES.auth.SIGNUP_PICK_OPTION);
       return;
     }
 
-    if (!targetJobs && !currentState) {
-      router.replace("/signup?step=detail");
+    if (targetJobs.length === 0 || !currentState) {
+      router.replace(ROUTES.auth.SIGNUP_DETAIL);
     }
   }, [isTermsAgreed, nickname, targetJobs, currentState, router]);
 
-  const isCareerValid = !isNaN(Number(career)) && Number(career) >= 0;
+  const isCareerValid = career >= 0;
   const isStep4Complete =
     educationLevel !== "" && field !== "" && isCareerValid;
 
@@ -81,12 +82,14 @@ export default function Preview() {
               updateField("isRegistrationSuccess", true);
               router.push("?step=complete");
             } catch (e) {
+              // eslint-disable-next-line no-console
               console.error("세션 업데이트 실패:", e);
             }
           },
           onError: (error) => {
             // eslint-disable-next-line no-console
             console.error("기본 정보 저장 실패:", error.message);
+            alert("기본 정보 저장에 실패했습니다. 다시 시도해주세요.");
           },
         }
       );
