@@ -1,6 +1,6 @@
 import { BaseInput } from "@/components/shared/inputs";
 
-import { STATE_OPTIONS, STATE_VALUES, StateType } from "../../constant"; // 추가
+import { STATE_OPTIONS, STATE_VALUES, StateType } from "../../constant";
 
 interface StatusSelectProps {
   value: StateType | string; // 선택된 값

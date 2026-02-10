@@ -8,7 +8,7 @@ import { BaseButton } from "@/components/shared/button";
 import { SectionHeader } from "@/components/shared/section-header";
 import { usePutCareer } from "@/hooks/use-onboarding";
 
-import { JobType, STATE_VALUES, StateType } from "../../constant";
+import { JobType, STATE_VALUES } from "../../constant";
 import { StatusSelect } from "./StatusSelect";
 import { Stepper } from "./Stepper";
 import { TargetJobsSelect } from "./TargetJobsSelect";
@@ -39,12 +39,10 @@ export default function Detail() {
     }
   }, [isTermsAgreed, nickname, router]);
 
-  const isStateValid =
+  const isStep3Complete =
     currentState !== "" &&
     (currentState !== STATE_VALUES.OTHER ||
       (otherInput || "").trim().length > 0);
-
-  const isStep3Complete = isStateValid && targetJobs.length > 0;
 
   const handleJobClick = (option: string) => {
     const castedOption = option as JobType;
@@ -91,7 +89,7 @@ export default function Detail() {
           value={currentState}
           otherValue={otherInput}
           onSelect={(val) => {
-            updateField("currentState", val as StateType);
+            updateField("currentState", val);
             if (val !== STATE_VALUES.OTHER) setOtherInput("");
           }}
           onOtherChange={setOtherInput}

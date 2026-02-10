@@ -1,8 +1,8 @@
-import { JOB_OPTIONS } from "../../constant";
+import { JOB_OPTIONS, JobType } from "../../constant";
 
 interface TargetJobsSelectProps {
   selectedJobs: string[];
-  onToggle: (job: string) => void;
+  onToggle: (job: JobType) => void;
 }
 
 export const TargetJobsSelect = ({
@@ -19,9 +19,9 @@ export const TargetJobsSelect = ({
           <button
             key={option}
             type="button"
-            onClick={() => onToggle(option)}
+            onClick={() => onToggle(option as JobType)}
             className={`text-center min-w-[100px] py-2 px-4 rounded-md body-medium transition-colors ${
-              selectedJobs.includes(option)
+              selectedJobs.includes(option as JobType)
                 ? "bg-frog-600 text-gray-0 shadow-md"
                 : "bg-gray-50 text-gray-700 hover:bg-gray-300"
             }`}
