@@ -1,32 +1,27 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 
-import { fetchTerms, postTerms } from "@/queries/api/terms";
-
-type PostTermsParams = number[];
+import { postTerms } from "@/queries/api/terms";
+import { termsQueries } from "@/queries/options/terms";
 
 export const useTerms = () => {
-  return useQuery({
-    queryKey: ["terms"],
-    queryFn: fetchTerms,
-    staleTime: 1000 * 60 * 5,
-  });
+  return useQuery(termsQueries.list());
 };
 
 export const usePostTerms = () => {
+  const queryClient = useQueryClient();
   const { data: session } = useSession();
 
   return useMutation({
-    mutationFn: (params: PostTermsParams) => {
+    mutationFn: (params: number[]) => {
       const token = session?.accessToken;
-
-      if (!token) {
-        const error = new Error("인증 토큰이 없습니다. 다시 로그인해주세요.");
-        throw error;
-      }
+      if (!token) throw new Error("인증 토큰이 없습니다.");
       return postTerms(params, token);
     },
-    onSuccess: () => {},
-    onError: () => {},
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: termsQueries.list().queryKey,
+      });
+    },
   });
 };

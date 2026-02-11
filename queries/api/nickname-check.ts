@@ -38,7 +38,18 @@ export async function nicknameCheck(
     throw error;
   }
 
-  const result =
-    (await res.json()) as CommonResponse<NicknameAvailabilityResponse>;
-  return result.data.isAvailable;
+  const result = await res.json();
+
+  const parsedData = typeof result === "string" ? JSON.parse(result) : result;
+
+  if (parsedData && typeof parsedData.isAvailable === "boolean") {
+    return parsedData.isAvailable;
+  }
+
+  if (result.body && typeof result.body === "string") {
+    const bodyData = JSON.parse(result.body);
+    return bodyData.isAvailable;
+  }
+
+  throw new Error("서버 응답에서 닉네임 가용 여부를 확인할 수 없습니다.");
 }

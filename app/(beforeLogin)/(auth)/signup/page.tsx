@@ -42,6 +42,23 @@ export default async function SignupPage({
 
   const activeStyle = getStepStyle(currentStep);
 
+  const renderStep = () => {
+    switch (currentStep) {
+      case "select":
+        return <Select />;
+      case "pick-option":
+        return <PickOption />;
+      case "detail":
+        return <Detail />;
+      case "preview":
+        return <Preview />;
+      case "complete":
+        return <Complete />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-10" />
@@ -51,11 +68,7 @@ export default async function SignupPage({
           activeStyle
         )}
       >
-        {currentStep === "select" && <Select />}
-        {currentStep === "pick-option" && <PickOption />}
-        {currentStep === "detail" && <Detail />}
-        {currentStep === "preview" && <Preview />}
-        {currentStep === "complete" && <Complete />}
+        {renderStep()}
       </div>
     </>
   );
