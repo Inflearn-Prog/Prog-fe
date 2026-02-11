@@ -1,8 +1,8 @@
-import { JOB_OPTIONS } from "../constant";
+import { JOB_OPTIONS, JobType } from "../../constant";
 
 interface TargetJobsSelectProps {
-  selectedJobs: string[];
-  onToggle: (job: string) => void;
+  selectedJobs: JobType[];
+  onToggle: (job: JobType) => void;
 }
 
 export const TargetJobsSelect = ({

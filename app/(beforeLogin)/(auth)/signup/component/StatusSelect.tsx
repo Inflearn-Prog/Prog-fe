@@ -1,11 +1,11 @@
 import { BaseInput } from "@/components/shared/inputs";
 
-import { STATE_OPTIONS } from "../constant";
+import { STATE_OPTIONS, STATE_VALUES, StateType } from "../../constant";
 
 interface StatusSelectProps {
-  value: string;
+  value: StateType | "";
   otherValue: string;
-  onSelect: (status: string) => void;
+  onSelect: (status: StateType) => void;
   onOtherChange: (val: string) => void;
 }
 
@@ -23,7 +23,7 @@ export const StatusSelect = ({
           <button
             key={option}
             type="button"
-            onClick={() => onSelect(option)}
+            onClick={() => onSelect(option as StateType)}
             className={`text-center min-w-[120px] py-2 px-4 rounded-md body-medium transition-colors ${
               value === option
                 ? "bg-frog-600 text-gray-0 shadow-md"
@@ -33,7 +33,7 @@ export const StatusSelect = ({
             {option}
           </button>
         ))}
-        {value === "기타" && (
+        {value === STATE_VALUES.OTHER && (
           <div className="flex-1">
             <BaseInput
               placeholder="직접입력"

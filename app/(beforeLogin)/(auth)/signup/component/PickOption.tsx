@@ -65,11 +65,14 @@ export default function PickOption() {
     }
 
     try {
-      const isAvailable = await nicknameCheck(nickname, session?.accessToken);
+      const available = await nicknameCheck(nickname, session?.accessToken);
 
-      if (isAvailable) {
+      if (available) {
         setDuplicateMessage("사용 가능한 닉네임입니다.");
         setIsAvailable(true);
+      } else {
+        setDuplicateMessage("이미 사용 중인 닉네임입니다.");
+        setIsAvailable(false);
       }
     } catch (error: unknown) {
       setIsAvailable(false);

@@ -6,20 +6,22 @@ import { useState } from "react";
 
 import { STATIC_IMAGES } from "@/lib/static-image";
 
+import { AuthProvider } from "../constant";
+
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSocialLogin = async (provider: string) => {
+  const handleSocialLogin = async (provider: AuthProvider) => {
     try {
       setIsLoading(true);
       await signIn(provider, { callbackUrl: "/auth-callback" });
     } catch (error) {
-      console.error(`${provider} 로그인 중 에러:`, error);
       alert("로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
     } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="col-span-12 flex flex-col h-full">
       <main className="flex h-full w-full flex-col items-center justify-center">
@@ -31,7 +33,7 @@ export default function SignInPage() {
             <button
               type="button"
               className="flex py-2 gap-2 shadow-md items-center justify-center bg-[#F9DB00] rounded-[6px]"
-              onClick={() => handleSocialLogin("kakao")}
+              onClick={() => handleSocialLogin(AuthProvider.KAKAO)}
               disabled={isLoading}
             >
               <Image {...STATIC_IMAGES.kakao} />
@@ -40,7 +42,7 @@ export default function SignInPage() {
             <button
               type="button"
               className="flex py-2 gap-2 shadow-md items-center justify-center bg-[#01C73C] rounded-[6px]"
-              onClick={() => handleSocialLogin("naver")}
+              onClick={() => handleSocialLogin(AuthProvider.NAVER)}
               disabled={isLoading}
             >
               <Image {...STATIC_IMAGES.naver} />
@@ -53,7 +55,7 @@ export default function SignInPage() {
               <button
                 type="button"
                 className="flex p-2 shadow-md items-center justify-center bg-[#F9DB00] rounded-full"
-                onClick={() => handleSocialLogin("kakao")}
+                onClick={() => handleSocialLogin(AuthProvider.KAKAO)}
                 disabled={isLoading}
               >
                 <Image {...STATIC_IMAGES.kakao} />
@@ -61,7 +63,7 @@ export default function SignInPage() {
               <button
                 type="button"
                 className="flex p-2 shadow-md items-center justify-center bg-[#01C73C] rounded-full"
-                onClick={() => handleSocialLogin("naver")}
+                onClick={() => handleSocialLogin(AuthProvider.NAVER)}
                 disabled={isLoading}
               >
                 <Image {...STATIC_IMAGES.naver} />

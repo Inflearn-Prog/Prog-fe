@@ -8,6 +8,7 @@ import { BaseButton } from "@/components/shared/button";
 import { SectionHeader } from "@/components/shared/section-header";
 import { usePutCareer } from "@/hooks/use-onboarding";
 
+import { JobType, STATE_VALUES } from "../../constant";
 import { StatusSelect } from "./StatusSelect";
 import { Stepper } from "./Stepper";
 import { TargetJobsSelect } from "./TargetJobsSelect";
@@ -38,25 +39,26 @@ export default function Detail() {
     }
   }, [isTermsAgreed, nickname, router]);
 
-  const isStateValid =
+  const isStep3Complete =
     currentState !== "" &&
-    (currentState !== "기타" || (otherInput || "").trim().length > 0);
-  const isStep3Complete = isStateValid && targetJobs.length > 0;
+    (currentState !== STATE_VALUES.OTHER ||
+      (otherInput || "").trim().length > 0);
 
   const handleJobClick = (option: string) => {
-    const isSelected = targetJobs.includes(option);
+    const castedOption = option as JobType;
+    const isSelected = targetJobs.includes(castedOption);
+
     if (isSelected) {
-      setTargetJobs(targetJobs.filter((j) => j !== option));
+      setTargetJobs(targetJobs.filter((j) => j !== castedOption));
     } else {
-      setTargetJobs([...targetJobs, option]);
+      setTargetJobs([...targetJobs, castedOption]);
     }
   };
 
   const handleNext = () => {
     if (isStep3Complete) {
-      //전송 로직
       const finalStatus =
-        currentState === "기타" ? otherInput.trim() : currentState;
+        currentState === STATE_VALUES.OTHER ? otherInput.trim() : currentState;
 
       const userCareerInfo = {
         currentStatuses: [finalStatus],
@@ -88,7 +90,7 @@ export default function Detail() {
           otherValue={otherInput}
           onSelect={(val) => {
             updateField("currentState", val);
-            if (val !== "기타") setOtherInput("");
+            if (val !== STATE_VALUES.OTHER) setOtherInput("");
           }}
           onOtherChange={setOtherInput}
         />

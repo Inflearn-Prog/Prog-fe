@@ -32,10 +32,9 @@ export async function nicknameCheck(
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     const error: ApiError = new Error(
-      errorData.data?.message || "닉네임 확인 중 오류가 발생했습니다."
+      errorData.message || "닉네임 확인 중 오류가 발생했습니다."
     );
     error.status = res.status;
-    error.code = errorData.data?.errorClassName;
     throw error;
   }
 

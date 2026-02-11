@@ -1,12 +1,14 @@
 import { create } from "zustand";
 
+import { JobType, StateType } from "../(beforeLogin)/(auth)/constant";
+
 type SignupFieldKey = Exclude<
   keyof SignupState,
   | "setSocialInfo"
   | "setNickname"
   | "setSelectedProfileType"
   | "setTargetJobs"
-  | "updateField"
+  | "updateMajor"
   | "reset"
 >;
 
@@ -20,8 +22,8 @@ interface SignupState {
   isTermsAgreed: boolean;
   nickname: string;
   selectedProfileType: "SOCIAL" | "DEFAULT" | null;
-  targetJobs: string[];
-  currentState: string;
+  targetJobs: JobType[];
+  currentState: StateType | "";
   educationLevel: string;
   field: string;
   career: number;
@@ -35,7 +37,7 @@ interface SignupState {
   }) => void;
   setNickname: (name: string) => void;
   setSelectedProfileType: (type: "SOCIAL" | "DEFAULT") => void;
-  setTargetJobs: (jobs: string[]) => void;
+  setTargetJobs: (jobs: JobType[]) => void;
   updateField: <K extends SignupFieldKey>(
     key: K,
     value: SignupState[K]
@@ -49,9 +51,9 @@ const INITIAL_SIGNUP_STATE = {
   profileImage: "",
   isTermsAgreed: false,
   nickname: "",
-  selectedProfileType: null,
+  selectedProfileType: "SOCIAL" as const,
   targetJobs: [],
-  currentState: "",
+  currentState: "" as const,
   educationLevel: "",
   field: "",
   career: 0,
