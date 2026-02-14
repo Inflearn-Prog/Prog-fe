@@ -1,9 +1,9 @@
 @theme {
   --white: #fff;
   --black: #000;
-  --success: #04B014;
-  --warning: #FFAA00;
-  --error: #DC0000;
+  --color-success: #04B014;
+  --color-warning: #FFAA00;
+  --color-error: #DC0000;
 
   /* Colors (gray) */
   --color-gray-*: initial;

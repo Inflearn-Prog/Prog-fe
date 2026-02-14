@@ -19,4 +19,18 @@ export const STATIC_IMAGES: Record<
     height: 24,
     priority: false,
   },
+  kakao: {
+    src: "/images/kakao_icon.svg",
+    alt: "Kakao Login Icon",
+    width: 20,
+    height: 20,
+    priority: false,
+  },
+  naver: {
+    src: "/images/naver_icon.svg",
+    alt: "Naver Login Icon",
+    width: 20,
+    height: 20,
+    priority: false,
+  },
 };
