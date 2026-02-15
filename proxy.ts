@@ -1,4 +1,3 @@
-// proxy.ts (또는 middleware.ts)
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
@@ -6,39 +5,35 @@ import { ROUTES } from "@/lib/routes";
 
 export default auth((req) => {
   const { nextUrl, auth: session } = req;
+  const pathname = nextUrl.pathname;
 
   const isSignIn = !!session;
   const isNewUser = session?.isNewUser;
 
-  // 2. 공통 허용 경로 (메인, MSW 등)
-  if (
-    nextUrl.pathname === "/" ||
-    nextUrl.pathname === "/mockServiceWorker.js"
-  ) {
-    return NextResponse.next();
+  // 1. 보호가 필요한 경로 정의 (마이페이지 등)
+  const isProtectedRoute = pathname.startsWith("/mypage");
+  // 2. 인증 관련 경로 (로그인, 가입)
+  const isAuthRoute = pathname === "/signin" || pathname === ROUTES.auth.SIGNUP;
+
+  // 로그인을 안 했는데 보호된 페이지(마이페이지)에 접근한 경우
+  if (!isSignIn && isProtectedRoute) {
+    const signInUrl = new URL("/signin", nextUrl.origin);
+    signInUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(signInUrl);
   }
 
-  // 3. 비로그인 유저 처리
-  if (!isSignIn) {
-    // 로그인 페이지는 통과, 그 외엔 로그인으로 리다이렉트
-    if (nextUrl.pathname !== "/signin") {
-      const signInUrl = new URL("/signin", nextUrl.origin);
-      signInUrl.searchParams.set("callbackUrl", nextUrl.pathname);
-      return NextResponse.redirect(signInUrl);
+  if (isSignIn) {
+    // 신규 유저인데 가입 페이지가 아닌 곳에 있다면 가입 페이지로
+    if (isNewUser && pathname !== ROUTES.auth.SIGNUP) {
+      return NextResponse.redirect(new URL(ROUTES.auth.SIGNUP, nextUrl.origin));
     }
-    return NextResponse.next();
-  }
 
-  // 4. 신규 유저 처리 (로그인은 했지만 가입 전)
-  if (isNewUser && nextUrl.pathname !== ROUTES.auth.SIGNUP) {
-    return NextResponse.redirect(new URL(ROUTES.auth.SIGNUP, nextUrl.origin));
+    // 가입 완료 유저가 가입/로그인 페이지 접근 시 메인으로
+    if (!isNewUser && isAuthRoute) {
+      return NextResponse.redirect(new URL("/", nextUrl.origin));
+    }
   }
-
-  // 5. 가입 완료 유저가 다시 가입 페이지 접근 시
-  if (!isNewUser && nextUrl.pathname === ROUTES.auth.SIGNUP) {
-    return NextResponse.redirect(new URL("/", nextUrl.origin));
-  }
-
+  // 그 외(메인, 랭킹 페이지 등)는 모두 통과
   return NextResponse.next();
 });
 

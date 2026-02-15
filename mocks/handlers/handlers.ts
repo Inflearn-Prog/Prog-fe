@@ -2,6 +2,7 @@ import { authHandlers } from "./auth-handlers";
 import { mswHandlers } from "./msw-test";
 import { nicknameHandlers } from "./nickname-handlers";
 import { onboardingHandlers } from "./onboarding-handlers";
+import { promptListHandlers } from "./prompt-list-handlers";
 import { termsHandlers } from "./terms-handlers";
 
 export const handlers = [
@@ -10,4 +11,5 @@ export const handlers = [
   ...onboardingHandlers,
   ...authHandlers,
   ...nicknameHandlers,
+  ...promptListHandlers,
 ];

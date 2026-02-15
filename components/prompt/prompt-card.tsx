@@ -4,6 +4,7 @@ import { Siren, ThumbsUpIcon } from "lucide-react";
 
 import { ProfIcon } from "../profile-icon/profile-icon";
 import { BaseButton } from "../shared/button";
+import { CATEGORY_MAP } from "./constants";
 
 const STYLES = {
   CARD_CONTAINER:
@@ -45,10 +46,12 @@ export default function PromptCard({
   onReport,
   onPreview,
 }: PromptCardProps) {
+  const categoryLabel = CATEGORY_MAP.get(category) || category;
+
   return (
     <article className={STYLES.CARD_CONTAINER}>
       {/* 카테고리 태그 */}
-      <div className={STYLES.TAG}>{category}</div>
+      <div className={STYLES.TAG}>{categoryLabel}</div>
 
       {/* 텍스트 콘텐츠 */}
       <h2 className={STYLES.TITLE}>{title}</h2>
