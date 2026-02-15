@@ -28,7 +28,7 @@ export default async function RankPage({ searchParams }: RankingPageProps) {
       </div>
 
       <section className="lg:hidden mb-12">
-        <Link href="/community/write" className="w-full">
+        <Link href={ROUTES.community.WRITE} className="w-full">
           <BaseButton full size="lg">
             글쓰기
           </BaseButton>
