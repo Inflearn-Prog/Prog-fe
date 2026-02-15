@@ -1,6 +1,6 @@
 import { Header } from "@/components/header/header";
 
-export default function RankingLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
