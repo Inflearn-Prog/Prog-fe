@@ -1,6 +1,5 @@
-import { RadioGroup } from "@radix-ui/react-radio-group";
-
 import { REASON_TYPE } from "@/app/types/type";
+import { RadioGroup } from "@/components/ui/radio-group";
 
 import { BaseButton } from "../shared/button";
 import { BaseInput } from "../shared/inputs";
@@ -35,7 +34,12 @@ export default function ReportModal({
       <div className="flex flex-col">
         <RadioGroup value={reason} onValueChange={onSelect}>
           {REASON_TYPE.map((r) => (
-            <BaseRadioItem label={r.label} id={r.value} value={r.value} />
+            <BaseRadioItem
+              key={r.value}
+              label={r.label}
+              id={r.value}
+              value={r.value}
+            />
           ))}
         </RadioGroup>
         <div className="flex-1 min-h-[48px]">
