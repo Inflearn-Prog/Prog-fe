@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
+import { useState } from "react";
 
 import PromptCard from "@/components/prompt/prompt-card";
+import ReportModal from "@/components/prompt/report-modal";
 
 import { StoryBox } from "../StoryBox";
 
@@ -8,13 +10,6 @@ const meta: Meta<typeof PromptCard> = {
   title: "Components/Prompt/PromptCard",
   component: PromptCard,
   tags: ["autodocs"],
-  argTypes: {
-    category: { control: "text" },
-    onCopy: { action: "copied" },
-    onLike: { action: "liked" },
-    onReport: { action: "reported" },
-    onPreview: { action: "previewed" },
-  },
   decorators: [
     (Story) => (
       <StoryBox>
@@ -35,5 +30,49 @@ export const Default: Story = {
     userIcon: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
     userName: "닉네임",
     userDesc: "유저 설명",
+  },
+  render: (args) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [reason, setReason] = useState("");
+    const [reasonDetail, setReasonDetail] = useState("");
+
+    const handleSelect = (val: string) => {
+      setReason(val);
+      if (val !== "OTHER") setReasonDetail("");
+    };
+
+    const onCancel = () => {
+      setReason("");
+      setReasonDetail("");
+      setIsModalOpen(false);
+    };
+
+    const onReport = () => {
+      setReason("");
+      setReasonDetail("");
+      setIsModalOpen(false);
+    };
+
+    return (
+      <>
+        <PromptCard {...args} onReport={() => setIsModalOpen(true)} />
+
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white p-6 rounded-lg w-[400px]">
+              <ReportModal
+                title="어떤 문제가 있나요?"
+                reason={reason}
+                reasonDetail={reasonDetail}
+                onSelect={handleSelect}
+                onOtherChange={setReasonDetail}
+                onCancel={onCancel}
+                onReport={onReport}
+              />
+            </div>
+          </div>
+        )}
+      </>
+    );
   },
 };
