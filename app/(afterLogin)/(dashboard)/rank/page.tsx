@@ -49,7 +49,7 @@ export default async function RankPage({ searchParams }: RankingPageProps) {
         {/* 오른쪽: 카드 리스트 */}
         <main className="col-span-4 lg:col-span-9 flex flex-col gap-4">
           <Suspense
-            key={category}
+            key={validCategory}
             fallback={
               <div className="flex flex-col gap-4">
                 {[...Array(10)].map((_, i) => (
@@ -58,7 +58,7 @@ export default async function RankPage({ searchParams }: RankingPageProps) {
               </div>
             }
           >
-            <RankingList category={category} />
+            <RankingList category={validCategory} />
           </Suspense>
         </main>
       </div>
