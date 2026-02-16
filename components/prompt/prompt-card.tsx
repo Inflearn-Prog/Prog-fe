@@ -2,6 +2,8 @@
 
 import { Siren, ThumbsUpIcon } from "lucide-react";
 
+import { PromptCardProps } from "@/app/types/type";
+
 import { ProfIcon } from "../profile-icon/profile-icon";
 import { BaseButton } from "../shared/button";
 import { CATEGORY_MAP } from "./constants";
@@ -20,19 +22,6 @@ const STYLES = {
   ICON_GROUP: "flex items-center gap-4 text-gray-800",
   ICON_BUTTON: "hover:opacity-70 transition-opacity",
 };
-
-interface PromptCardProps {
-  category: string;
-  title: string;
-  content: string;
-  userIcon: string;
-  userName: string;
-  userDesc: string;
-  onCopy?: () => void;
-  onLike?: () => void;
-  onReport?: () => void;
-  onPreview?: () => void;
-}
 
 export default function PromptCard({
   category,

@@ -5,3 +5,20 @@ export const REASON_TYPE = [
   { label: "제 창작물(또는 타인의 것)을 도용했어요.", value: "PLAGIARISM" },
   { label: "기타", value: "OTHER" },
 ];
+
+export interface Prompt {
+  id: string;
+  category: string;
+  title: string;
+  content: string;
+  userIcon: string;
+  userName: string;
+  userDesc: string;
+}
+
+export interface PromptCardProps extends Prompt {
+  onCopy?: () => void;
+  onLike?: () => void;
+  onReport?: () => void;
+  onPreview?: () => void;
+}

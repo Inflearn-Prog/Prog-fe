@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 
-import { Prompt } from "@/app/(afterLogin)/(dashboard)/rank/RankList";
+import { Prompt } from "@/app/types/type";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8080";
