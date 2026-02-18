@@ -23,3 +23,9 @@ export interface PromptCardProps extends Prompt {
   onReport?: () => void;
   onPreview?: () => void;
 }
+
+export interface PromptPage {
+  items: Prompt[];
+  nextPage: number | null;
+  isLast: boolean;
+}

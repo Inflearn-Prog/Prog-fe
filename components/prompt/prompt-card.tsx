@@ -74,6 +74,7 @@ export default function PromptCard({
           >
             복사
           </BaseButton>
+          {/* TODO: 미리보기 기능 구현 후 활성 */}
           {/*<BaseButton
             size={"sm"}
             shape={"round"}

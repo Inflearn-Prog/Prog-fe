@@ -1,5 +1,6 @@
 "use client";
 
+import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -7,8 +8,11 @@ import PromptCard from "@/components/prompt/prompt-card";
 import PromptCardSkeleton from "@/components/prompt/prompt-card-skeleton";
 import ReportModal from "@/components/prompt/report-modal";
 import { toasts } from "@/components/shared/toast";
-import { useGetPrompts, useReportMutation } from "@/hooks/use-prompt-list";
-import { useToggleLikeMutation } from "@/hooks/use-prompt-list";
+import {
+  useGetPrompts,
+  useReportMutation,
+  useToggleLikeMutation,
+} from "@/hooks/use-prompt-list";
 
 export interface Prompt {
   id: string;
@@ -101,19 +105,34 @@ export default function RankingList({ category }: { category: string }) {
         )}
       </div>
       {reportTargetId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-[400px] lg:max-w-[640px] bg-gray-0 p-6 rounded-10">
-            <ReportModal
-              title="어떤 문제가 있나요?"
-              reason={reportReason}
-              reasonDetail={reportDetail}
-              onSelect={(val) => setReportReason(val)}
-              onOtherChange={(val) => setReportDetail(val)}
-              onCancel={closeReportModal}
-              onReport={handleReport}
-            />
-          </div>
-        </div>
+        <Dialog.Root
+          open={!!reportTargetId}
+          onOpenChange={(open) => !open && closeReportModal()}
+        >
+          <Dialog.Portal>
+            <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50" />
+
+            <Dialog.Content
+              className="fixed left-1/2 top-1/2 z-50 w-full max-w-[400px] lg:max-w-[640px] -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-10 shadow-lg"
+              onOpenAutoFocus={(e) => e.preventDefault()}
+            >
+              <Dialog.Title className="sr-only">신고하기</Dialog.Title>
+              <Dialog.Description className="sr-only">
+                해당 프롬프트의 부적절한 내용을 신고하는 창입니다.
+              </Dialog.Description>
+
+              <ReportModal
+                title="어떤 문제가 있나요?"
+                reason={reportReason}
+                reasonDetail={reportDetail}
+                onSelect={(val) => setReportReason(val)}
+                onOtherChange={(val) => setReportDetail(val)}
+                onCancel={closeReportModal}
+                onReport={handleReport}
+              />
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
       )}
     </div>
   );

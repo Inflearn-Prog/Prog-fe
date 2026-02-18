@@ -12,6 +12,7 @@ const MOCK_PROMPTS = [
     userName: "개발왕코딩이",
     userDesc: "네카라쿠배 현직 개발자",
     likes: 120,
+    isLiked: true,
   },
   {
     id: "2",
@@ -23,6 +24,7 @@ const MOCK_PROMPTS = [
     userName: "서버마스터",
     userDesc: "10년차 시니어 엔지니어",
     likes: 85,
+    isLiked: false,
   },
   {
     id: "9",
@@ -34,6 +36,7 @@ const MOCK_PROMPTS = [
     userName: "풀스택조아",
     userDesc: "스타트업 CTO",
     likes: 42,
+    isLiked: false,
   },
   {
     id: "10",
@@ -45,6 +48,7 @@ const MOCK_PROMPTS = [
     userName: "리뷰어킴",
     userDesc: "금융권 IT 보안팀",
     likes: 33,
+    isLiked: true,
   },
 
   // 디자인 (design) - 3개
@@ -58,6 +62,7 @@ const MOCK_PROMPTS = [
     userName: "픽셀장인",
     userDesc: "에이전시 출신 아트디렉터",
     likes: 95,
+    isLiked: false,
   },
   {
     id: "4",
@@ -69,6 +74,7 @@ const MOCK_PROMPTS = [
     userName: "디자인고수",
     userDesc: "대기업 인하우스 디자이너",
     likes: 77,
+    isLiked: false,
   },
   {
     id: "11",
@@ -80,6 +86,7 @@ const MOCK_PROMPTS = [
     userName: "시스템러버",
     userDesc: "유니콘 기업 프로덕트 디자이너",
     likes: 56,
+    isLiked: false,
   },
 
   // 마케팅/콘텐츠 (marketing_content) - 4개
@@ -93,6 +100,7 @@ const MOCK_PROMPTS = [
     userName: "마케팅천재",
     userDesc: "그로스 해킹 전문가",
     likes: 110,
+    isLiked: true,
   },
   {
     id: "6",
@@ -104,6 +112,7 @@ const MOCK_PROMPTS = [
     userName: "콘텐츠요정",
     userDesc: "유명 브랜드 SNS 매니저",
     likes: 64,
+    isLiked: false,
   },
   {
     id: "12",
@@ -115,6 +124,7 @@ const MOCK_PROMPTS = [
     userName: "비투비킹",
     userDesc: "SaaS 마케팅 리더",
     likes: 29,
+    isLiked: false,
   },
   {
     id: "13",
@@ -126,6 +136,7 @@ const MOCK_PROMPTS = [
     userName: "브랜더",
     userDesc: "F&B 브랜드 디렉터",
     likes: 48,
+    isLiked: false,
   },
 
   // 서비스 기획 (service_planning) - 3개
@@ -138,6 +149,7 @@ const MOCK_PROMPTS = [
     userName: "기획의정석",
     userDesc: "핀테크 스타트업 PO",
     likes: 88,
+    isLiked: false,
   },
   {
     id: "14",
@@ -149,6 +161,7 @@ const MOCK_PROMPTS = [
     userName: "런칭머신",
     userDesc: "연쇄 창업가 & 기획자",
     likes: 52,
+    isLiked: false,
   },
   {
     id: "15",
@@ -160,6 +173,7 @@ const MOCK_PROMPTS = [
     userName: "유엑스피엠",
     userDesc: "커머스 플랫폼 PM",
     likes: 39,
+    isLiked: false,
   },
 
   // 인사/총무 (hr_general_affairs) - 2개
@@ -173,6 +187,7 @@ const MOCK_PROMPTS = [
     userName: "인사통",
     userDesc: "15년차 HR 파트장",
     likes: 45,
+    isLiked: false,
   },
   {
     id: "16",
@@ -184,6 +199,7 @@ const MOCK_PROMPTS = [
     userName: "교육전문가",
     userDesc: "글로벌 IT 기업 HRD",
     likes: 21,
+    isLiked: false,
   },
 ];
 
@@ -235,8 +251,6 @@ export const promptListHandlers = [
   }),
   http.post(`${BASE_URL}/api/prompts/like/:promptId`, ({ params }) => {
     const { promptId } = params;
-
-    console.log(`Prompt ${promptId} 좋아요 처리됨`);
 
     return HttpResponse.json(
       {
