@@ -14,11 +14,12 @@ export interface Prompt {
   userIcon: string;
   userName: string;
   userDesc: string;
+  isLiked: boolean;
 }
 
 export interface PromptCardProps extends Prompt {
   onCopy?: () => void;
-  onLike?: () => void;
+  onLike?: (promptId: string, isLiked: boolean) => void;
   onReport?: () => void;
   onPreview?: () => void;
 }

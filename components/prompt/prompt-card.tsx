@@ -24,12 +24,14 @@ const STYLES = {
 };
 
 export default function PromptCard({
+  id,
   category,
   title,
   content,
   userIcon,
   userName,
   userDesc,
+  isLiked,
   onCopy,
   onLike,
   onReport,
@@ -72,23 +74,23 @@ export default function PromptCard({
           >
             복사
           </BaseButton>
-          <BaseButton
+          {/*<BaseButton
             size={"sm"}
             shape={"round"}
             className={STYLES.BUTTON}
             onClick={onPreview}
           >
             미리보기
-          </BaseButton>
+          </BaseButton>*/}
         </div>
         <div className={STYLES.ICON_GROUP}>
           <button
             type="button"
-            className={STYLES.ICON_BUTTON}
+            className={`${STYLES.ICON_BUTTON} ${isLiked ? "text-frog-600" : "text-gray-800"}`}
             aria-label="좋아요"
-            onClick={onLike}
+            onClick={() => onLike?.(id, !!isLiked)}
           >
-            <ThumbsUpIcon size={20} fill="currentColor" strokeWidth={0} />
+            <ThumbsUpIcon size={20} fill={"currentColor"} strokeWidth={0} />
           </button>
           <button
             type="button"
