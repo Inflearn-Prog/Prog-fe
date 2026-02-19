@@ -7,7 +7,9 @@ import { ROUTES } from "@/lib/routes";
 export default auth((req) => {
   const { nextUrl, auth: session } = req;
 
-  const isSignIn = !!session;
+  const isDevelopment = process.env.NODE_ENV === "development";
+  const isSignIn = isDevelopment ? true : !!session;
+
   const isNewUser = session?.isNewUser;
 
   // 2. 공통 허용 경로 (메인, MSW 등)

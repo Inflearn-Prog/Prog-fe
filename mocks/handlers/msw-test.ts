@@ -1,8 +1,8 @@
 import { http, HttpResponse } from "msw";
 
-const baseUrl = "https://api.example.com";
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 export const mswHandlers = [
-  http.get(`${baseUrl}/api/user`, () => {
+  http.get(`${baseUrl}/user`, ({ request }) => {
     try {
       // API 로직: 실제로는 DB나 외부 데이터에서 가져옴
       return HttpResponse.json({
@@ -29,7 +29,16 @@ export const mswHandlers = [
     }
   }),
 
-  http.get(`${baseUrl}/api/user/:id`, (req) => {
+  http.get(`${baseUrl}/user/:id`, (req) => {
+    // jwt 토큰이 안왔을때,
+    // if (!req.request.headers.get("Authorization")) {
+    //   return HttpResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // }
+
+    // return HttpResponse.json(
+    //   apiErrorResponse(401, "Unauthorized", "Unauthorized")
+    // );
+
     const { id } = req.params;
     // 상단의 데이터 배열에서 해당 id의 유저를 찾음
     const users = [
@@ -53,7 +62,7 @@ export const mswHandlers = [
     }
   }),
 
-  http.get(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/users/me`, () => {
+  http.get(`${baseUrl}/users/me`, () => {
     const data = {
       status: 200,
       success: true,
