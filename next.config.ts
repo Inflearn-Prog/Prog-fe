@@ -18,8 +18,8 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/((?!auth).*)",
-        destination: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/:1*`,
+        source: "/api/:path*",
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/:path*`,
       },
     ];
   },
