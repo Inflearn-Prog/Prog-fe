@@ -14,11 +14,19 @@ export interface PromptBase {
   userIcon: string;
   userName: string;
   userDesc: string;
+  isLiked?: boolean;
+  likes?: number;
 }
 
 export interface PromptCardProps extends PromptBase {
   onCopy?: () => void;
-  onLike?: () => void;
+  onLike?: (promptId: string, isLiked: boolean) => void;
   onReport?: () => void;
   onPreview?: () => void;
+}
+
+export interface PromptPage {
+  items: PromptBase[];
+  nextPage: number | null;
+  isLast: boolean;
 }
