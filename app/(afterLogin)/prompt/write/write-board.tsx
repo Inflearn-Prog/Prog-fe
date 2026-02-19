@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 
 import { Board } from "@/components/board/board";
 import { BaseInput } from "@/components/shared/inputs";
+import { SelectBox } from "@/components/shared/select-box";
 
 import { BoardFormData, boardSchema } from "../board-schema";
 
@@ -29,6 +30,28 @@ export function WriteBoard() {
         control={form.control}
         render={({ field }) => <BaseInput {...field} />}
       />
+      {form.formState.errors.title && (
+        <p className="text-red-500">{form.formState.errors.title.message}</p>
+      )}
+
+      <Controller
+        name="category"
+        control={form.control}
+        render={({ field }) => (
+          <SelectBox
+            {...field}
+            onValueChange={field.onChange}
+            selectOptions={[
+              { value: "general", label: "General" },
+              { value: "feedback", label: "Feedback" },
+              { value: "question", label: "Question" },
+            ]}
+          />
+        )}
+      />
+      {form.formState.errors.category && (
+        <p className="text-red-500">{form.formState.errors.category.message}</p>
+      )}
       <Controller
         name="content"
         control={form.control}
@@ -40,8 +63,9 @@ export function WriteBoard() {
           />
         )}
       />
-      {form.formState.errors.content && <span>This field is required</span>}
-
+      {form.formState.errors.content && (
+        <p className="text-red-500">{form.formState.errors.content.message}</p>
+      )}
       <button type="submit">submit</button>
     </form>
   );
