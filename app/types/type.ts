@@ -6,7 +6,7 @@ export const REASON_TYPE = [
   { label: "기타", value: "OTHER" },
 ];
 
-export interface Prompt {
+export interface PromptBase {
   id: string;
   category: string;
   title: string;
@@ -14,10 +14,11 @@ export interface Prompt {
   userIcon: string;
   userName: string;
   userDesc: string;
-  isLiked: boolean;
+  isLiked?: boolean;
+  likes?: number;
 }
 
-export interface PromptCardProps extends Prompt {
+export interface PromptCardProps extends PromptBase {
   onCopy?: () => void;
   onLike?: (promptId: string, isLiked: boolean) => void;
   onReport?: () => void;
@@ -25,7 +26,7 @@ export interface PromptCardProps extends Prompt {
 }
 
 export interface PromptPage {
-  items: Prompt[];
+  items: PromptBase[];
   nextPage: number | null;
   isLast: boolean;
 }
