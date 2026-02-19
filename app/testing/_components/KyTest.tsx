@@ -12,7 +12,6 @@ export default function KyTest() {
       return response;
     },
   });
-  console.log("data", data);
 
   async function handlePost() {
     const res = await fetcher
