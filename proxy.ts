@@ -7,7 +7,8 @@ export default auth((req) => {
   const { nextUrl, auth: session } = req;
   const pathname = nextUrl.pathname;
 
-  const isSignIn = !!session;
+  const isDevelopment = process.env.NODE_ENV === "development";
+  const isSignIn = isDevelopment ? true : !!session;
   const isNewUser = session?.isNewUser;
 
   const protectedRoutes = [ROUTES.mypage.ROOT];

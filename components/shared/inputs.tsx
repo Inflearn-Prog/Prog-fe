@@ -30,7 +30,7 @@ export function BaseInput({
 }: BaseInputProps) {
   const isRound = rounded ? "rounded-full" : "rounded-md";
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <Input
         disabled={props.disabled}
         className={cn(
@@ -80,7 +80,7 @@ interface IconInputProps extends Omit<BaseInputProps, "name"> {
  */
 export function IconInput({ name, icon, ...props }: IconInputProps) {
   return (
-    <div className="group relative flex items-center">
+    <div className="group relative flex items-center w-full">
       <div
         className={cn(
           "absolute left-4 size-5 top-1/2 -translate-y-1/2 z-10",
