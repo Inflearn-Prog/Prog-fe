@@ -11,7 +11,8 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  const isSignIn = !!session;
+  const isDevelopment = process.env.NODE_ENV === "development";
+  const isSignIn = isDevelopment ? true : !!session;
   const isNewUser = session?.isNewUser;
   const regStatus = session?.registrationStatus;
   const protectedRoutes = [ROUTES.mypage.ROOT];
