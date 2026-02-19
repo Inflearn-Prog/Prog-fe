@@ -9,7 +9,7 @@ import { PromptBase, PromptPage } from "@/app/types/type";
 import { toasts } from "@/components/shared/toast";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http/localhost:8000/api/v1";
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8000/api/v1";
 
 export const useGetPrompts = (category: string) => {
   return useInfiniteQuery({
@@ -23,7 +23,7 @@ export const useGetPrompts = (category: string) => {
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      return lastPage.isLast ? undefined : lastPage.currentPage + 1;
+      return lastPage.nextPage ?? undefined;
     },
     // 상세 페이지 이동 후 돌아왔을 때 데이터가 사라지거나 재호출되는 것을 방지
     staleTime: 1000 * 60 * 5,
@@ -67,11 +67,9 @@ export const useToggleLikeMutation = () => {
                 ? {
                     ...item,
                     isLiked: !isLiked,
-                    likes: item.likes
-                      ? isLiked
-                        ? item.likes - 1
-                        : item.likes + 1
-                      : 1,
+                    likes: isLiked
+                      ? Math.max((item.likes ?? 0) - 1, 0)
+                      : (item.likes ?? 0) + 1,
                   }
                 : item
             ),
