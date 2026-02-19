@@ -47,6 +47,7 @@ export const useToggleLikeMutation = () => {
         method,
       });
       if (!response.ok) throw new Error("좋아요 처리 중 에러가 발생했습니다.");
+      if (response.status === 204) return null;
       return response.json();
     },
 
