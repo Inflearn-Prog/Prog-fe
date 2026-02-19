@@ -74,4 +74,5 @@ export const fetcher = ky.create({
     ],
   },
   retry: 0,
+  timeout: 1000 * 10,
 });

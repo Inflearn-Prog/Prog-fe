@@ -52,4 +52,22 @@ export const mswHandlers = [
       return HttpResponse.json({ error: "User not found" }, { status: 404 });
     }
   }),
+
+  http.get(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/users/me`, () => {
+    const data = {
+      status: 200,
+      success: true,
+      data: {
+        provider: "google",
+        email: "user@example.com" /* TODO : 아마 이 부분 */,
+        nickname: "집에가고싶다",
+        profileImageUrl: "https://some.profile.image.url.com" /* 이미지 url */,
+        kakaoEmail: "siria22@kakao.com",
+        googleEmail: null,
+        naverEmail: "someNaverEmail@naver.com",
+      },
+    };
+
+    return HttpResponse.json(data);
+  }),
 ];

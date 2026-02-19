@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import { JobType, StateType } from "../(beforeLogin)/(auth)/constant";
+
 type SignupFieldKey = Exclude<
   keyof SignupState,
   | "setSocialInfo"
@@ -17,12 +19,15 @@ interface SignupState {
   profileImage: string;
 
   // 유저가 단계별로 채워넣을 정보
+  isTermsAgreed: boolean;
   nickname: string;
-  selectedProfileType: "SOCIAL" | "DEFAULT";
-  targetJobs: string[];
+  selectedProfileType: "SOCIAL" | "DEFAULT" | null;
+  targetJobs: JobType[];
+  currentState: StateType | "";
   educationLevel: string;
   field: string;
-  career: string;
+  career: number;
+  isRegistrationSuccess: boolean;
 
   // 액션
   setSocialInfo: (info: {
@@ -32,7 +37,7 @@ interface SignupState {
   }) => void;
   setNickname: (name: string) => void;
   setSelectedProfileType: (type: "SOCIAL" | "DEFAULT") => void;
-  setTargetJobs: (jobs: string[]) => void;
+  setTargetJobs: (jobs: JobType[]) => void;
   updateField: <K extends SignupFieldKey>(
     key: K,
     value: SignupState[K]
@@ -44,12 +49,15 @@ const INITIAL_SIGNUP_STATE = {
   email: "",
   provider: "",
   profileImage: "",
+  isTermsAgreed: false,
   nickname: "",
   selectedProfileType: "SOCIAL" as const,
   targetJobs: [],
+  currentState: "" as const,
   educationLevel: "",
   field: "",
-  career: "",
+  career: 0,
+  isRegistrationSuccess: false,
 };
 export const useSignupStore = create<SignupState>((set) => ({
   ...INITIAL_SIGNUP_STATE,
