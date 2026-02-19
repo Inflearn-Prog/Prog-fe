@@ -1,11 +1,11 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 
-import { Prompt } from "@/app/types/type";
+import { PromptBase } from "@/app/types/type";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8080";
 export const useGetPrompts = (category: string) => {
-  return useSuspenseQuery<Prompt[]>({
+  return useSuspenseQuery<PromptBase[]>({
     queryKey: ["prompts", category],
     queryFn: async () => {
       const response = await fetch(

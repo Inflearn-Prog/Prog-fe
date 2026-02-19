@@ -28,21 +28,17 @@ export default async function RankPage({ searchParams }: RankingPageProps) {
       </div>
 
       <section className="lg:hidden mb-12">
-        <Link href={ROUTES.community.WRITE} className="w-full">
-          <BaseButton full size="lg">
-            글쓰기
-          </BaseButton>
-        </Link>
+        <BaseButton asChild full size="lg">
+          <Link href={ROUTES.community.WRITE}>글쓰기</Link>
+        </BaseButton>
       </section>
 
       <div className="grid grid-cols-4 lg:grid-cols-12 gap-4 items-start">
         {/* 왼쪽: 사이드바 */}
         <aside className="hidden lg:flex lg:col-span-3 flex-col gap-6">
-          <Link href={ROUTES.community.WRITE} className="w-full">
-            <BaseButton full size="lg">
-              글쓰기
-            </BaseButton>
-          </Link>
+          <BaseButton asChild full size="lg">
+            <Link href={ROUTES.community.WRITE}>글쓰기</Link>
+          </BaseButton>
           <ProgSidebar />
         </aside>
 

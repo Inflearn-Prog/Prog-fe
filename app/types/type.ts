@@ -6,7 +6,7 @@ export const REASON_TYPE = [
   { label: "기타", value: "OTHER" },
 ];
 
-export interface Prompt {
+export interface PromptBase {
   id: string;
   category: string;
   title: string;
@@ -16,7 +16,7 @@ export interface Prompt {
   userDesc: string;
 }
 
-export interface PromptCardProps extends Prompt {
+export interface PromptCardProps extends PromptBase {
   onCopy?: () => void;
   onLike?: () => void;
   onReport?: () => void;

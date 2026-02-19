@@ -10,8 +10,11 @@ export default auth((req) => {
   const isSignIn = !!session;
   const isNewUser = session?.isNewUser;
 
-  // 1. 보호가 필요한 경로 정의 (마이페이지 등)
-  const isProtectedRoute = pathname.startsWith("/mypage");
+  const protectedRoutes = [ROUTES.mypage.ROOT];
+
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
   // 2. 인증 관련 경로 (로그인, 가입)
   const isAuthRoute =
     pathname === ROUTES.auth.SIGNIN || pathname === ROUTES.auth.SIGNUP;

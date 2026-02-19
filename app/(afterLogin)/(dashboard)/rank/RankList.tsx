@@ -1,17 +1,11 @@
 "use client";
 
+import { PromptBase } from "@/app/types/type";
 import PromptCard from "@/components/prompt/prompt-card";
 import { useGetPrompts } from "@/hooks/use-prompt-list";
 
-export interface Prompt {
-  id: string;
-  category: string;
-  title: string;
-  content: string;
-  userIcon: string;
-  userName: string;
-  userDesc: string;
-  rank?: number; // 랭킹 페이지이므로 추가
+export interface PromptInfo extends PromptBase {
+  rank?: number;
   likes?: number;
   bookmarks?: number;
 }
@@ -21,7 +15,7 @@ export default function RankingList({ category }: { category: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      {prompts?.map((prompt: Prompt) => (
+      {prompts?.map((prompt: PromptInfo) => (
         <PromptCard key={prompt.id} {...prompt} />
       ))}
     </div>
