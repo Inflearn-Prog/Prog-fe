@@ -53,37 +53,48 @@ export const useToggleLikeMutation = () => {
     onMutate: async ({ promptId, isLiked }) => {
       await queryClient.cancelQueries({ queryKey: ["prompts"] });
 
-      const previousPrompts = queryClient.getQueryData<
+      const previousPrompts = queryClient.getQueriesData<
         InfiniteData<PromptPage>
-      >(["prompts"]);
-      queryClient.setQueryData<InfiniteData<PromptPage>>(["prompts"], (old) => {
-        if (!old) return old;
-        return {
-          ...old,
-          pages: old.pages.map((page: PromptPage) => ({
-            ...page,
-            items: page.items.map((item: PromptBase) =>
-              item.id === promptId
-                ? {
-                    ...item,
-                    isLiked: !isLiked,
-                    likes: isLiked
-                      ? Math.max((item.likes ?? 0) - 1, 0)
-                      : (item.likes ?? 0) + 1,
-                  }
-                : item
-            ),
-          })),
-        };
+      >({
+        queryKey: ["prompts"],
       });
+
+      queryClient.setQueriesData<InfiniteData<PromptPage>>(
+        { queryKey: ["prompts"] },
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page: PromptPage) => ({
+              ...page,
+              items: page.items.map((item: PromptBase) =>
+                item.id === promptId
+                  ? {
+                      ...item,
+                      isLiked: !isLiked,
+                      likes: isLiked
+                        ? Math.max((item.likes ?? 0) - 1, 0)
+                        : (item.likes ?? 0) + 1,
+                    }
+                  : item
+              ),
+            })),
+          };
+        }
+      );
 
       return { previousPrompts };
     },
     onError: (err, newLike, context) => {
       if (context?.previousPrompts) {
-        queryClient.setQueryData(["prompts"], context.previousPrompts);
+        context.previousPrompts.forEach(([key, data]) => {
+          queryClient.setQueryData(key, data);
+        });
       }
       toasts.success("좋아요 처리에 실패했습니다.");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["prompts"] });
     },
   });
 };
