@@ -2,6 +2,9 @@
 
 import dynamic from "next/dynamic";
 
+import { MAX_BOARD_CONTENT_LENGTH } from "@/app/(afterLogin)/prompt/constant";
+import { stripHtml } from "@/lib/utils";
+
 import { BoardSkeleton } from "../ui/skeleton";
 
 const QuillBoardDynamic = dynamic(
@@ -27,15 +30,33 @@ export interface BoardProps {
   value: string;
   setValue: (value: string) => void;
   placeholder?: string;
+  error?: boolean; // 에러 상태 prop 추가
 }
 
-export function Board({ value, setValue, placeholder = "" }: BoardProps) {
+export function Board({
+  value,
+  setValue,
+  placeholder = "",
+  error = false,
+  ...props
+}: BoardProps) {
+  const borderColor = error ? "border-red-500" : "border-gray-300";
+
   return (
-    <QuillBoardDynamic
-      value={value}
-      setValue={setValue}
-      placeholder={placeholder}
-    />
+    <div className={`rounded border ${borderColor} relative`}>
+      <QuillBoardDynamic
+        value={value}
+        setValue={setValue}
+        placeholder={placeholder}
+        className="bg-white"
+        {...props}
+      />
+      <div className="flex w-full justify-end px-2 py-1">
+        <p className="text-xs text-gray-500">
+          {stripHtml(value).length} / {MAX_BOARD_CONTENT_LENGTH}자
+        </p>
+      </div>
+    </div>
   );
 }
 

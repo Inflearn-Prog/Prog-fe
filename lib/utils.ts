@@ -21,3 +21,7 @@ export function formatRelativeDate(dateString: string) {
   const date = parseISO(dateString);
   return formatDistanceToNow(date, { addSuffix: true, locale: ko });
 }
+
+export function stripHtml(html: string) {
+  return html.replace(/<[^>]*>?/gm, "").trim();
+}
