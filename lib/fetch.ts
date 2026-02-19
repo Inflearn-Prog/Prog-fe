@@ -54,24 +54,17 @@ export const fetcher = ky.create({
     ],
     afterResponse: [
       async (request, options, response) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const body = (await response.json()) as ApiResponse<any>;
-
-        if (!body.success || !response.ok) {
-          const errorData = body.data as ApiErrorData;
-
+        if (!response.ok) {
           // 이부분에 에러 코드 및 상황에 따른 처리 로직 추가
           // 예시 `/users/me` 호출 시 토큰 만료 처리
-          if (errorData?.errorClassName === "ACCESS_TOKEN_EXPIRED") {
-            // 로그아웃 처리 등
-          }
-
-          throw new ApiError(body.status, errorData);
+          // if (errorData?.errorClassName === "ACCESS_TOKEN_EXPIRED") {
+          //   로그아웃 처리 등
+          // }
         }
-
         return response;
       },
     ],
   },
   retry: 0,
+  timeout: 1000 * 10,
 });

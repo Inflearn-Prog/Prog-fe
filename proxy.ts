@@ -8,6 +8,7 @@ export default auth((req) => {
   const pathname = nextUrl.pathname;
 
   const isSignIn = !!session;
+
   const isNewUser = session?.isNewUser;
 
   const protectedRoutes = [ROUTES.mypage.ROOT];
