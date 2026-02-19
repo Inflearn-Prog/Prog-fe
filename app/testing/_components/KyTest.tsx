@@ -7,16 +7,30 @@ export default function KyTest() {
   const { data } = useSuspenseQuery({
     queryKey: ["test"],
     queryFn: async () => {
-      const response = await fetcher.get("user/11");
+      const response = await fetcher.get("user/11").json();
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const res = await response.json();
-      return res;
+      return response;
     },
   });
+  console.log("data", data);
 
-  return <div>KyTest</div>;
+  async function handlePost() {
+    const res = await fetcher
+      .post("user", {
+        json: {
+          name: "John Doe",
+          email: "123@kakao.com",
+          age: 30,
+        },
+      })
+      .json();
+  }
+
+  return (
+    <div>
+      <p>KyTest</p>
+
+      <button onClick={handlePost}>post</button>
+    </div>
+  );
 }
