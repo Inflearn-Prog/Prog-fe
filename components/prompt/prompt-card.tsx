@@ -2,8 +2,11 @@
 
 import { Siren, ThumbsUpIcon } from "lucide-react";
 
+import { PromptCardProps } from "@/app/types/type";
+
 import { ProfIcon } from "../profile-icon/profile-icon";
 import { BaseButton } from "../shared/button";
+import { CATEGORY_MAP } from "./constants";
 
 const STYLES = {
   CARD_CONTAINER:
@@ -20,19 +23,6 @@ const STYLES = {
   ICON_BUTTON: "hover:opacity-70 transition-opacity",
 };
 
-interface PromptCardProps {
-  category: string;
-  title: string;
-  content: string;
-  userIcon: string;
-  userName: string;
-  userDesc: string;
-  onCopy?: () => void;
-  onLike?: () => void;
-  onReport?: () => void;
-  onPreview?: () => void;
-}
-
 export default function PromptCard({
   category,
   title,
@@ -45,10 +35,12 @@ export default function PromptCard({
   onReport,
   onPreview,
 }: PromptCardProps) {
+  const categoryLabel = CATEGORY_MAP.get(category) || category;
+
   return (
     <article className={STYLES.CARD_CONTAINER}>
       {/* 카테고리 태그 */}
-      <div className={STYLES.TAG}>{category}</div>
+      <div className={STYLES.TAG}>{categoryLabel}</div>
 
       {/* 텍스트 콘텐츠 */}
       <h2 className={STYLES.TITLE}>{title}</h2>
