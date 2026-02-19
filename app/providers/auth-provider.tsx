@@ -8,5 +8,9 @@ interface Props {
 }
 
 export default function AuthProvider({ children }: Props) {
+  // const isDevelopment = process.env.NODE_ENV === "development";
+  // if (isDevelopment) {
+  //   return <>{children}</>;
+  // }
   return <SessionProvider>{children}</SessionProvider>;
 }

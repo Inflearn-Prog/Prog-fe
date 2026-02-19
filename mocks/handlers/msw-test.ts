@@ -1,6 +1,19 @@
 import { http, HttpResponse } from "msw";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+
+// 사용자 데이터 타입 정의
+interface User {
+  id: string;
+  name: string;
+  age: number;
+}
+
+// POST 요청 본문 타입 정의
+interface CreateUserRequest {
+  name: string;
+  age: number;
+}
 export const mswHandlers = [
   http.get(`${baseUrl}/user`, ({ request }) => {
     try {
@@ -59,6 +72,22 @@ export const mswHandlers = [
       return HttpResponse.json({ data: user });
     } else {
       return HttpResponse.json({ error: "User not found" }, { status: 404 });
+    }
+  }),
+
+  http.post(`${baseUrl}/user`, async (req) => {
+    try {
+      const body = (await req.request.json()) as CreateUserRequest;
+      const { name, age } = body;
+
+      const newUser: User = { id: String(Date.now()), name, age };
+      return HttpResponse.json({ data: newUser }, { status: 201 });
+    } catch (error) {
+      // 요청 본문 파싱 에러 처리
+      return HttpResponse.json(
+        { error: "Invalid request body" },
+        { status: 400 }
+      );
     }
   }),
 

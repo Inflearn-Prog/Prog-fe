@@ -55,28 +55,12 @@ export const fetcher = ky.create({
     afterResponse: [
       async (request, options, response) => {
         if (!response.ok) {
-          let errorData: ApiErrorData | null = null;
-          try {
-            errorData = await response.json();
-          } catch (error) {
-            console.error("Failed to parse error response:", error);
-          }
-
           // 이부분에 에러 코드 및 상황에 따른 처리 로직 추가
           // 예시 `/users/me` 호출 시 토큰 만료 처리
           // if (errorData?.errorClassName === "ACCESS_TOKEN_EXPIRED") {
-          // 로그아웃 처리 등
-          //   }
-
-          throw new ApiError(
-            response.status,
-            errorData || {
-              errorClassName: "UNKNOWN_ERROR",
-              message: "An unknown error occurred",
-            }
-          );
+          //   로그아웃 처리 등
+          // }
         }
-
         return response;
       },
     ],
