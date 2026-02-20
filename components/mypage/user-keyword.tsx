@@ -18,7 +18,7 @@ export default function UserKeyword({
   label,
   onChange,
   placeholder = "키워드",
-  maxTags = 5,
+  maxTags = 5, //TODO: 최대 몇개까지인지 (추후 정해지는대로 수정)
 }: KeywordInputProps) {
   const [inputValue, setInputValue] = useState("");
   const [isFocus, setIsFocus] = useState(false); // 클릭 여부 상태

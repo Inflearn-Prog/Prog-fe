@@ -19,7 +19,7 @@ export default function UserExperience({
   onChange,
   label,
   placeholder,
-  maxItems = 3,
+  maxItems = 3, //TODO: 최대 몇개까지인지 (추후 정해지는대로 수정)
 }: userExperienceProps) {
   const [inputValue, setInputValue] = useState("");
 
