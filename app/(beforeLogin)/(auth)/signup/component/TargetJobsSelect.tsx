@@ -1,19 +1,19 @@
 import { JOB_OPTIONS, JobType } from "../../constant";
 
 interface TargetJobsSelectProps {
+  label: string;
   selectedJobs: JobType[];
   onToggle: (job: JobType) => void;
 }
 
 export const TargetJobsSelect = ({
+  label,
   selectedJobs,
   onToggle,
 }: TargetJobsSelectProps) => {
   return (
     <section>
-      <p className="mb-2 body-medium">
-        목표 직무를 선택해주세요 (복수선택가능).
-      </p>
+      <p className="mb-2 body-medium">{label}</p>
       <div className="flex gap-2 flex-wrap">
         {JOB_OPTIONS.map((option) => (
           <button

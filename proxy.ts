@@ -10,7 +10,7 @@ export default auth((req) => {
   const isSignIn = !!session;
   const isNewUser = session?.isNewUser;
 
-  const protectedRoutes = [ROUTES.mypage.ROOT];
+  const protectedRoutes = ["ROUTES.mypage.ROOT"];
 
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)

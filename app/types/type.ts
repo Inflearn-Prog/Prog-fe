@@ -24,6 +24,21 @@ export interface PromptCardProps extends PromptBase {
   onReport?: () => void;
   onPreview?: () => void;
 }
+export interface BasePrompt {
+  promptId: number;
+  title: string;
+  description: string;
+}
+
+// 좋아요 목록 타입
+export interface LikedPrompt extends BasePrompt {
+  isLiked: boolean;
+}
+
+// 내 게시글 목록 타입 (createdAt 필수)
+export interface MyPrompt extends BasePrompt {
+  createdAt: string;
+}
 
 export interface PromptPage {
   items: PromptBase[];
