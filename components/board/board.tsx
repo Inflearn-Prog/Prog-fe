@@ -40,10 +40,10 @@ export function Board({
   error = false,
   ...props
 }: BoardProps) {
-  const borderColor = error ? "border-red-500" : "border-gray-300";
+  const borderColor = error ? "border border-red-500" : "";
 
   return (
-    <div className={`rounded border ${borderColor} relative`}>
+    <div className={`rounded ${borderColor} relative`}>
       <QuillBoardDynamic
         value={value}
         setValue={setValue}
@@ -51,9 +51,9 @@ export function Board({
         className="bg-white"
         {...props}
       />
-      <div className="flex w-full justify-end px-2 py-1">
+      <div className="flex absolute bottom-1 right-2 w-full justify-end px-2 py-1">
         <p className="text-xs text-gray-500">
-          {stripHtml(value).length} / {MAX_BOARD_CONTENT_LENGTH}자
+          {stripHtml(value).length} / {MAX_BOARD_CONTENT_LENGTH}
         </p>
       </div>
     </div>
