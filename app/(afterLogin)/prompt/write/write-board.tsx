@@ -5,12 +5,16 @@ import React from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { Board } from "@/components/board/board";
+import { BaseButton } from "@/components/shared/button";
 import { BaseInput } from "@/components/shared/inputs";
 import { SelectBox } from "@/components/shared/select-box";
+import { cn } from "@/lib/utils";
 
 import { BoardFormData, boardSchema } from "../board-schema";
 
 export function WriteBoard() {
+  const layout = cn("mx-auto max-w-7xl lg:px-0 px-5 min-w-90 mx-auto");
+
   const form = useForm<BoardFormData>({
     mode: "onTouched",
     resolver: zodResolver(boardSchema),
@@ -23,82 +27,104 @@ export function WriteBoard() {
   const handleSubmit = (data: BoardFormData) => {
     console.log("submit ", data);
   };
+
   return (
-    <form onSubmit={form.handleSubmit(handleSubmit)} className="">
-      {/* <BaseInput></BaseInput> */}
-      <CLSBox
-        text={
-          form.formState.errors.title && (
-            <p className="text-red-500">
-              {form.formState.errors.title.message}
-            </p>
-          )
-        }
-      >
-        <Controller
-          name="title"
-          control={form.control}
-          render={({ field }) => (
-            <BaseInput
-              className="h-15 border-none"
-              {...field}
-              placeholder="제목을 입력해주세요"
-            />
-          )}
-        />
-      </CLSBox>
-
-      <CLSBox
-        text={
-          form.formState.errors.category && (
-            <p className="text-red-500">
-              {form.formState.errors.category.message}
-            </p>
-          )
-        }
-      >
-        <Controller
-          name="category"
-          control={form.control}
-          render={({ field }) => (
-            <div className="w-full md:max-w-76.25 ">
-              <SelectBox
+    <form onSubmit={form.handleSubmit(handleSubmit)}>
+      <div className={layout}>
+        <CLSBox
+          text={
+            form.formState.errors.title && (
+              <p className="text-red-500">
+                {form.formState.errors.title.message}
+              </p>
+            )
+          }
+        >
+          <Controller
+            name="title"
+            control={form.control}
+            render={({ field }) => (
+              <BaseInput
+                className="h-15 border-none"
                 {...field}
-                onValueChange={field.onChange}
-                selectOptions={[
-                  { value: "general", label: "General" },
-                  { value: "feedback", label: "Feedback" },
-                  { value: "question", label: "Question" },
-                ]}
+                placeholder="제목을 입력해주세요"
+                viewLength
               />
-            </div>
-          )}
-        />
-      </CLSBox>
+            )}
+          />
+        </CLSBox>
 
-      <CLSBox
-        text={
-          form.formState.errors.content && (
-            <p className="text-red-500">
-              {form.formState.errors.content.message}
-            </p>
-          )
-        }
-      >
-        <Controller
-          name="content"
-          control={form.control}
-          render={({ field }) => (
-            <Board
-              value={field.value}
-              setValue={field.onChange}
-              error={!!form.formState.errors.content}
-            />
-          )}
-        />
-      </CLSBox>
+        <CLSBox
+          text={
+            form.formState.errors.category && (
+              <p className="text-red-500">
+                {form.formState.errors.category.message}
+              </p>
+            )
+          }
+        >
+          <Controller
+            name="category"
+            control={form.control}
+            render={({ field }) => (
+              <div className="w-full md:max-w-76.25 ">
+                <SelectBox
+                  {...field}
+                  onValueChange={field.onChange}
+                  selectOptions={[
+                    { value: "general", label: "General" },
+                    { value: "feedback", label: "Feedback" },
+                    { value: "question", label: "Question" },
+                  ]}
+                />
+              </div>
+            )}
+          />
+        </CLSBox>
 
-      <button type="submit">submit</button>
+        <CLSBox
+          text={
+            form.formState.errors.content && (
+              <p className="text-red-500">
+                {form.formState.errors.content.message}
+              </p>
+            )
+          }
+        >
+          <Controller
+            name="content"
+            control={form.control}
+            render={({ field }) => (
+              <Board
+                value={field.value}
+                setValue={field.onChange}
+                error={!!form.formState.errors.content}
+              />
+            )}
+          />
+        </CLSBox>
+      </div>
+
+      <div className="py-5 bg-white flex items-center">
+        <div
+          className={cn(
+            layout,
+            "flex justify-end gap-x-2 flex-1 flex-wrap gap-y-5"
+          )}
+        >
+          <BaseButton
+            type="button"
+            className="w-full md:w-49.25"
+            variant="secondary"
+          >
+            임시저장
+          </BaseButton>
+
+          <BaseButton type="submit" className="w-full md:w-49.25" disabled>
+            작성하기
+          </BaseButton>
+        </div>
+      </div>
     </form>
   );
 }
