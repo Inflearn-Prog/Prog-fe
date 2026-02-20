@@ -1,16 +1,23 @@
 "use client";
 
 import { ArrowLeftIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { BaseButton } from "@/components/shared/button";
 
 export default function BoardNavigate() {
   const layout =
     "mx-auto max-w-7xl lg:px-0 px-5 min-w-90 mx-auto flex-1 flex items-center justify-between";
+
+  const router = useRouter();
+
+  const handleGoBack = () => {
+    router.back();
+  };
   return (
     <div className={layout}>
       <div className="flex items-center gap-x-5">
-        <button>
+        <button onClick={handleGoBack}>
           <ArrowLeftIcon className="size-9" />
         </button>
         <h2 className="heading-medium">게시글 작성하기</h2>
