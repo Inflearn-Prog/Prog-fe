@@ -83,10 +83,10 @@ export default function UserProfile({
       {/* 계정 연결 정보 배지 */}
       <div className={cn(CLASSES.PROVIDER_BADGE, theme.bg)}>
         <Image
-          src={theme.icon.src}
+          src={theme.image.src}
           alt={theme.label}
-          width={theme.icon.width}
-          height={theme.icon.height}
+          width={theme.image.width}
+          height={theme.image.height}
         />
         <p className={CLASSES.PROVIDER_TEXT}>{theme.label} 계정 연결됨</p>
       </div>
