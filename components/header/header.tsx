@@ -12,7 +12,10 @@ import { HeaderRightSection } from "./header-right-section";
 // LATER: 추후 리펙토링 필요
 export function Header() {
   return (
-    <header className="h-15 flex items-center bg-white w-full" role="banner">
+    <header
+      className="h-15 flex items-center border-b bg-white w-full border-b-gray-100"
+      role="banner"
+    >
       <div className="max-w-440 mx-auto py-1.5 w-full xl:px-40 md:px-10 px-5 flex justify-between items-center">
         <HeaderLeftSection />
         <HeaderRightSection />
