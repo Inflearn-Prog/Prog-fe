@@ -20,6 +20,7 @@ export function WriteBoard() {
     resolver: zodResolver(boardSchema),
     defaultValues: {
       title: "",
+      category: "",
       content: "",
     },
   });
@@ -120,7 +121,11 @@ export function WriteBoard() {
             임시저장
           </BaseButton>
 
-          <BaseButton type="submit" className="w-full md:w-49.25" disabled>
+          <BaseButton
+            type="submit"
+            className="w-full md:w-49.25"
+            disabled={!form.formState.isValid}
+          >
             작성하기
           </BaseButton>
         </div>
