@@ -80,7 +80,7 @@ export const transformStateToPayload = (state: {
   );
 
   return {
-    currentStatus: String(stateCode),
+    currentStatus: stateCode,
     targetJob: jobCodes,
     careerYear: state.career,
     education: state.educationLevel,

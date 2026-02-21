@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   EDUCATION_OPTIONS,
@@ -47,8 +47,11 @@ export default function MypageRightSection() {
   }, [reset]);
 
   //TODO: 약관동의 동의 여부를 조회가능한 API 있는지 확인
+  const initialized = useRef(false);
   useEffect(() => {
     if (profile) {
+      if (initialized.current) return;
+      initialized.current = true;
       const { careerInfo, selfIntro } = profile;
 
       const normalized = transformCareerInfoToState(careerInfo);
