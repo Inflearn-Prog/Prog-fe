@@ -69,18 +69,22 @@ export const transformCareerInfoToState = (careerInfo: {
 
 export const transformStateToPayload = (state: {
   currentState: string;
+  otherInput?: string;
   targetJobs: string[];
   career: number;
   educationLevel: string;
 }) => {
-  const stateCode =
-    REVERSE_STATE_MAP.get(state.currentState) || state.currentState;
+  const isOther = state.currentState === STATE_VALUES.OTHER;
+  const stateCode = isOther
+    ? state.otherInput || "OTHER"
+    : REVERSE_STATE_MAP.get(state.currentState) || state.currentState;
+
   const jobCodes = state.targetJobs.map(
     (label) => REVERSE_JOB_MAP.get(label) || label
   );
 
   return {
-    currentStatus: stateCode,
+    currentStatus: String(stateCode),
     targetJob: jobCodes,
     careerYear: state.career,
     education: state.educationLevel,

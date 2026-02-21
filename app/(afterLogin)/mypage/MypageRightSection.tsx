@@ -89,6 +89,7 @@ export default function MypageRightSection() {
     const careerPayload = transformStateToPayload({
       currentState,
       targetJobs,
+      otherInput,
       career,
       educationLevel,
     });
