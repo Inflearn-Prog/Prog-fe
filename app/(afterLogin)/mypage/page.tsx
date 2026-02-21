@@ -11,7 +11,11 @@ interface Props {
 
 export default async function MyPage({ searchParams }: Props) {
   const { tab } = await searchParams;
-  const activeTab = (tab as "profile" | "activity") || "profile";
+  const VALID_TABS = ["profile", "activity"] as const;
+  type ActiveTab = (typeof VALID_TABS)[number];
+  const activeTab: ActiveTab = VALID_TABS.includes(tab as ActiveTab)
+    ? (tab as ActiveTab)
+    : "profile";
 
   return (
     <div className="mx-auto max-w-7xl px-5 py-8 bg-gray-50">

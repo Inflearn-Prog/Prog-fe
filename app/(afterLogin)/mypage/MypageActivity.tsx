@@ -16,7 +16,9 @@ export default function MypageActivitySection() {
   const searchParams = useSearchParams();
 
   // 1. 현재 탭 및 페이지 상태 관리
-  const activeSub = (searchParams.get("sub") as "liked" | "posted") || "liked";
+  const rawSub = searchParams.get("sub");
+  const activeSub: "liked" | "posted" =
+    rawSub === "posted" ? "posted" : "liked";
   const currentPage = Number(searchParams.get("page")) || 0;
   const userId = 1; // 실제로는 인증 정보나 프로필 훅에서 가져온 ID 사용
 

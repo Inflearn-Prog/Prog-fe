@@ -25,7 +25,11 @@ export default function UserExperience({
 
   const addItem = () => {
     const trimmedValue = inputValue.trim();
-    if (trimmedValue && value.length < maxItems) {
+    if (
+      trimmedValue &&
+      !value.includes(trimmedValue) &&
+      value.length < maxItems
+    ) {
       onChange([...value, trimmedValue]);
       setInputValue("");
     }

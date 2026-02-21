@@ -5,17 +5,14 @@ import { useEffect, useState } from "react";
 
 import {
   EDUCATION_OPTIONS,
-  JOB_MAP,
   JobType,
-  REVERSE_JOB_MAP,
-  REVERSE_STATE_MAP,
-  STATE_MAP,
   STATE_VALUES,
-  StateType,
+  transformCareerInfoToState,
+  transformStateToPayload,
 } from "@/app/(beforeLogin)/(auth)/constant";
 import { StatusSelect } from "@/app/(beforeLogin)/(auth)/signup/component/StatusSelect";
 import { TargetJobsSelect } from "@/app/(beforeLogin)/(auth)/signup/component/TargetJobsSelect";
-import { useSignupStore } from "@/app/store/signUpStore";
+import { useMypageStore } from "@/app/store/mypageStore";
 import UserExperience from "@/components/mypage/user-experience";
 import UserKeyword from "@/components/mypage/user-keyword";
 import { BaseButton } from "@/components/shared/button";
@@ -41,30 +38,24 @@ export default function MypageRightSection() {
     career,
     educationLevel,
     updateField,
-  } = useSignupStore();
+    reset,
+  } = useMypageStore();
 
-  // 1. 서버 데이터 로드 시 초기화 및 타입 싱크
+  useEffect(() => {
+    return () => reset();
+  }, [reset]);
+
   useEffect(() => {
     if (profile) {
       const { careerInfo, selfIntro } = profile;
 
-      // 직무 변환 (영문 코드 배열 -> 한글 라벨 배열)
-      const jobsInKorean = careerInfo.targetJob.map(
-        (code) => JOB_MAP.get(code) || code
-      );
-      setTargetJobs(jobsInKorean as JobType[]);
+      const normalized = transformCareerInfoToState(careerInfo);
 
-      // 상태 변환 (배열의 첫 번째 요소 추출 -> 한글 라벨)
-      const serverStateKey = careerInfo.currentStatus[0];
-      const stateInKorean = STATE_MAP.get(serverStateKey) || "";
+      setTargetJobs(normalized.targetJobs);
+      updateField("currentState", normalized.currentState);
+      updateField("educationLevel", normalized.educationLevel);
+      updateField("career", normalized.career);
 
-      // Zustand 스토어 타입에 맞게 단언하여 업데이트
-      updateField("currentState", stateInKorean as "" | StateType);
-
-      updateField("educationLevel", careerInfo.education);
-      const serverCareer = careerInfo.careerYear;
-      const careerNumber = serverCareer === "신입" ? 0 : Number(serverCareer);
-      updateField("career", careerNumber);
       setExperiences(selfIntro.experiences || []);
       setKeywords(selfIntro.keywords || []);
     }
@@ -87,16 +78,15 @@ export default function MypageRightSection() {
     }
   };
 
-  // 2. 저장 핸들러
   const handleGlobalSave = () => {
     if (!profile) return;
 
-    const targetJobCodes = targetJobs.map(
-      (label) => REVERSE_JOB_MAP.get(label) || label
-    );
-
-    const currentStateCode =
-      REVERSE_STATE_MAP.get(currentState) || currentState;
+    const careerPayload = transformStateToPayload({
+      currentState,
+      targetJobs,
+      career,
+      educationLevel,
+    });
 
     const payload: UpdateProfileRequest = {
       basicInfo: {
@@ -104,10 +94,7 @@ export default function MypageRightSection() {
         introduction: profile.basicInfo.introduction || "",
       },
       careerInfo: {
-        currentStatus: currentStateCode,
-        targetJob: targetJobCodes,
-        careerYear: career,
-        education: educationLevel,
+        ...careerPayload,
         major: profile.careerInfo.major || "",
       },
       selfIntro: {

@@ -10,6 +10,9 @@ const meta: Meta<typeof UserKeyword> = {
     layout: "centered",
   },
   tags: ["autodocs"],
+  args: {
+    label: "키워드",
+  },
   argTypes: {
     label: {
       control: { type: "text" },

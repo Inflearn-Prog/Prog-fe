@@ -29,7 +29,10 @@ export default function MypageLeftSection() {
         router.refresh();
       } catch (error) {
         Cookies.remove("accessToken");
+        Cookies.remove("refreshToken");
         console.error("Logout failed:", error);
+        //TODO: error 컴포넌트가 생기면 사용자 피드백 주기
+        //toasts.error("로그아웃 처리 중 오류가 발생했습니다.");
       }
     }
   };
@@ -42,10 +45,9 @@ export default function MypageLeftSection() {
     if (!isConfirmed || !userData) return;
 
     try {
-      await deleteUserAccount(userData.basicInfo.uid, {
-        reason: "서비스 이용 불편",
-      });
+      await deleteUserAccount(userData.basicInfo.uid);
 
+      Cookies.remove("refreshToken");
       Cookies.remove("accessToken");
       queryClient.clear();
 

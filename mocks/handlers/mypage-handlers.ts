@@ -64,7 +64,7 @@ export const mypageHandlers = [
           pageSize: size,
           totalElements: 45,
           totalPages: Math.ceil(45 / size),
-          isLast: page >= 11,
+          isLast: page >= Math.ceil(45 / size) - 1,
         },
       },
     });
@@ -95,7 +95,7 @@ export const mypageHandlers = [
           pageSize: size,
           totalElements: 45,
           totalPages: Math.ceil(45 / size),
-          isLast: page >= 11,
+          isLast: page >= Math.ceil(45 / size) - 1,
         },
       },
     });

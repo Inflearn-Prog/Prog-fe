@@ -10,6 +10,10 @@ const meta: Meta<typeof UserExperience> = {
     layout: "centered",
   },
   tags: ["autodocs"],
+  args: {
+    label: "경험",
+    placeholder: "경험을 입력해주세요",
+  },
   argTypes: {
     label: {
       control: { type: "text" },

@@ -87,7 +87,8 @@ export default function UserKeyword({
         {value.length < maxTags && (
           <div
             className={cn(
-              `relative flex items-center transition-all duration-200 px-4 py-1.5 ${isFocus && "bg-gray-0 border border-gray-100 rounded-full"}`
+              "relative flex items-center transition-all duration-200 px-4 py-1.5",
+              isFocus && "bg-gray-0 border border-gray-100 rounded-full"
             )}
             style={{ width: isFocus ? inputWidth : "auto" }}
           >
