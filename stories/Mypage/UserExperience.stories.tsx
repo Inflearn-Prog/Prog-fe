@@ -13,6 +13,7 @@ const meta: Meta<typeof UserExperience> = {
   args: {
     label: "경험",
     placeholder: "경험을 입력해주세요",
+    onChange: () => {},
   },
   argTypes: {
     label: {

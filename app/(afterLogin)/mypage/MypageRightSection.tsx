@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import {
   EDUCATION_OPTIONS,
+  EducationValue,
   JobType,
   STATE_VALUES,
   transformCareerInfoToState,
@@ -24,7 +25,7 @@ import { UpdateProfileRequest } from "@/queries/api/mypage";
 
 export default function MypageRightSection() {
   const { data: profile, isLoading } = useUserProfile();
-  const { mutate: updateProfile } = useUpdateProfile();
+  const { mutate: updateProfile, isPending } = useUpdateProfile();
 
   const [otherInput, setOtherInput] = useState("");
   const [experiences, setExperiences] = useState<string[]>([]);
@@ -45,6 +46,7 @@ export default function MypageRightSection() {
     return () => reset();
   }, [reset]);
 
+  //TODO: 약관동의 동의 여부를 조회가능한 API 있는지 확인
   useEffect(() => {
     if (profile) {
       const { careerInfo, selfIntro } = profile;
@@ -138,7 +140,9 @@ export default function MypageRightSection() {
             <SelectBox
               placeholder="학력을 선택해주세요"
               value={educationLevel}
-              onValueChange={(val) => updateField("educationLevel", val)}
+              onValueChange={(val) =>
+                updateField("educationLevel", val as EducationValue)
+              }
               selectOptions={EDUCATION_OPTIONS}
             />
           </div>
@@ -167,6 +171,7 @@ export default function MypageRightSection() {
           </BaseButton>
           <BaseButton
             onClick={handleGlobalSave}
+            disabled={isPending}
             className="px-4 py-2.5 min-w-[197px]"
           >
             변경사항 저장
@@ -204,6 +209,7 @@ export default function MypageRightSection() {
           <BaseButton
             onClick={handleGlobalSave}
             className="px-4 py-2.5 min-w-[197px]"
+            disabled={isPending}
           >
             변경사항 저장
           </BaseButton>
@@ -243,6 +249,7 @@ export default function MypageRightSection() {
           </BaseButton>
           <BaseButton
             onClick={handleGlobalSave}
+            disabled={isPending}
             className="px-4 py-2.5 min-w-[197px]"
           >
             변경사항 저장

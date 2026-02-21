@@ -55,8 +55,9 @@ export const transformCareerInfoToState = (careerInfo: {
   const jobsInKorean = careerInfo.targetJob.map(
     (code) => JOB_MAP.get(code) || code
   );
+  const parsed = Number(careerInfo.careerYear);
   const careerNumber =
-    careerInfo.careerYear === "신입" ? 0 : Number(careerInfo.careerYear);
+    careerInfo.careerYear === "신입" || !Number.isFinite(parsed) ? 0 : parsed;
 
   return {
     currentState: stateInKorean as "" | StateType,

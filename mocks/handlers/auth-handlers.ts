@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+const BASE_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL ?? "http://localhost:8080/api/v1";
 
 export const authHandlers = [
   http.post(`${BASE_URL}/auth/social-login`, async ({ request }) => {

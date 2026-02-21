@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { UserProfileResponse, UserPromptsResponse } from "@/queries/api/types";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8080/api/v1";
+  process.env.NEXT_PUBLIC_BACKEND_API_URL ?? "http://localhost:8080/api/v1";
 
 export const mypageHandlers = [
   http.get(`${BASE_URL}/users/me/profile`, ({ request }) => {
@@ -64,7 +64,7 @@ export const mypageHandlers = [
           pageSize: size,
           totalElements: 45,
           totalPages: Math.ceil(45 / size),
-          isLast: page >= Math.ceil(45 / size) - 1,
+          isLast: page >= 11,
         },
       },
     });
@@ -95,7 +95,7 @@ export const mypageHandlers = [
           pageSize: size,
           totalElements: 45,
           totalPages: Math.ceil(45 / size),
-          isLast: page >= Math.ceil(45 / size) - 1,
+          isLast: page >= 11,
         },
       },
     });
