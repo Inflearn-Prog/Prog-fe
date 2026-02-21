@@ -49,4 +49,33 @@ export const authHandlers = [
       },
     });
   }),
+  http.post(`${BASE_URL}/auth/logout`, () => {
+    return HttpResponse.json(
+      {
+        success: true,
+        code: "200",
+        data: {},
+        timestamp: new Date().toISOString(),
+      },
+      { status: 200 }
+    );
+  }),
+  http.delete(`${BASE_URL}/users/:uid`, async ({ params }) => {
+    const { uid } = params;
+
+    return HttpResponse.json(
+      {
+        success: true,
+        code: "200",
+        message: "회원 탈퇴 및 소셜 연동 해제가 정상적으로 처리되었습니다.",
+        data: {
+          uid: uid,
+          unlinkedProvider: "KAKAO",
+          terminatedAt: new Date().toISOString(),
+        },
+        timestamp: new Date().toISOString(),
+      },
+      { status: 200 }
+    );
+  }),
 ];

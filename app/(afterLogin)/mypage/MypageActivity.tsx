@@ -2,28 +2,42 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { LikedPrompt, MyPrompt } from "@/app/types/type";
 import {
   LikedArticleCard,
   MyArticleCard,
 } from "@/components/mypage/articleCard";
+import { PaginationButton } from "@/components/pagination-button/pagination-button";
 import { toasts } from "@/components/shared/toast";
+import { useLikedPrompts, useUserPrompts } from "@/hooks/use-mypage";
 import { cn } from "@/lib/utils";
 
 export default function MypageActivitySection() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const activeSub = searchParams.get("sub") || "liked";
+  // 1. 현재 탭 및 페이지 상태 관리
+  const activeSub = (searchParams.get("sub") as "liked" | "posted") || "liked";
+  const currentPage = Number(searchParams.get("page")) || 0;
+  const userId = 1; // 실제로는 인증 정보나 프로필 훅에서 가져온 ID 사용
+
+  const { data: likedData, isLoading: isLikedLoading } = useLikedPrompts(
+    userId,
+    currentPage
+  );
+  const { data: postedData, isLoading: isPostedLoading } = useUserPrompts({
+    userId,
+    page: currentPage,
+  });
 
   const handleSubTabChange = (sub: "liked" | "posted") => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("sub", sub);
+    params.set("page", "0");
     router.push(`/mypage?${params.toString()}`, { scroll: false });
   };
 
   const handleCopy = async (e: React.MouseEvent, content: string) => {
-    e.stopPropagation(); // 카드의 onClick이 실행되지 않도록 차단
+    e.stopPropagation();
     try {
       await navigator.clipboard.writeText(content);
       toasts.success("프롬프트가 클립보드에 복사되었습니다!");
@@ -31,44 +45,19 @@ export default function MypageActivitySection() {
       alert("복사에 실패했습니다.");
     }
   };
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", page.toString());
+    router.push(`/mypage?${params.toString()}`, { scroll: false });
+  };
 
   const handleCardClick = (id: number) => {
     router.push(`/prompts/${id}`);
   };
 
-  // 실제 API 데이터 구조에 맞춘 임시 데이터
-  // 1. 좋아요 한 프롬프트 데이터
-  const mockLikedPrompts = [
-    {
-      promptId: 1024,
-      title: "좋아요 - 자소서를 위한 GPT 프롬프트",
-      description: "이 프롬프트는 좋아요 탭에서만 보입니다.",
-      isLiked: true,
-    },
-    {
-      promptId: 1025,
-      title: "좋아요 - 면접 대비 프롬프트",
-      description: "상세한 설명이 들어가는 영역입니다.",
-      isLiked: true,
-    },
-  ];
-
-  // 2. 내가 게시한 프롬프트 데이터 (createdAt 포함)
-  const mockMyPrompts = [
-    {
-      promptId: 2048,
-      title: "게시글 - 나만의 비밀 프롬프트",
-      description: "내가 직접 작성해서 게시한 프롬프트입니다.",
-      createdAt: "2026-02-18T10:00:00", // n시간 전/일 전 테스트용
-    },
-    {
-      promptId: 2049,
-      title: "게시글 - 효율적인 코딩 프롬프트",
-      description: "코딩 효율을 200% 높여주는 마법의 문장들.",
-      createdAt: "2026-01-20T13:50:00",
-    },
-  ];
-  const currentList = activeSub === "liked" ? mockLikedPrompts : mockMyPrompts;
+  // 현재 활성화된 데이터와 로딩 상태 결정
+  const currentData = activeSub === "liked" ? likedData : postedData;
+  const isLoading = activeSub === "liked" ? isLikedLoading : isPostedLoading;
 
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -100,8 +89,17 @@ export default function MypageActivitySection() {
 
       {/* 리스트 영역 */}
       <div className="flex flex-col gap-4">
-        {activeSub === "liked"
-          ? (mockLikedPrompts as LikedPrompt[]).map((prompt) => (
+        {isLoading ? (
+          <div className="py-20 text-center text-gray-400">로딩 중...</div>
+        ) : currentData?.content.length === 0 ? (
+          <div className="py-20 text-center text-gray-400">
+            {activeSub === "liked"
+              ? "좋아요한 프롬프트가 없습니다."
+              : "게시한 프롬프트가 없습니다."}
+          </div>
+        ) : (
+          currentData?.content.map((prompt) =>
+            activeSub === "liked" ? (
               <LikedArticleCard
                 key={prompt.promptId}
                 title={prompt.title}
@@ -109,8 +107,7 @@ export default function MypageActivitySection() {
                 onCopy={(e) => handleCopy(e, prompt.description)}
                 onClick={() => handleCardClick(prompt.promptId)}
               />
-            ))
-          : (mockMyPrompts as MyPrompt[]).map((prompt) => (
+            ) : (
               <MyArticleCard
                 key={prompt.promptId}
                 title={prompt.title}
@@ -118,8 +115,21 @@ export default function MypageActivitySection() {
                 createdAt={prompt.createdAt}
                 onClick={() => handleCardClick(prompt.promptId)}
               />
-            ))}
+            )
+          )
+        )}
       </div>
+
+      {/* 단순 페이지네이션 (필요 시 추가) */}
+      {!isLoading && (currentData?.pageInfo.totalPages ?? 0) > 1 && (
+        <div className="flex justify-center gap-2 mt-4">
+          <PaginationButton
+            currentPage={currentPage}
+            totalPages={currentData?.pageInfo.totalPages ?? 1}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
     </div>
   );
 }
