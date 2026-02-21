@@ -86,6 +86,11 @@ export default function MypageRightSection() {
   const handleGlobalSave = () => {
     if (!profile) return;
 
+    if (currentState === STATE_VALUES.OTHER && !otherInput.trim()) {
+      alert("기타 상태를 직접 입력해주세요.");
+      //toasts.error("기타 상태를 직접 입력해주세요.");
+      return;
+    }
     const careerPayload = transformStateToPayload({
       currentState,
       targetJobs,
