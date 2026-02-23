@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 
-const BASE_URL = "http://localhost:8080";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL ?? "http://localhost:8080/api/v1";
 
 export const termsHandlers = [
   http.get(`${BASE_URL}/terms`, () => {

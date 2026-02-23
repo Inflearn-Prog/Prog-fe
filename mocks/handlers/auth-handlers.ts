@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+const BASE_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL ?? "http://localhost:8080/api/v1";
 
 export const authHandlers = [
   http.post(`${BASE_URL}/auth/social-login`, async ({ request }) => {
@@ -48,5 +49,34 @@ export const authHandlers = [
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlcmFzZSI6Im1vY2siLCJleHAiOjQ3Njg4MzIwMDB9.signature",
       },
     });
+  }),
+  http.post(`${BASE_URL}/auth/logout`, () => {
+    return HttpResponse.json(
+      {
+        success: true,
+        code: "200",
+        data: {},
+        timestamp: new Date().toISOString(),
+      },
+      { status: 200 }
+    );
+  }),
+  http.delete(`${BASE_URL}/users/:uid`, async ({ params }) => {
+    const { uid } = params;
+
+    return HttpResponse.json(
+      {
+        success: true,
+        code: "200",
+        message: "회원 탈퇴 및 소셜 연동 해제가 정상적으로 처리되었습니다.",
+        data: {
+          uid: uid,
+          unlinkedProvider: "KAKAO",
+          terminatedAt: new Date().toISOString(),
+        },
+        timestamp: new Date().toISOString(),
+      },
+      { status: 200 }
+    );
   }),
 ];
