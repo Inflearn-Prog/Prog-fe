@@ -67,7 +67,12 @@ export default function UserExperience({
           <BaseInput
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value.slice(0, 200))}
-            onKeyDown={(e) => e.key === "Enter" && addItem()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addItem();
+              }
+            }}
             placeholder={placeholder}
             maxLength={200}
             viewLength

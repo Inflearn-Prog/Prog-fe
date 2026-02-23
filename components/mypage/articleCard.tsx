@@ -1,3 +1,5 @@
+"use client";
+
 import { formatRelativeDate } from "@/lib/utils";
 
 import { BaseButton } from "../shared/button";

@@ -105,8 +105,14 @@ export default function UserKeyword({
               type="text"
               value={inputValue}
               onFocus={() => setIsFocus(true)}
-              onBlur={() => {
-                addTag();
+              onBlur={(e) => {
+                if (
+                  !e.currentTarget
+                    .closest(".flex-wrap")
+                    ?.contains(e.relatedTarget as Node)
+                ) {
+                  addTag();
+                }
                 setIsFocus(false);
               }}
               onChange={(e) => setInputValue(e.target.value)}
