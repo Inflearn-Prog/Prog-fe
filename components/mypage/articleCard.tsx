@@ -9,7 +9,7 @@ const STYLES = {
     "w-full mx-auto p-6 bg-gray-0 border border-gray-100 rounded-10 shadow-sm",
   TITLE: "heading-medium font-bold text-gray-1000 mb-2",
   DESCRIPTION: "text-gray-1000 mb-6",
-  BUTTON: "px-2 py-4",
+  BUTTON: "px-4 py-2",
   ACTION_BAR: "mt-6 flex items-center justify-between",
 };
 
@@ -33,7 +33,16 @@ export function LikedArticleCard({
   onClick,
 }: LikedArticleCardProps) {
   return (
-    <article className={STYLES.CARD_CONTAINER} onClick={onClick}>
+    <article
+      className={STYLES.CARD_CONTAINER}
+      {...(onClick && {
+        role: "button",
+        tabIndex: 0,
+        onKeyDown: (e: React.KeyboardEvent) => {
+          if (e.key === "Enter" || e.key === " ") onClick();
+        },
+      })}
+    >
       {/* 텍스트 콘텐츠 */}
       <h2 className={STYLES.TITLE}>{title}</h2>
       <p className={STYLES.DESCRIPTION}>{content}</p>
@@ -45,7 +54,10 @@ export function LikedArticleCard({
             size={"sm"}
             shape={"round"}
             className={STYLES.BUTTON}
-            onClick={onCopy}
+            onClick={(e) => {
+              e.stopPropagation();
+              onCopy(e);
+            }}
           >
             복사
           </BaseButton>

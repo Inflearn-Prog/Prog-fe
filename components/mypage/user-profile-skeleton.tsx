@@ -13,7 +13,7 @@ const CLASSES = {
 
 export default function UserProfileSkeleton() {
   return (
-    <div className={cn(CLASSES.CONTAINER, "animate-pulse")}>
+    <div className={cn(CLASSES.CONTAINER, "animate-pulse")} aria-hidden="true">
       {/* 프로필 이미지 스켈레톤 */}
       <div className={CLASSES.AVATAR_WRAPPER}>
         <Skeleton className="h-[120px] w-[120px] rounded-full" />

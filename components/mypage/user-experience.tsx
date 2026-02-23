@@ -19,7 +19,7 @@ export default function UserExperience({
   onChange,
   label,
   placeholder,
-  maxItems = 3, //TODO: 최대 몇개까지인지 (추후 정해지는대로 수정)
+  maxItems = 3,
 }: userExperienceProps) {
   const [inputValue, setInputValue] = useState("");
 
@@ -52,6 +52,7 @@ export default function UserExperience({
           >
             <span className="body-medium text-gray-500">{item}</span>
             <button
+              type="button"
               onClick={() => removeItem(index)}
               className="text-gray-500 hover:text-gray-600 transition-colors"
             >
