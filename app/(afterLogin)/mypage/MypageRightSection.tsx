@@ -20,12 +20,16 @@ import { BaseButton } from "@/components/shared/button";
 import { BaseCheckBox } from "@/components/shared/checkbox";
 import { BaseInput } from "@/components/shared/inputs";
 import { SelectBox } from "@/components/shared/select-box";
+import { toasts } from "@/components/shared/toast";
 import { useUpdateProfile, useUserProfile } from "@/hooks/use-mypage";
+import { usePostTerms } from "@/hooks/use-terms-checks";
 import { UpdateProfileRequest } from "@/queries/api/mypage";
 
 export default function MypageRightSection() {
   const { data: profile, isLoading } = useUserProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
+  const { mutate: postTermsMutation, isPending: isTermsPending } =
+    usePostTerms();
 
   const [otherInput, setOtherInput] = useState("");
   const [experiences, setExperiences] = useState<string[]>([]);
@@ -81,6 +85,21 @@ export default function MypageRightSection() {
     } else {
       setTargetJobs([...targetJobs, castedOption]);
     }
+  };
+
+  const handleMarketingChange = () => {
+    const termIds = marketingAgree ? [1, 2, 3] : [1, 2];
+
+    postTermsMutation(termIds, {
+      onSuccess: () => {
+        toasts.success("마케팅 수신 동의 설정이 저장되었습니다.");
+      },
+      onError: (error) => {
+        console.error("약관 업데이트 실패:", error);
+        alert("저장에 실패했습니다.");
+        //toasts.error("저장에 실패했습니다.");
+      },
+    });
   };
 
   const handleGlobalSave = () => {
@@ -241,7 +260,7 @@ export default function MypageRightSection() {
             onCheckedChange={(checked) => setMarketingAgree(!!checked)}
           />
           <Link
-            href="#"
+            href="#" // TODO: 실제 마케팅 동의 약관 URL로 교체
             className="text-frog-600 label-medium hover:underline px-2"
             target="_blank"
           >
@@ -257,7 +276,7 @@ export default function MypageRightSection() {
             취소
           </BaseButton>
           <BaseButton
-            onClick={handleGlobalSave}
+            onClick={handleMarketingChange}
             disabled={isPending}
             className="px-4 py-2.5 min-w-[197px]"
           >

@@ -9,7 +9,7 @@ export const useSubTabFilters = (rootPath: string = "mypage") => {
     params.set(key, value);
 
     if (key !== "page") {
-      params.set("page", "0");
+      params.set("page", "1");
     }
 
     const targetPath = rootPath.startsWith("/") ? rootPath : `/${rootPath}`;
@@ -26,7 +26,7 @@ export const useSubTabFilters = (rootPath: string = "mypage") => {
 
   return {
     currentSub: searchParams.get("sub") || "liked",
-    currentPage: Number(searchParams.get("page")) || 0,
+    currentPage: Number(searchParams.get("page")) || 1,
     handleSubTabChange,
     handlePageChange,
   };

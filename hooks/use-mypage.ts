@@ -23,26 +23,35 @@ interface UseUserPromptsProps {
   userId: string | number;
   page: number;
   size?: number;
+  enabled?: boolean;
 }
 
 export const useUserPrompts = ({
   userId,
   page,
   size = 4,
+  enabled = true,
 }: UseUserPromptsProps) => {
   return useQuery({
     queryKey: ["user", "prompts", userId, { page, size }],
     queryFn: () => getUserPrompts({ userId, page, size }),
     placeholderData: (previousData) => previousData,
     select: (response) => response.data,
+    enabled: !!userId && enabled,
   });
 };
-export const useLikedPrompts = (userId: string | number, page: number) => {
+export const useLikedPrompts = ({
+  userId,
+  page,
+  size = 4,
+  enabled = true,
+}: UseUserPromptsProps) => {
   return useQuery({
-    queryKey: ["user", "likes", userId, { page }],
-    queryFn: () => getLikedPrompts({ userId, page }),
+    queryKey: ["user", "likes", userId, { page, size }],
+    queryFn: () => getLikedPrompts({ userId, page, size }),
     placeholderData: (previousData) => previousData,
     select: (res) => res.data,
+    enabled: !!userId && enabled,
   });
 };
 
@@ -57,6 +66,7 @@ export const useUpdateProfile = () => {
     },
     onError: (error: Error) => {
       if (error instanceof ApiError) {
+        //TODO: error 컴포넌트 추가시 피드백 추가
         // 401 권한 없음 (세션 만료) 처리
         if (error.status === 401) {
           //toasts.error("세션이 만료되었습니다. 다시 로그인해주세요.");

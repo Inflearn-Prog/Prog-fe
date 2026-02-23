@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import {
   LikedArticleCard,
@@ -8,30 +9,31 @@ import {
 } from "@/components/mypage/articleCard";
 import { PaginationButton } from "@/components/pagination-button/pagination-button";
 import { toasts } from "@/components/shared/toast";
-import { useSubTabFilters } from "@/hooks/use-filters"; // 훅 경로 확인하세요!
+import { useSubTabFilters } from "@/hooks/use-filters";
 import { useLikedPrompts, useUserPrompts } from "@/hooks/use-mypage";
 import { cn } from "@/lib/utils";
 
 export default function MypageActivitySection() {
   const router = useRouter();
 
-  // 1. 훅에서 모든 상태와 핸들러를 가져옵니다. (중복 로직 제거)
   const { currentSub, currentPage, handleSubTabChange, handlePageChange } =
     useSubTabFilters("mypage");
 
-  //const { data: session } = useSession();
-  //const userId = session?.user?.id;
-  const userId = 1;
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  //const userId = 1; //테스트 용 임시 값
 
   const activeSub = currentSub as "liked" | "posted";
 
   const { data: likedData, isLoading: isLikedLoading } = useLikedPrompts(
     userId,
-    currentPage
+    currentPage,
+    { enabled: activeSub === "liked" }
   );
   const { data: postedData, isLoading: isPostedLoading } = useUserPrompts({
     userId,
     page: currentPage,
+    enabled: activeSub === "posted",
   });
 
   const handleCopy = async (e: React.MouseEvent, content: string) => {
@@ -86,7 +88,7 @@ export default function MypageActivitySection() {
           <div className="py-20 text-center text-gray-400 font-medium">
             로딩 중...
           </div>
-        ) : currentData?.content.length === 0 ? (
+        ) : !currentData?.content?.length ? (
           <div className="py-20 text-center text-gray-400 border border-dashed rounded-2xl">
             {activeSub === "liked"
               ? "좋아요한 프롬프트가 없습니다."
