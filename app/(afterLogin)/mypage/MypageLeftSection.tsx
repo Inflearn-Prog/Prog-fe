@@ -7,6 +7,7 @@ import UserProfile from "@/components/mypage/user-profile";
 import { BaseButton } from "@/components/shared/button";
 import { toasts } from "@/components/shared/toast";
 import { useUserProfile } from "@/hooks/use-mypage";
+import { ROUTES } from "@/lib/routes";
 import { deleteUserAccount, postLogout } from "@/queries/api/auth";
 
 export default function MypageLeftSection() {
@@ -25,7 +26,7 @@ export default function MypageLeftSection() {
 
         queryClient.clear();
         toasts.success("로그아웃 되었습니다.");
-        router.push("/");
+        router.push(ROUTES.rank.ROOT);
         router.refresh();
       } catch (error) {
         Cookies.remove("accessToken");
@@ -52,7 +53,7 @@ export default function MypageLeftSection() {
       queryClient.clear();
 
       toasts.success("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
-      router.push("/");
+      router.push("ROUTES.rank.ROOT");
       router.refresh();
     } catch (error) {
       console.error("Withdrawal failed:", error);
@@ -61,9 +62,19 @@ export default function MypageLeftSection() {
   };
 
   // 로딩 및 에러 처리
-  if (isLoading) return <div className="p-10 text-center">로딩 중...</div>;
+  // TODO: 마이페이지 유저프로필 스켈레톤 추가 후 MypageLeftSkeleton 추가
+  if (isLoading) return <MypageLeftSkeleton />;
   if (!userData)
-    return <div className="p-10 text-center">유저 정보가 없습니다.</div>;
+    return (
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 p-6 border border-gray-100 bg-gray-0 rounded-[10px] shadow-md">
+          유저 정보가 없습니다.
+        </div>
+        <BaseButton onClick={() => router.push(ROUTES.auth.SIGNIN)}>
+          로그인하러 가기
+        </BaseButton>
+      </div>
+    );
 
   const { basicInfo } = userData;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import {
   LikedArticleCard,
@@ -8,19 +8,22 @@ import {
 } from "@/components/mypage/articleCard";
 import { PaginationButton } from "@/components/pagination-button/pagination-button";
 import { toasts } from "@/components/shared/toast";
+import { useSubTabFilters } from "@/hooks/use-filters"; // 훅 경로 확인하세요!
 import { useLikedPrompts, useUserPrompts } from "@/hooks/use-mypage";
 import { cn } from "@/lib/utils";
 
 export default function MypageActivitySection() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  // 1. 현재 탭 및 페이지 상태 관리
-  const rawSub = searchParams.get("sub");
-  const activeSub: "liked" | "posted" =
-    rawSub === "posted" ? "posted" : "liked";
-  const currentPage = Number(searchParams.get("page")) || 0;
-  const userId = 1; // 실제로는 인증 정보나 프로필 훅에서 가져온 ID 사용
+  // 1. 훅에서 모든 상태와 핸들러를 가져옵니다. (중복 로직 제거)
+  const { currentSub, currentPage, handleSubTabChange, handlePageChange } =
+    useSubTabFilters("mypage");
+
+  //const { data: session } = useSession();
+  //const userId = session?.user?.id;
+  const userId = 1;
+
+  const activeSub = currentSub as "liked" | "posted";
 
   const { data: likedData, isLoading: isLikedLoading } = useLikedPrompts(
     userId,
@@ -31,13 +34,6 @@ export default function MypageActivitySection() {
     page: currentPage,
   });
 
-  const handleSubTabChange = (sub: "liked" | "posted") => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("sub", sub);
-    params.set("page", "0");
-    router.push(`/mypage?${params.toString()}`, { scroll: false });
-  };
-
   const handleCopy = async (e: React.MouseEvent, content: string) => {
     e.stopPropagation();
     try {
@@ -46,11 +42,6 @@ export default function MypageActivitySection() {
     } catch {
       alert("복사에 실패했습니다.");
     }
-  };
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", page.toString());
-    router.push(`/mypage?${params.toString()}`, { scroll: false });
   };
 
   const handleCardClick = (id: number) => {
@@ -70,7 +61,7 @@ export default function MypageActivitySection() {
           className={cn(
             "flex-1 py-2.5 label-medium !font-bold transition-all rounded-[6px]",
             activeSub === "liked"
-              ? "bg-blue-600 text-gray-0 shadow-sm"
+              ? "bg-frog-600 text-gray-0 shadow-sm"
               : "text-gray-500 hover:bg-gray-50"
           )}
         >
@@ -81,7 +72,7 @@ export default function MypageActivitySection() {
           className={cn(
             "flex-1 py-2.5 label-medium !font-bold transition-all rounded-[6px]",
             activeSub === "posted"
-              ? "bg-blue-600 text-gray-0 shadow-sm"
+              ? "bg-frog-600 text-gray-0 shadow-sm"
               : "text-gray-500 hover:bg-gray-50"
           )}
         >
@@ -92,9 +83,11 @@ export default function MypageActivitySection() {
       {/* 리스트 영역 */}
       <div className="flex flex-col gap-4">
         {isLoading ? (
-          <div className="py-20 text-center text-gray-400">로딩 중...</div>
+          <div className="py-20 text-center text-gray-400 font-medium">
+            로딩 중...
+          </div>
         ) : currentData?.content.length === 0 ? (
-          <div className="py-20 text-center text-gray-400">
+          <div className="py-20 text-center text-gray-400 border border-dashed rounded-2xl">
             {activeSub === "liked"
               ? "좋아요한 프롬프트가 없습니다."
               : "게시한 프롬프트가 없습니다."}
@@ -122,9 +115,9 @@ export default function MypageActivitySection() {
         )}
       </div>
 
-      {/* 단순 페이지네이션 (필요 시 추가) */}
+      {/* 페이지네이션 */}
       {!isLoading && (currentData?.pageInfo.totalPages ?? 0) > 1 && (
-        <div className="flex justify-center gap-2 mt-4">
+        <div className="flex justify-center mt-4">
           <PaginationButton
             currentPage={currentPage}
             totalPages={currentData?.pageInfo.totalPages ?? 1}
