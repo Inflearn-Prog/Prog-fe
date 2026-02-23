@@ -22,6 +22,8 @@ export default function UserKeyword({
 }: KeywordInputProps) {
   const [inputValue, setInputValue] = useState("");
   const [isFocus, setIsFocus] = useState(false); // 클릭 여부 상태
+
+  const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const spanRef = useRef<HTMLSpanElement>(null);
   const [inputWidth, setInputWidth] = useState(60);
@@ -54,9 +56,15 @@ export default function UserKeyword({
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <p className="body-medium text-gray-1000">{label}</p>
+      <label
+        htmlFor="user-keyword-input"
+        className="body-medium text-gray-1000"
+      >
+        {label}
+      </label>
 
       <div
+        ref={containerRef}
         className={cn(
           "flex flex-wrap items-center gap-2 p-4 min-h-[52px] w-full",
           "bg-gray-50 border border-gray-100 rounded-[6px] transition-all cursor-text"
@@ -102,19 +110,21 @@ export default function UserKeyword({
             </span>
 
             <input
+              id="user-keyword-input"
               ref={inputRef}
               type="text"
               value={inputValue}
               onFocus={() => setIsFocus(true)}
               onBlur={(e) => {
-                if (
-                  !e.currentTarget
-                    .closest(".flex-wrap")
-                    ?.contains(e.relatedTarget as Node)
-                ) {
+                const isWithinContainer = containerRef.current?.contains(
+                  e.relatedTarget as Node
+                );
+                if (!isWithinContainer) {
                   addTag();
+                  setIsFocus(false);
+                } else {
+                  inputRef.current?.focus();
                 }
-                setIsFocus(false);
               }}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}

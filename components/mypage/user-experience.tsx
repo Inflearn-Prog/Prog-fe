@@ -41,7 +41,12 @@ export default function UserExperience({
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <label className="body-medium text-gray-1000">{label}</label>
+      <label
+        htmlFor="user-experience-input"
+        className="body-medium text-gray-1000"
+      >
+        {label}
+      </label>
 
       {/* 1. 추가된 경험 리스트 */}
       <div className="flex flex-col gap-2">
@@ -66,6 +71,7 @@ export default function UserExperience({
       {value.length < maxItems && (
         <div className="relative">
           <BaseInput
+            id="user-experience-input"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value.slice(0, 200))}
             onKeyDown={(e) => {
