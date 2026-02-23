@@ -277,7 +277,7 @@ export default function MypageRightSection() {
           </BaseButton>
           <BaseButton
             onClick={handleMarketingChange}
-            disabled={isPending}
+            disabled={isTermsPending}
             className="px-4 py-2.5 min-w-[197px]"
           >
             변경사항 저장

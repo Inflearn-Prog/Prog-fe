@@ -33,6 +33,7 @@ export default function MypageLeftSection() {
         Cookies.remove("refreshToken");
         console.error("Logout failed:", error);
         //TODO: error 컴포넌트가 생기면 사용자 피드백 주기
+        alert("로그아웃 처리 중 오류가 발생했습니다.");
         //toasts.error("로그아웃 처리 중 오류가 발생했습니다.");
       }
     }
@@ -56,7 +57,10 @@ export default function MypageLeftSection() {
       router.push(ROUTES.rank.ROOT);
       router.refresh();
     } catch (error) {
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
       console.error("Withdrawal failed:", error);
+      alert("탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
       //toasts.error("탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
     }
   };

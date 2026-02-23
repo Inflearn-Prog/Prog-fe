@@ -5,7 +5,7 @@ export default function MypageLeftSkeleton() {
   return (
     <div className="flex flex-col gap-5">
       <UserProfileSkeleton />
-      <Skeleton />
+      <Skeleton className="h-10 w-full" />
     </div>
   );
 }
