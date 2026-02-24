@@ -13,7 +13,7 @@ const CLASSES = {
   AVATAR_WRAPPER: "flex-center",
   INFO_LIST: "flex flex-col gap-3",
   INFO_ITEM:
-    "flex gap-2 text-gray-500 py-2 px-4 border border-gray-50 rounded-[5px]",
+    "flex gap-2 text-gray-500 py-2 px-4 border border-gray-50 rounded-5",
   PROVIDER_BADGE: "flex-center py-[10px] px-4 gap-2 shadow-md rounded-[6px]",
   PROVIDER_TEXT: "label-medium !font-bold",
 } as const;
