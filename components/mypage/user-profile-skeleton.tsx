@@ -6,7 +6,7 @@ const CLASSES = {
     "flex flex-col gap-5 p-6 border border-gray-100 bg-gray-0 rounded-10 shadow-md",
   AVATAR_WRAPPER: "flex-center",
   INFO_LIST: "flex flex-col gap-3",
-  INFO_ITEM: "flex gap-2 py-2 px-4 border border-gray-50 rounded-5",
+  INFO_ITEM: "flex gap-2 py-2 px-4 border border-gray-50 rounded-[5px]",
   PROVIDER_BADGE:
     "flex-center h-[44px] w-full gap-2  rounded-[6px] bg-gray-100",
 } as const;

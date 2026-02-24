@@ -1,11 +1,11 @@
 import { Mail, User } from "lucide-react";
 import Image from "next/image";
 
+import { AuthProvider } from "@/app/(beforeLogin)/(auth)/constant";
 import { STATIC_IMAGES } from "@/lib/static-image";
 import { cn } from "@/lib/utils";
 
 import { ProfIcon } from "../profile-icon/profile-icon";
-import { AuthProvider } from "./types";
 
 const CLASSES = {
   CONTAINER:
@@ -13,16 +13,16 @@ const CLASSES = {
   AVATAR_WRAPPER: "flex-center",
   INFO_LIST: "flex flex-col gap-3",
   INFO_ITEM:
-    "flex gap-2 text-gray-500 py-2 px-4 border border-gray-50 rounded-5",
+    "flex gap-2 text-gray-500 py-2 px-4 border border-gray-50 rounded-[5px]",
   PROVIDER_BADGE: "flex-center py-[10px] px-4 gap-2 shadow-md rounded-[6px]",
   PROVIDER_TEXT: "label-medium !font-bold",
 } as const;
 
-interface userProfileProps {
+interface UserProfileProps {
   nickname: string;
   email: string;
   profileImage: string;
-  provider: AuthProvider.KAKAO | AuthProvider.NAVER;
+  provider: AuthProvider;
   introduction: string;
 }
 
@@ -32,16 +32,16 @@ export default function UserProfile({
   email,
   provider,
   introduction,
-}: userProfileProps) {
+}: UserProfileProps) {
   const getTheme = () => {
     switch (provider) {
-      case "NAVER":
+      case "naver":
         return {
           bg: "bg-naver",
           label: "네이버",
           image: STATIC_IMAGES.naver,
         };
-      case "KAKAO":
+      case "kakao":
       default:
         return {
           bg: "bg-kakao",
