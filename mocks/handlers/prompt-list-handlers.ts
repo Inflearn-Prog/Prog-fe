@@ -216,8 +216,7 @@ interface ReportRequestBody {
   reasonDetail: string;
 }
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_API_URL ?? "http://localhost:8080/api/v1";
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export const promptListHandlers = [
   //API 명세서 업데이트되면 맞춰서 수정해야함.

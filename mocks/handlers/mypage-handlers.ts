@@ -2,8 +2,7 @@ import { http, HttpResponse } from "msw";
 
 import { UserProfileResponse, UserPromptsResponse } from "@/queries/api/types";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_API_URL ?? "http://localhost:8080/api/v1";
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export const mypageHandlers = [
   http.get(`${BASE_URL}/users/me/profile`, ({ request }) => {
