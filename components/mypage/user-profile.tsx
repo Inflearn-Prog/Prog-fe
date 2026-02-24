@@ -5,6 +5,7 @@ import { STATIC_IMAGES } from "@/lib/static-image";
 import { cn } from "@/lib/utils";
 
 import { ProfIcon } from "../profile-icon/profile-icon";
+import { AuthProvider } from "./types";
 
 const CLASSES = {
   CONTAINER:

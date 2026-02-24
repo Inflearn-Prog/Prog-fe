@@ -1,4 +1,4 @@
-enum AuthProvider {
+export enum AuthProvider {
   KAKAO = "KAKAO",
   NAVER = "NAVER",
 }
