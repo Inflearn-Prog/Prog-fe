@@ -8,13 +8,12 @@ import { ProfIcon } from "../profile-icon/profile-icon";
 
 const CLASSES = {
   CONTAINER:
-    "flex flex-col gap-5 p-6 border border-gray-100 bg-gray-0 rounded-[10px] shadow-md",
-  AVATAR_WRAPPER: "flex items-center justify-center",
+    "flex flex-col gap-5 p-6 border border-gray-100 bg-gray-0 rounded-10 shadow-md",
+  AVATAR_WRAPPER: "flex-center",
   INFO_LIST: "flex flex-col gap-3",
   INFO_ITEM:
-    "flex gap-2 text-gray-500 py-2 px-4 border border-gray-50 rounded-[5px]",
-  PROVIDER_BADGE:
-    "flex py-[10px] px-4 gap-2 shadow-md items-center justify-center rounded-[6px]",
+    "flex gap-2 text-gray-500 py-2 px-4 border border-gray-50 rounded-5",
+  PROVIDER_BADGE: "flex-center py-[10px] px-4 gap-2 shadow-md rounded-[6px]",
   PROVIDER_TEXT: "label-medium !font-bold",
 } as const;
 
@@ -22,7 +21,7 @@ interface userProfileProps {
   nickname: string;
   email: string;
   profileImage: string;
-  provider: "KAKAO" | "NAVER";
+  provider: AuthProvider.KAKAO | AuthProvider.NAVER;
   introduction: string;
 }
 
@@ -37,14 +36,14 @@ export default function UserProfile({
     switch (provider) {
       case "NAVER":
         return {
-          bg: "bg-[#01C73C]",
+          bg: "bg-naver",
           label: "네이버",
           image: STATIC_IMAGES.naver,
         };
       case "KAKAO":
       default:
         return {
-          bg: "bg-[#F9DB00]",
+          bg: "bg-kakao",
           label: "카카오",
           image: STATIC_IMAGES.kakao,
         };

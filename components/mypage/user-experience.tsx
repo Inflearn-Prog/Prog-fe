@@ -53,7 +53,7 @@ export default function UserExperience({
         {value.map((item, index) => (
           <div
             key={index}
-            className="flex items-center justify-between px-4 py-2 bg-gray-50 border border-gray-100 rounded-[6px] group"
+            className="flex-center px-4 py-2 bg-gray-50 border border-gray-100 rounded-[6px] group"
           >
             <span className="body-medium text-gray-500">{item}</span>
             <button
