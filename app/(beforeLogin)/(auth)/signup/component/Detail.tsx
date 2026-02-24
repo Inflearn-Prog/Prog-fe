@@ -86,6 +86,7 @@ export default function Detail() {
       />
       <div className="flex flex-col gap-6 mb-10">
         <StatusSelect
+          label={"현재 상태를 선택해주세요."}
           value={currentState}
           otherValue={otherInput}
           onSelect={(val) => {
@@ -95,7 +96,11 @@ export default function Detail() {
           onOtherChange={setOtherInput}
         />
 
-        <TargetJobsSelect selectedJobs={targetJobs} onToggle={handleJobClick} />
+        <TargetJobsSelect
+          label={"목표 직무를 선택해주세요 (복수선택가능)."}
+          selectedJobs={targetJobs}
+          onToggle={handleJobClick}
+        />
       </div>
 
       <div className="mx-auto lg:w-[55%]">
