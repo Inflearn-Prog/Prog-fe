@@ -141,3 +141,9 @@
     @apply max-w-7xl mx-auto;
   }
 }
+/* 중앙정렬 css */
+@layer components {
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+}
