@@ -12,7 +12,11 @@ import { SelectBox } from "@/components/shared/select-box";
 import { usePutBasic } from "@/hooks/use-onboarding";
 import { ROUTES } from "@/lib/routes";
 
-import { EDUCATION_OPTIONS, FIELD_OPTIONS } from "../../constant";
+import {
+  EDUCATION_OPTIONS,
+  JOB_OPTIONS,
+  REVERSE_JOB_MAP,
+} from "../../constant";
 import { Stepper } from "./Stepper";
 
 export default function Preview() {
@@ -124,7 +128,10 @@ export default function Preview() {
             placeholder="계열을 선택해주세요"
             value={field}
             onValueChange={(val) => updateField("field", val)}
-            selectOptions={FIELD_OPTIONS}
+            selectOptions={JOB_OPTIONS.map((label) => ({
+              label: label,
+              value: REVERSE_JOB_MAP.get(label) || label,
+            }))}
           />
         </div>
 
