@@ -20,7 +20,7 @@ export const ROUTES = {
    * 외부 노션 링크 이동
    */
   question: {
-    ROOT: "/",
+    ROOT: "https://www.notion.so/joelchoi/533a7ca9265b836596e901c824581c31",
   },
   search: {
     ROOT: "/search",
