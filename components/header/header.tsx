@@ -62,7 +62,7 @@ export function HeaderLeftSection() {
   return (
     <div className="flex items-center gap-x-15">
       <HeaderLogo />
-      <div className="hidden md:visible">
+      <div className="hidden md:block">
         <HeaderNavigation />
       </div>
     </div>
