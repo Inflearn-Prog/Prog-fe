@@ -3,12 +3,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
+import { AuthProvider } from "@/app/(beforeLogin)/(auth)/constant";
 import UserProfile from "@/components/mypage/user-profile";
 import { BaseButton } from "@/components/shared/button";
 import { toasts } from "@/components/shared/toast";
 import { useUserProfile } from "@/hooks/use-mypage";
 import { ROUTES } from "@/lib/routes";
 import { deleteUserAccount, postLogout } from "@/queries/api/auth";
+
+import MypageLeftSkeleton from "./MypageLeftSkeleton";
 
 export default function MypageLeftSection() {
   const router = useRouter();
@@ -66,7 +69,6 @@ export default function MypageLeftSection() {
   };
 
   // 로딩 및 에러 처리
-  // TODO: 마이페이지 유저프로필 스켈레톤 추가 후 MypageLeftSkeleton 추가
   if (isLoading) return <MypageLeftSkeleton />;
   if (!userData)
     return (
@@ -88,7 +90,7 @@ export default function MypageLeftSection() {
         nickname={basicInfo.nickname}
         email={basicInfo.email}
         profileImage={""}
-        provider={basicInfo.provider}
+        provider={basicInfo.provider.toLowerCase() as AuthProvider}
         introduction={basicInfo.introduction ?? "반갑습니다!"}
       />
 

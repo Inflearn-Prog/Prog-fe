@@ -25,15 +25,15 @@ export default function MypageActivitySection() {
 
   const activeSub = currentSub as "liked" | "posted";
 
-  const { data: likedData, isLoading: isLikedLoading } = useLikedPrompts(
-    userId,
-    currentPage,
-    { enabled: activeSub === "liked" }
-  );
-  const { data: postedData, isLoading: isPostedLoading } = useUserPrompts({
-    userId,
+  const { data: likedData, isLoading: isLikedLoading } = useLikedPrompts({
+    userId: userId as string,
     page: currentPage,
-    enabled: activeSub === "posted",
+    enabled: !!userId && activeSub === "liked",
+  });
+  const { data: postedData, isLoading: isPostedLoading } = useUserPrompts({
+    userId: userId as string,
+    page: currentPage,
+    enabled: !!userId && activeSub === "posted",
   });
 
   const handleCopy = async (e: React.MouseEvent, content: string) => {
