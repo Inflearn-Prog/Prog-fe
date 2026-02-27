@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
+import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 import {
@@ -17,9 +18,13 @@ import {
 } from "../ui/sidebar";
 import { COMMUNITY_CATEGORY_LIST, RANK_CATEGORY_LIST } from "./constant";
 
-const ROUTES = {
-  RANK: "/rank",
-} as const;
+// ROUTES.rank 및 ROUTES.community 문자열 값 기반 타입
+type RankRouteValue = (typeof ROUTES.rank)[keyof typeof ROUTES.rank];
+type CommunityRouteValue = Extract<
+  (typeof ROUTES.community)[keyof typeof ROUTES.community],
+  string
+>;
+type CategoryRouteValue = RankRouteValue | CommunityRouteValue;
 
 const SIDEBAR_STYLES = {
   CONTAINER: "bg-white w-full p-4 border border-gray-100 rounded-10",
@@ -34,7 +39,7 @@ const SIDEBAR_STYLES = {
 const MENU_ITEM_STYLES = {
   BASE: "label-medium bg-white text-gray-600 rounded-[10px] h-11.5 w-full hover:text-frog-600 hover:bg-white",
   ACTIVE: "text-frog-600 bg-frog-100 transition-300",
-  LINK: "w-full",
+  LINK: cn("w-full"),
 } as const;
 
 interface CategorySidebarProps {
@@ -59,7 +64,7 @@ export function ProgSidebar() {
 
   // 현재 경로에 따라 사이드바 목록 결정
   const sidebarList = useMemo(() => {
-    return pathname.includes(ROUTES.RANK)
+    return pathname.includes(ROUTES.rank.ROOT)
       ? RANK_CATEGORY_LIST
       : COMMUNITY_CATEGORY_LIST;
   }, [pathname]);
@@ -100,15 +105,19 @@ function CategorySidebar({ title, children }: CategorySidebarProps) {
  * 카테고리 목록을 순회하며 링크 아이템을 생성합니다.
  */
 function CategorySidebarItem({ categories }: CategorySidebarItemProps) {
-  const pathname = usePathname();
+  // const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category") || "";
 
-  // 활성 상태 확인 함수
-  const isActive = (href: string): boolean => {
-    return pathname.includes(href);
+  // 활성 상태 확인 함수 (ROUTES.rank 또는 ROUTES.community 값과 비교)
+  const isActive = (href: CategoryRouteValue): boolean => {
+    const [, query] = href.split("?");
+    const params = new URLSearchParams(query ?? "");
+    return (params.get("category") ?? "") === categoryParam;
   };
 
   // 메뉴 아이템 스타일 계산 함수
-  const getMenuItemStyle = (href: string): string => {
+  const getMenuItemStyle = (href: CategoryRouteValue): string => {
     return isActive(href)
       ? cn(MENU_ITEM_STYLES.BASE, MENU_ITEM_STYLES.ACTIVE)
       : MENU_ITEM_STYLES.BASE;
