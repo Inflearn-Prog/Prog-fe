@@ -216,11 +216,11 @@ interface ReportRequestBody {
   reasonDetail: string;
 }
 
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export const promptListHandlers = [
   //API 명세서 업데이트되면 맞춰서 수정해야함.
-  http.get(`${BASE_URL}/api/prompts`, ({ request }) => {
+  http.get(`${BASE_URL}/prompts`, ({ request }) => {
     const url = new URL(request.url);
     const category = url.searchParams.get("category");
 
@@ -249,7 +249,7 @@ export const promptListHandlers = [
       isLast: isLast,
     });
   }),
-  http.post(`${BASE_URL}/api/prompts/like/:promptId`, ({ params }) => {
+  http.post(`${BASE_URL}/prompts/like/:promptId`, ({ params }) => {
     const { promptId } = params;
 
     return HttpResponse.json(
@@ -260,7 +260,7 @@ export const promptListHandlers = [
       { status: 200 }
     );
   }),
-  http.delete(`${BASE_URL}/api/prompts/like/:promptId`, ({ params }) => {
+  http.delete(`${BASE_URL}/prompts/like/:promptId`, ({ params }) => {
     const { promptId } = params;
 
     console.log(`Prompt ${promptId} 좋아요 취소됨`);
@@ -273,7 +273,7 @@ export const promptListHandlers = [
       { status: 200 }
     );
   }),
-  http.post(`${BASE_URL}/api/reports`, async ({ request }) => {
+  http.post(`${BASE_URL}/reports`, async ({ request }) => {
     const body = (await request.json()) as ReportRequestBody;
     const { targetType, targetId, reason, reasonDetail } = body;
 

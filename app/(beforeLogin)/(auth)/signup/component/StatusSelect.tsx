@@ -3,6 +3,7 @@ import { BaseInput } from "@/components/shared/inputs";
 import { STATE_OPTIONS, STATE_VALUES, StateType } from "../../constant";
 
 interface StatusSelectProps {
+  label: string;
   value: StateType | "";
   otherValue: string;
   onSelect: (status: StateType) => void;
@@ -10,6 +11,7 @@ interface StatusSelectProps {
 }
 
 export const StatusSelect = ({
+  label,
   value,
   otherValue,
   onSelect,
@@ -17,7 +19,7 @@ export const StatusSelect = ({
 }: StatusSelectProps) => {
   return (
     <section>
-      <p className="mb-2 body-medium">현재 상태를 선택해주세요.</p>
+      <p className="mb-2 body-medium">{label}</p>
       <div className="flex gap-2 flex-wrap">
         {STATE_OPTIONS.map((option) => (
           <button

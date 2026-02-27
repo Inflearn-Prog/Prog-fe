@@ -1,3 +1,5 @@
+import { ApiResponse, fetcher } from "@/lib/fetcher";
+
 export const postAuth = async ({
   provider,
   authCode,
@@ -24,4 +26,25 @@ export const postAuth = async ({
     throw errorData;
   }
   return response.json();
+};
+
+export const postLogout = async () => {
+  return await fetcher.post("auth/logout").json<ApiResponse<object>>();
+};
+
+export interface WithdrawRequest {
+  reason?: string;
+}
+
+export const deleteUserAccount = async (
+  uid: string | number,
+  data?: WithdrawRequest
+) => {
+  return await fetcher.delete(`users/${uid}`, { json: data }).json<
+    ApiResponse<{
+      uid: string;
+      unlinkedProvider: string;
+      terminatedAt: string;
+    }>
+  >();
 };
