@@ -40,6 +40,7 @@ export default function Detail() {
   }, [isTermsAgreed, nickname, router]);
 
   const isStep3Complete =
+    targetJobs.length > 0 &&
     currentState !== "" &&
     (currentState !== STATE_VALUES.OTHER ||
       (otherInput || "").trim().length > 0);
