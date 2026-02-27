@@ -5,8 +5,6 @@ import { ProgSidebar } from "@/components/sidebar/category-sidebar";
 import { auth } from "@/lib/auth";
 import { ROUTES } from "@/lib/routes";
 
-import { CommunityPageTitle } from "./_components/community-page-title";
-
 export default async function layout({
   children,
 }: {
@@ -15,12 +13,6 @@ export default async function layout({
   const session = await auth();
   return (
     <div className="mx-auto max-w-7xl px-5 py-8 bg-gray-50">
-      <div className="grid grid-cols-4 lg:grid-cols-12 gap-10">
-        <div className="lg:col-start-4 lg:col-span-9 mb-10 col-span-4">
-          <CommunityPageTitle />
-        </div>
-      </div>
-
       <section className="lg:hidden mb-12">
         {session && (
           <BaseButton asChild full size="lg">
@@ -31,7 +23,7 @@ export default async function layout({
 
       <div className="grid grid-cols-4 lg:grid-cols-12 gap-4 items-start">
         {/* 왼쪽: 사이드바 */}
-        <aside className="hidden lg:flex lg:col-span-3 flex-col gap-6">
+        <aside className="hidden lg:flex lg:col-span-3 flex-col gap-6 pt-29.5">
           {session && (
             <BaseButton asChild full size="lg">
               <Link href={ROUTES.community.WRITE}>글쓰기</Link>
@@ -40,7 +32,7 @@ export default async function layout({
           <ProgSidebar />
         </aside>
 
-        {/* 오른쪽: 카드 리스트 */}
+        {/* 오른쪽: 메인 아이템 */}
         <main className="col-span-4 lg:col-span-9 flex flex-col gap-4">
           {children}
         </main>
