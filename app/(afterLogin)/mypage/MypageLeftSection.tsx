@@ -2,6 +2,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 import { AuthProvider } from "@/app/(beforeLogin)/(auth)/constant";
 import UserProfile from "@/components/mypage/user-profile";
@@ -23,18 +24,18 @@ export default function MypageLeftSection() {
     if (confirm("로그아웃 하시겠습니까?")) {
       try {
         await postLogout();
-
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
-
         queryClient.clear();
         toasts.success("로그아웃 되었습니다.");
-        router.push(ROUTES.rank.ROOT);
-        router.refresh();
       } catch (error) {
         //TODO: error 컴포넌트가 생기면 사용자 피드백 주기
         alert("로그아웃 처리 중 오류가 발생했습니다.");
         //toasts.error("로그아웃 처리 중 오류가 발생했습니다.");
+      } finally {
+        await signOut({
+          callbackUrl: ROUTES.rank.ROOT,
+          redirect: true,
+        });
+        queryClient.clear();
       }
     }
   };
