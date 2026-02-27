@@ -132,6 +132,9 @@ export default function PickOption() {
         <div className="flex flex-col gap-2 md:gap-4 text-center">
           <button
             onClick={() => setSelectedProfileType("SOCIAL")}
+            type="button"
+            aria-label="소셜 프로필 선택"
+            aria-pressed={selectedProfileType === "SOCIAL"}
             className={cn(
               "rounded-full transition-all duration-300",
               selectedProfileType === "SOCIAL" && "ring-8 ring-frog-600"
@@ -160,6 +163,9 @@ export default function PickOption() {
         <div className="flex flex-col gap-4 text-center">
           <button
             onClick={() => setSelectedProfileType("DEFAULT")}
+            type="button"
+            aria-label="Prog 프로필 선택"
+            aria-pressed={selectedProfileType === "DEFAULT"}
             className={cn(
               "rounded-full transition-all duration-300",
               selectedProfileType === "DEFAULT" && "ring-8 ring-frog-600"
