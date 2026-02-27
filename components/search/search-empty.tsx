@@ -10,7 +10,7 @@ import { Empty, EmptyDescription, EmptyTitle } from "../ui/empty";
 
 export function SearchEmpty() {
   const router = useRouter();
-  const handleClick = () => router.push(ROUTES.community.WRITE);
+  const handleClick = () => router.push(ROUTES.prompt.WRITE);
   return (
     <Empty className="gap-y-7">
       <Image
