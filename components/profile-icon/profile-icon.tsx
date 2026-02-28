@@ -37,7 +37,10 @@ export function ProfIcon({
 
   return (
     <Avatar
-      style={{ width: `${width}px`, height: `${height}px` }}
+      style={{
+        width: className?.includes("w-") ? undefined : `${width}px`,
+        height: className?.includes("h-") ? undefined : `${height}px`,
+      }}
       className={cn(BASE_IMAGE_STYLE, className)}
     >
       <AvatarImage
@@ -48,7 +51,7 @@ export function ProfIcon({
       />
       <AvatarFallback
         style={{ backgroundColor: bgColor }}
-        className="display-large"
+        className="display-small md:display-large"
       >
         {displayFallback}
       </AvatarFallback>
