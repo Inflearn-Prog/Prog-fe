@@ -10,11 +10,12 @@ import { Term } from "./types";
 
 // 스타일 상수
 const TERMS_STYLES = {
-  GROUP_CONTAINER: "bg-gray-100 rounded-md px-6 py-2",
-  ALL_CHECK_WRAPPER: "mb-4",
-  ITEM_LIST_WRAPPER: "flex flex-col gap-1",
-  ITEM_WRAPPER: "flex items-center justify-between py-2",
-  SHOW_LINK: "text-frog-600 label-medium hover:underline",
+  GROUP_CONTAINER: "bg-gray-100 rounded-md px-3 md:px-4 py-2 md:py-3",
+  ALL_CHECK_WRAPPER: "mb-3 md:mb-4",
+  ITEM_LIST_WRAPPER: "flex flex-col gap-0.5 md:gap-1",
+  ITEM_WRAPPER: "flex items-center justify-between py-2.5 md:py-3",
+  SHOW_LINK:
+    "text-frog-600 label-small md:label-medium hover:underline shrink-0 ml-2",
 } as const;
 
 // 인터페이스
@@ -92,24 +93,29 @@ const CheckboxItem = ({
   checked,
   onChange,
   showLink = true,
-  className,
   link,
 }: CheckboxItemProps) => (
-  <div className={TERMS_STYLES.ITEM_WRAPPER}>
-    <BaseCheckBox
-      id={id}
-      label={`${required ? "(필수) " : ""}${label}`}
-      checked={checked}
-      onCheckedChange={onChange}
-      className={className}
-    />
+  <div
+    className={cn(
+      TERMS_STYLES.ITEM_WRAPPER,
+      "flex items-start justify-between w-full gap-2"
+    )}
+  >
+    <div className="flex-1 min-w-0">
+      <BaseCheckBox
+        id={id}
+        label={`${required ? "(필수) " : ""}${label}`}
+        checked={checked}
+        onCheckedChange={onChange}
+        className="body-small md:body-medium break-keep"
+      />
+    </div>
     {showLink && link && (
       <Link
         href={link}
-        className={TERMS_STYLES.SHOW_LINK}
+        className={cn(TERMS_STYLES.SHOW_LINK, "whitespace-nowrap pt-1")}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`${label} 상세 보기`}
       >
         보기
       </Link>

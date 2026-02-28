@@ -109,7 +109,7 @@ export default function Preview() {
         className="mb-6"
       />
 
-      <div className="flex flex-col gap-4 mb-10">
+      <div className="flex flex-col gap-4 mb-5 md:mb-10">
         {/* 최종학력 선택 */}
         <div className="flex flex-col gap-2">
           <label className="font-semibold text-gray-700">최종학력</label>
