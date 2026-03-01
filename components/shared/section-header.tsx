@@ -7,8 +7,8 @@ interface SectionHeaderProps {
 }
 
 const STYLES = {
-  TITLE: "display-small font-bold mb-3 text-center",
-  SUBTITLE: "text-center body-medium",
+  TITLE: "md:display-small font-bold! mb-3 text-center",
+  SUBTITLE: "text-center body-small md:body-medium",
 } as const;
 
 export function SectionHeader({

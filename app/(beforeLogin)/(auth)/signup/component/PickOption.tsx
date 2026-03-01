@@ -127,11 +127,14 @@ export default function PickOption() {
       />
 
       {/* 프로필 선택 영역 */}
-      <div className="flex gap-12 mb-10 items-center justify-center">
+      <div className="flex gap-6 md:gap-12 mb-5 md:mb-10 items-center justify-center">
         {/* 소셜(SOCIAL) 프로필 */}
-        <div className="flex flex-col gap-4 text-center">
+        <div className="flex flex-col gap-2 md:gap-4 text-center">
           <button
             onClick={() => setSelectedProfileType("SOCIAL")}
+            type="button"
+            aria-label="소셜 프로필 선택"
+            aria-pressed={selectedProfileType === "SOCIAL"}
             className={cn(
               "rounded-full transition-all duration-300",
               selectedProfileType === "SOCIAL" && "ring-8 ring-frog-600"
@@ -143,6 +146,7 @@ export default function PickOption() {
               height={180}
               alt={nickname}
               fallback={nickname}
+              className="w-[7.5rem] h-[7.5rem]"
             />
           </button>
           <p className="body-small !font-semibold">
@@ -159,6 +163,9 @@ export default function PickOption() {
         <div className="flex flex-col gap-4 text-center">
           <button
             onClick={() => setSelectedProfileType("DEFAULT")}
+            type="button"
+            aria-label="Prog 프로필 선택"
+            aria-pressed={selectedProfileType === "DEFAULT"}
             className={cn(
               "rounded-full transition-all duration-300",
               selectedProfileType === "DEFAULT" && "ring-8 ring-frog-600"
@@ -170,6 +177,7 @@ export default function PickOption() {
               height={180}
               alt={nickname}
               fallback={nickname}
+              className="w-[7.5rem] h-[7.5rem]"
             />
           </button>
           <p className="body-small !font-semibold">Prog 프로필</p>
@@ -192,7 +200,7 @@ export default function PickOption() {
           </div>
           <BaseButton
             type="button"
-            className="min-w-[100px]"
+            className="min-w-[6.25rem]"
             disabled={!isNicknameValid || isLoading}
             onClick={checkDuplicate}
           >
@@ -200,7 +208,7 @@ export default function PickOption() {
           </BaseButton>
         </div>
 
-        <div className="w-full my-2 min-h-6">
+        <div className="w-full mt-2 md:my-2 min-h-6">
           {duplicateMessage && (
             <ValidationMessage
               message={duplicateMessage}

@@ -4,7 +4,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 
-import SearchForm from "./_components/search-form";
+import { SearchSection } from "./_components/search-section";
 
 export default async function SearchPage({
   searchParams,
@@ -17,9 +17,7 @@ export default async function SearchPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div>
-        <SearchForm />
-      </div>
+      <SearchSection q={q} />
     </HydrationBoundary>
   );
 }
