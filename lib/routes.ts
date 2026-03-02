@@ -36,6 +36,9 @@ export const ROUTES = {
     HR_GENERAL_AFFAIRS: "/community?category=hr_general_affairs",
     DESIGN: "/community?category=design",
   },
+  prompt: {
+    DETAIL: (id: string) => `/prompt/${id}`,
+  },
   mypage: {
     ROOT: "/mypage",
     PROFILE: "/mypage?tab=profile",
