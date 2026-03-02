@@ -10,6 +10,7 @@ import PromptCardSkeleton from "@/components/prompt/prompt-card-skeleton";
 import { PageTitleGroup } from "@/components/shared/page-title-group";
 
 import RankingList from "./RankList";
+import RankSelectBar from "./RankSelectBar";
 
 interface RankingPageProps {
   searchParams: Promise<{ category?: string }>;
@@ -24,10 +25,12 @@ export default async function RankPage({ searchParams }: RankingPageProps) {
   }
 
   const { title, desc } = RANKING_INFO.get(category)!;
-
   return (
     <>
       <PageTitleGroup title={title} subtitle={desc} />
+      <div className="lg:hidden">
+        <RankSelectBar defaultValue={category} />
+      </div>
       <Suspense
         key={category}
         fallback={
