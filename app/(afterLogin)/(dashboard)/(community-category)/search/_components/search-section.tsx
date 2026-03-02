@@ -2,7 +2,7 @@
 
 import { SearchTitle } from "@/components/search/search-title";
 
-import SortGroup from "../../_components/sort-group";
+import { SortGroup } from "../../_components/sort-group";
 import SearchForm from "./search-form";
 
 export function SearchSection({ q }: { q?: string }) {
