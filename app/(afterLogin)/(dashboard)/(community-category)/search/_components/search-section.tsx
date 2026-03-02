@@ -14,6 +14,8 @@ export function SearchSection({ q }: { q?: string }) {
         <SearchTitle search={q} searchLength={q?.length} />
         <SortGroup />
       </div>
+
+      <div />
     </div>
   );
 }
