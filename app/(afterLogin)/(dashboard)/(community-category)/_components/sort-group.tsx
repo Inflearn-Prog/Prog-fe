@@ -14,32 +14,20 @@ export function SortGroup() {
     setParams({ sort });
   };
 
+  const spanStyle = (sort: SortType) =>
+    cn(
+      "whitespace-nowrap text-15",
+      currentSort === sort ? "text-prog-600 font-bold" : "text-gray-500"
+    );
+
   return (
     <div className="flex items-start gap-x-1">
       <button onClick={() => handleSortChange("latest")}>
-        <span
-          className={cn(
-            "whitespace-nowrap text-15",
-            currentSort === "latest"
-              ? "text-prog-600 font-bold"
-              : "text-gray-500"
-          )}
-        >
-          시간순
-        </span>
+        <span className={spanStyle("latest")}>시간순</span>
       </button>
       |
       <button onClick={() => handleSortChange("popular")}>
-        <span
-          className={cn(
-            "whitespace-nowrap text-15",
-            currentSort === "popular"
-              ? "text-prog-600 font-bold"
-              : "text-gray-500"
-          )}
-        >
-          인기순
-        </span>
+        <span className={spanStyle("popular")}>인기순</span>
       </button>
     </div>
   );
