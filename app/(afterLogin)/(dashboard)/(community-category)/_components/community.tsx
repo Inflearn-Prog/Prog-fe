@@ -13,8 +13,16 @@ import { CommunityPromptItem } from "../../_types/community-type";
 
 export function CommunitySection() {
   return (
-    <div className="border p-5 rounded-10 bg-white">
-      <CommunityList />
+    <div>
+      {/* 검색 결과가 있을 때 */}
+      <div className="border p-5 rounded-10 bg-white mt-7">
+        <CommunityList />
+      </div>
+
+      {/* 검색 결과가 없을 때 */}
+      {/* <div className="py-5.5">
+        <SearchEmpty />
+      </div> */}
     </div>
   );
 }
