@@ -1,9 +1,10 @@
 "use client";
 
 import { SearchIcon } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
+import useQueryParams from "@/app/hooks/use-query-params";
 import { BaseButton } from "@/components/shared/button";
 import { IconInput } from "@/components/shared/inputs";
 
@@ -13,17 +14,25 @@ export default function SearchForm() {
 
   const [search, setSearch] = useState(q || "");
 
-  const router = useRouter();
-  const pathname = usePathname();
+  const { setParams } = useQueryParams();
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const handleSearch = () => {
     if (!search.trim()) {
       return;
     }
-    router.push(`${pathname}?q=${search}`);
+    setParams({ q: search });
   };
+
+  useEffect(() => {
+    setSearch(q || "");
+  }, [searchParams]);
+
   return (
-    <div className="p-5 rounded-10 bg-white border w-full flex items-center gap-x-4">
+    <form
+      onSubmit={handleSearch}
+      className="p-5 rounded-10 bg-white border w-full flex items-center gap-x-4"
+    >
       <IconInput
         name="all4"
         inputSize="lg"
@@ -36,9 +45,9 @@ export default function SearchForm() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <BaseButton size="lg" className="" onClick={handleSearch}>
+      <BaseButton type="submit" size="lg" className="">
         검색
       </BaseButton>
-    </div>
+    </form>
   );
 }

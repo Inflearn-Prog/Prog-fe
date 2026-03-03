@@ -1,6 +1,6 @@
 "use client";
 
-import useQueryParams from "@/app/hooks/use-query-parmas";
+import useQueryParams from "@/app/hooks/use-query-params";
 import { cn } from "@/lib/utils";
 
 const SORT_TYPES = ["latest", "popular"] as const;
@@ -14,17 +14,14 @@ const INACTIVE_STYLE = "text-gray-500";
 export function SortGroup() {
   const { getParam, setParams } = useQueryParams();
 
-  const currentSort = getParam("sort") as SortType | null;
-
+  const rawSort = getParam("sort");
+  const currentSort: SortType = rawSort === "popular" ? "popular" : "latest";
   const handleSortChange = (sort: SortType) => {
     setParams({ sort });
   };
 
   // 활성 정렬 여부 확인 (sort 파라미터 없을 때 기본값은 latest)
-  const isActive = (sort: SortType) =>
-    sort === "latest"
-      ? currentSort === "latest" || currentSort === null
-      : currentSort === sort;
+  const isActive = (sort: SortType) => currentSort === sort;
 
   return (
     <div className="flex items-start gap-x-1">
