@@ -146,7 +146,7 @@ export default function PickOption() {
               height={180}
               alt={nickname}
               fallback={nickname}
-              className="w-[7.5rem] h-[7.5rem]"
+              className="w-[7.5rem] h-[7.5rem] md:w-[11.25rem] md:h-[11.25rem]"
             />
           </button>
           <p className="body-small !font-semibold">
@@ -177,7 +177,7 @@ export default function PickOption() {
               height={180}
               alt={nickname}
               fallback={nickname}
-              className="w-[7.5rem] h-[7.5rem]"
+              className="size-[7.5rem] md:size-[11.25rem]"
             />
           </button>
           <p className="body-small !font-semibold">Prog 프로필</p>
