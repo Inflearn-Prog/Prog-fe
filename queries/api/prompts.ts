@@ -57,6 +57,7 @@ export type PromptUpdateRequest = Partial<PromptCreateRequest>;
 
 export interface PromptResponse extends Pick<
   Prompt,
+  | "id"
   | "userId"
   | "category"
   | "title"
@@ -66,8 +67,8 @@ export interface PromptResponse extends Pick<
   | "userName"
   | "userIcon"
   | "userDesc"
+  | "promptId"
 > {
-  promptId: number;
   isLiked?: boolean;
   likes?: number;
 }

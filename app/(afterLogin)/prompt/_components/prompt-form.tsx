@@ -1,7 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { Board } from "@/components/board/board";
@@ -9,35 +10,67 @@ import { BaseButton } from "@/components/shared/button";
 import { BaseInput } from "@/components/shared/inputs";
 import { SelectBox } from "@/components/shared/select-box";
 import { cn } from "@/lib/utils";
-import { PromptCreateRequest } from "@/queries/api/prompts";
+import {
+  PromptCreateRequest,
+  PromptResponse,
+  PromptUpdateRequest,
+} from "@/queries/api/prompts";
 
 import { BoardFormData, boardSchema } from "../board-schema";
 import usePromptQuery from "../hook/use-prompt-query";
 
-export function WriteBoard() {
+interface PromptFormProps {
+  initialData?: PromptResponse;
+  isEdit?: boolean;
+}
+
+export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
+  const router = useRouter();
   const layout = cn("mx-auto max-w-7xl lg:px-0 px-5 min-w-90 mx-auto");
 
+  console.log("initialData", initialData);
   const form = useForm<BoardFormData>({
     mode: "onTouched",
     resolver: zodResolver(boardSchema),
     defaultValues: {
-      title: "",
-      category: "",
-      content: "",
+      title: initialData?.title || "",
+      category: initialData?.category || "",
+      content: initialData?.content || "",
     },
   });
 
-  const { mutate: createPrompt } = usePromptQuery();
+  useEffect(() => {
+    if (initialData) {
+      form.reset({
+        title: initialData.title,
+        category: initialData.category,
+        content: initialData.content,
+      });
+    }
+  }, [initialData, form]);
+
+  const { createPrompt, updatePrompt, isCreating, isUpdating } =
+    usePromptQuery();
 
   const handleSubmit = (data: BoardFormData) => {
-    const body: PromptCreateRequest = {
-      title: data.title,
-      categoryId: data.category,
-      content: data.content,
-    };
-
-    createPrompt(body);
+    if (isEdit && initialData) {
+      const body: PromptUpdateRequest = {
+        title: data.title,
+        categoryId: data.category,
+        content: data.content,
+      };
+      updatePrompt({ id: initialData.id, data: body });
+    } else {
+      const body: PromptCreateRequest = {
+        title: data.title,
+        categoryId: data.category,
+        content: data.content,
+      };
+      createPrompt(body);
+    }
   };
+
+  const isPending = isCreating || isUpdating;
 
   return (
     <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -56,7 +89,7 @@ export function WriteBoard() {
             control={form.control}
             render={({ field }) => (
               <BaseInput
-                className="h-15 border-none"
+                className="h-15 border-none font-bold text-2xl"
                 {...field}
                 placeholder="제목을 입력해주세요"
                 viewLength
@@ -83,9 +116,10 @@ export function WriteBoard() {
                   {...field}
                   onValueChange={field.onChange}
                   selectOptions={[
-                    { value: "general", label: "General" },
-                    { value: "feedback", label: "Feedback" },
-                    { value: "question", label: "Question" },
+                    { value: "BACKEND", label: "Backend" },
+                    { value: "FRONTEND", label: "Frontend" },
+                    { value: "AI", label: "AI" },
+                    { value: "ETC", label: "ETC" },
                   ]}
                 />
               </div>
@@ -127,16 +161,17 @@ export function WriteBoard() {
             type="button"
             className="w-full md:w-49.25"
             variant="secondary"
+            onClick={() => router.back()}
           >
-            임시저장
+            취소
           </BaseButton>
 
           <BaseButton
             type="submit"
             className="w-full md:w-49.25"
-            disabled={!form.formState.isValid}
+            disabled={!form.formState.isValid || isPending}
           >
-            작성하기
+            {isEdit ? "수정하기" : "작성하기"}
           </BaseButton>
         </div>
       </div>

@@ -1,5 +1,5 @@
-import { WriteBoard } from "./write-board";
+import { PromptForm } from "../_components/prompt-form";
 
 export default function PromptWrite() {
-  return <WriteBoard />;
+  return <PromptForm />;
 }
