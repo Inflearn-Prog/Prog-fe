@@ -6,7 +6,8 @@ import { use } from "react";
 
 import { promptQueries } from "@/queries/options/prompt-query";
 
-import { PromptForm } from "../../_components/prompt-form";
+import { PromptForm } from "../../../_components/prompt-form";
+import { PromptFormSkeleton } from "../../../_components/prompt-form-skeleton";
 
 export default function PromptEdit({
   params,
@@ -17,7 +18,7 @@ export default function PromptEdit({
   const { data, isLoading, isError } = useQuery(promptQueries.detail(id));
 
   if (isLoading) {
-    return null;
+    return <PromptFormSkeleton />;
   }
 
   if (isError || !data) {
