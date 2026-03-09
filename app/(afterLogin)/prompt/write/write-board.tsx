@@ -9,8 +9,10 @@ import { BaseButton } from "@/components/shared/button";
 import { BaseInput } from "@/components/shared/inputs";
 import { SelectBox } from "@/components/shared/select-box";
 import { cn } from "@/lib/utils";
+import { PromptCreateRequest } from "@/queries/api/prompts";
 
 import { BoardFormData, boardSchema } from "../board-schema";
+import usePromptQuery from "../hook/use-prompt-query";
 
 export function WriteBoard() {
   const layout = cn("mx-auto max-w-7xl lg:px-0 px-5 min-w-90 mx-auto");
@@ -25,8 +27,16 @@ export function WriteBoard() {
     },
   });
 
+  const { mutate: createPrompt } = usePromptQuery();
+
   const handleSubmit = (data: BoardFormData) => {
-    console.log("submit ", data);
+    const body: PromptCreateRequest = {
+      title: data.title,
+      categoryId: data.category,
+      content: data.content,
+    };
+
+    createPrompt(body);
   };
 
   return (

@@ -1,205 +1,67 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { http, HttpResponse } from "msw";
 
 const MOCK_PROMPTS = [
-  // 개발 (development) - 4개
   {
-    id: "1",
-    category: "development",
-    title: "신입 프론트엔드 기술 면접 대비 자소서 프롬프트",
-    content:
-      "React의 가상 DOM 원리와 성능 최적화 경험을 논리적으로 서술해주는 프롬프트입니다.",
-    userIcon: "/icons/user1.png",
-    userName: "개발왕코딩이",
-    userDesc: "네카라쿠배 현직 개발자",
+    id: 1,
+    userId: 101,
+    category: "FRONTEND",
+    title: "React의 가상 DOM 원리",
+    content: "가상 DOM에 대해 설명해주세요.",
+    createdAt: "2024-03-01T10:00:00Z",
+    updatedAt: "2024-03-01T10:00:00Z",
+    userName: "프론트엔드마스터",
+    userIcon: "https://example.com/user101.png",
+    userDesc: "프론트엔드 개발자입니다.",
     likes: 120,
     isLiked: true,
   },
   {
-    id: "2",
-    category: "development",
-    title: "백엔드 아키텍처 설계 역량 강조형 프롬프트",
-    content:
-      "MSA 환경에서의 트랜잭션 처리 경험을 직무 역량에 맞춰 요약해드립니다.",
-    userIcon: "/icons/user2.png",
-    userName: "서버마스터",
-    userDesc: "10년차 시니어 엔지니어",
+    id: 2,
+    userId: 102,
+    category: "BACKEND",
+    title: "백엔드 아키텍처 설계",
+    content: "MSA 아키텍처 설계 방법",
+    createdAt: "2024-03-02T11:00:00Z",
+    updatedAt: "2024-03-02T11:00:00Z",
+    userName: "백엔드고수",
+    userIcon: "https://example.com/user102.png",
+    userDesc: "백엔드 개발자입니다.",
     likes: 85,
     isLiked: false,
   },
   {
-    id: "9",
-    category: "development",
-    title: "Next.js 14 App Router 마이그레이션 경험 정리",
-    content:
-      "서버 컴포넌트 도입을 통해 얻은 성능 이점을 기술적으로 기술하는 가이드입니다.",
-    userIcon: "/icons/user9.png",
-    userName: "풀스택조아",
-    userDesc: "스타트업 CTO",
-    likes: 42,
+    id: 3,
+    userId: 103,
+    category: "AI",
+    title: "오늘의 핫한 AI 프롬프트",
+    content: "LLM 최적화 방법",
+    createdAt: "2024-03-03T12:00:00Z",
+    updatedAt: "2024-03-03T12:00:00Z",
+    userName: "AI연구원",
+    userIcon: "https://example.com/user103.png",
+    userDesc: "AI 연구원입니다.",
+    likes: 200,
     isLiked: false,
   },
-  {
-    id: "10",
-    category: "development",
-    title: "코드 리뷰 문화 정착 및 협업 능력 강조 프롬프트",
-    content:
-      "팀원들과의 기술적 소통과 코드 퀄리티 향상을 위한 노력을 자소서에 녹여냅니다.",
-    userIcon: "/icons/user10.png",
-    userName: "리뷰어킴",
-    userDesc: "금융권 IT 보안팀",
-    likes: 33,
-    isLiked: true,
-  },
+];
 
-  // 디자인 (design) - 3개
+const MOCK_COMMENTS = [
   {
-    id: "3",
-    category: "design",
-    title: "UI/UX 디자인 포트폴리오 스토리텔링 가이드",
-    content:
-      "문제 정의부터 해결 과정까지, 논리적인 디자인 프로세스를 자소서에 녹여보세요.",
-    userIcon: "/icons/user3.png",
-    userName: "픽셀장인",
-    userDesc: "에이전시 출신 아트디렉터",
-    likes: 95,
-    isLiked: false,
+    commentId: 1,
+    nickName: "개발왕",
+    comment: "좋은 프롬프트네요!",
+    parentId: null,
+    createdAt: "2024-03-04T10:00:00Z",
+    updatedAt: "2024-03-04T10:00:00Z",
   },
   {
-    id: "4",
-    category: "design",
-    title: "비전공자 출신 디자이너를 위한 직무 전환 프롬프트",
-    content:
-      "이전 직무의 경험을 디자인적 사고(Design Thinking)로 연결하는 비법입니다.",
-    userIcon: "/icons/user4.png",
-    userName: "디자인고수",
-    userDesc: "대기업 인하우스 디자이너",
-    likes: 77,
-    isLiked: false,
-  },
-  {
-    id: "11",
-    category: "design",
-    title: "디자인 시스템 구축 및 협업 효율화 사례",
-    content:
-      "컴포넌트 단위 디자인을 통해 개발 생산성을 높인 경험을 설명해줍니다.",
-    userIcon: "/icons/user11.png",
-    userName: "시스템러버",
-    userDesc: "유니콘 기업 프로덕트 디자이너",
-    likes: 56,
-    isLiked: false,
-  },
-
-  // 마케팅/콘텐츠 (marketing_content) - 4개
-  {
-    id: "5",
-    category: "marketing_content",
-    title: "데이터 기반 퍼포먼스 마케팅 성과 서술 프롬프트",
-    content:
-      "ROAS 300% 달성 등 수치화된 성과를 매력적인 문장으로 바꿔드립니다.",
-    userIcon: "/icons/user5.png",
-    userName: "마케팅천재",
-    userDesc: "그로스 해킹 전문가",
-    likes: 110,
-    isLiked: true,
-  },
-  {
-    id: "6",
-    category: "marketing_content",
-    title: "SNS 콘텐츠 기획 및 트렌드 민감도 강조형",
-    content:
-      "Z세대 트렌드를 분석하고 이를 브랜드 캠페인으로 연결한 경험을 강조합니다.",
-    userIcon: "/icons/user6.png",
-    userName: "콘텐츠요정",
-    userDesc: "유명 브랜드 SNS 매니저",
-    likes: 64,
-    isLiked: false,
-  },
-  {
-    id: "12",
-    category: "marketing_content",
-    title: "B2B 마케팅 리드 생성 및 전환 가이드",
-    content:
-      "웨비나와 뉴스레터를 활용해 잠재 고객을 확보한 전략적 접근법을 정리합니다.",
-    userIcon: "/icons/user12.png",
-    userName: "비투비킹",
-    userDesc: "SaaS 마케팅 리더",
-    likes: 29,
-    isLiked: false,
-  },
-  {
-    id: "13",
-    category: "marketing_content",
-    title: "브랜드 아이덴티티 구축 및 팬덤 마케팅",
-    content:
-      "단순 판매를 넘어 브랜드의 가치를 전달하고 커뮤니티를 활성화한 사례입니다.",
-    userIcon: "/icons/user13.png",
-    userName: "브랜더",
-    userDesc: "F&B 브랜드 디렉터",
-    likes: 48,
-    isLiked: false,
-  },
-
-  // 서비스 기획 (service_planning) - 3개
-  {
-    id: "7",
-    category: "service_planning",
-    title: "서비스 기획자의 논리적 지표 개선 사례 프롬프트",
-    content: "로그 분석을 통해 이탈률을 개선한 PM/PO 핵심 역량을 정리해줍니다.",
-    userIcon: "/icons/user7.png",
-    userName: "기획의정석",
-    userDesc: "핀테크 스타트업 PO",
-    likes: 88,
-    isLiked: false,
-  },
-  {
-    id: "14",
-    category: "service_planning",
-    title: "신규 서비스 런칭을 위한 MVP 기획 및 검증",
-    content:
-      "최소 기능 제품으로 가설을 검증하고 피벗(Pivot)한 과정을 논리적으로 서술합니다.",
-    userIcon: "/icons/user14.png",
-    userName: "런칭머신",
-    userDesc: "연쇄 창업가 & 기획자",
-    likes: 52,
-    isLiked: false,
-  },
-  {
-    id: "15",
-    category: "service_planning",
-    title: "사용자 중심의 UX 라이팅 및 흐름 개선",
-    content:
-      "복잡한 금융 프로세스를 사용자 언어로 풀어내어 가입 전환율을 높인 사례입니다.",
-    userIcon: "/icons/user15.png",
-    userName: "유엑스피엠",
-    userDesc: "커머스 플랫폼 PM",
-    likes: 39,
-    isLiked: false,
-  },
-
-  // 인사/총무 (hr_general_affairs) - 2개
-  {
-    id: "8",
-    category: "hr_general_affairs",
-    title: "조직 문화 개선 및 사내 커뮤니케이션 강조 프롬프트",
-    content:
-      "갈등 관리 사례를 통해 유연한 소통 능력을 증명하는 자소서 가이드입니다.",
-    userIcon: "/icons/user8.png",
-    userName: "인사통",
-    userDesc: "15년차 HR 파트장",
-    likes: 45,
-    isLiked: false,
-  },
-  {
-    id: "16",
-    category: "hr_general_affairs",
-    title: "직무 전문성 강화를 위한 사내 교육 프로그램 기획",
-    content:
-      "임직원의 이탈률을 낮추고 만족도를 높인 교육 시스템 구축 경험을 정리합니다.",
-    userIcon: "/icons/user16.png",
-    userName: "교육전문가",
-    userDesc: "글로벌 IT 기업 HRD",
-    likes: 21,
-    isLiked: false,
+    commentId: 2,
+    nickName: "코딩맨",
+    comment: "동의합니다!",
+    parentId: 1,
+    createdAt: "2024-03-04T11:00:00Z",
+    updatedAt: "2024-03-04T11:00:00Z",
   },
 ];
 
@@ -348,5 +210,191 @@ export const promptListHandlers = [
       },
       { status: 201 }
     );
+  }),
+
+  http.post(`${BASE_URL}/prompts`, async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      status: 201,
+      success: true,
+      data: {
+        promptId: 999,
+        ...body,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      message: "프롬프트가 생성되었습니다.",
+    });
+  }),
+
+  // 프롬프트 상세 조회
+  http.get(`${BASE_URL}/prompts/:promptId`, ({ params }) => {
+    const { promptId } = params;
+    const prompt =
+      MOCK_PROMPTS.find((p) => p.id === Number(promptId)) || MOCK_PROMPTS[0];
+    return HttpResponse.json({
+      status: 200,
+      success: true,
+      data: prompt,
+      message: "프롬프트 상세 조회가 완료되었습니다.",
+    });
+  }),
+
+  // 프롬프트 수정
+  http.put(`${BASE_URL}/prompts/:promptId`, async ({ params, request }) => {
+    const { promptId } = params;
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      status: 200,
+      success: true,
+      data: {
+        promptId: Number(promptId),
+        ...body,
+        updatedAt: new Date().toISOString(),
+      },
+      message: "프롬프트가 수정되었습니다.",
+    });
+  }),
+
+  // 프롬프트 삭제
+  http.delete(`${BASE_URL}/prompts/:promptId`, ({ params }) => {
+    const { promptId } = params;
+    return HttpResponse.json({
+      status: 200,
+      success: true,
+      message: "프롬프트가 삭제되었습니다.",
+    });
+  }),
+
+  // 2. 프롬프트 조회 및 검색 (User)
+  // 최신순 조회
+  http.get(`${BASE_URL}/prompts/createDesc`, () => {
+    const sorted = [...MOCK_PROMPTS].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    return HttpResponse.json({
+      status: 200,
+      success: true,
+      data: sorted,
+    });
+  }),
+
+  // 좋아요순 조회
+  http.get(`${BASE_URL}/prompts/likeDesc`, () => {
+    const sorted = [...MOCK_PROMPTS].sort(
+      (a, b) => (b.likes || 0) - (a.likes || 0)
+    );
+    return HttpResponse.json({
+      status: 200,
+      success: true,
+      data: sorted,
+    });
+  }),
+
+  // 오늘 핫한 프롬프트
+  http.get(`${BASE_URL}/prompts/today-hot`, () => {
+    return HttpResponse.json({
+      status: 200,
+      success: true,
+      data: MOCK_PROMPTS.slice(0, 5),
+    });
+  }),
+
+  // 제목 검색
+  http.get(`${BASE_URL}/prompts/search/:keyword`, ({ params }) => {
+    const { keyword } = params;
+    const filtered = MOCK_PROMPTS.filter((p) =>
+      p.title.includes(keyword as string)
+    );
+    return HttpResponse.json({
+      status: 200,
+      success: true,
+      data: filtered,
+    });
+  }),
+
+  // 좋아요/취소 토글
+  http.post(`${BASE_URL}/prompts/:promptId/like`, ({ params }) => {
+    const { promptId } = params;
+    return HttpResponse.json({
+      status: 200,
+      success: true,
+      message: `프롬프트 ${promptId} 좋아요 처리 완료`,
+    });
+  }),
+
+  // 3. 프롬프트 댓글 관리 (User)
+  // 댓글 목록 조회
+  http.get(`${BASE_URL}/api/v1/comment/:promptId`, ({ params }) => {
+    return HttpResponse.json({
+      status: 200,
+      success: true,
+      data: MOCK_COMMENTS,
+    });
+  }),
+
+  // 댓글 작성
+  http.post(`${BASE_URL}/api/v1/comment/:promptId`, async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      status: 201,
+      success: true,
+      data: {
+        commentId: 100,
+        nickName: "작성자",
+        ...body,
+        parentId: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    });
+  }),
+
+  // 대댓글 작성
+  http.post(
+    `${BASE_URL}/api/v1/comment/:promptId/:commentId`,
+    async ({ params, request }) => {
+      const { commentId } = params;
+      const body = (await request.json()) as any;
+      return HttpResponse.json({
+        status: 201,
+        success: true,
+        data: {
+          commentId: 200,
+          nickName: "답글작성자",
+          ...body,
+          parentId: Number(commentId),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      });
+    }
+  ),
+
+  // 댓글 수정
+  http.patch(
+    `${BASE_URL}/api/v1/comment/:commentId`,
+    async ({ params, request }) => {
+      const body = (await request.json()) as any;
+      return HttpResponse.json({
+        status: 200,
+        success: true,
+        data: {
+          commentId: Number(params.commentId),
+          ...body,
+          updatedAt: new Date().toISOString(),
+        },
+      });
+    }
+  ),
+
+  // 댓글 삭제
+  http.delete(`${BASE_URL}/api/v1/comment/:commentId`, ({ params }) => {
+    return HttpResponse.json({
+      status: 200,
+      success: true,
+      message: "댓글이 삭제되었습니다.",
+    });
   }),
 ];
