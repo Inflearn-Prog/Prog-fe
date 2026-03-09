@@ -28,7 +28,6 @@ export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
   const router = useRouter();
   const layout = cn("mx-auto max-w-7xl lg:px-0 px-5 min-w-90 mx-auto");
 
-  console.log("initialData", initialData);
   const form = useForm<BoardFormData>({
     mode: "onTouched",
     resolver: zodResolver(boardSchema),
@@ -78,9 +77,9 @@ export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
         <CLSBox
           text={
             form.formState.errors.title && (
-              <p className="text-red-500">
+              <span className="text-red-500">
                 {form.formState.errors.title.message}
-              </p>
+              </span>
             )
           }
         >
