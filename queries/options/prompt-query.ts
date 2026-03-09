@@ -81,12 +81,12 @@ export const promptQueries = {
   createComment: (promptId: string | number, data: PromptCommentRequest) =>
     promptApi.createComment(promptId, data).then((res) => res.data),
   createReply: (
-    promptId: string | number,
-    commentId: string | number,
+    promptId: string,
+    commentId: string,
     data: PromptCommentRequest
   ) => promptApi.createReply(promptId, commentId, data).then((res) => res.data),
-  updateComment: (commentId: string | number, data: PromptCommentRequest) =>
+  updateComment: (commentId: string, data: PromptCommentRequest) =>
     promptApi.updateComment(commentId, data).then((res) => res.data),
-  deleteComment: (commentId: string | number) =>
+  deleteComment: (commentId: string) =>
     promptApi.deleteComment(commentId).then((res) => res.data),
 };

@@ -19,7 +19,7 @@ export const fetchPrompts = async (
 };
 
 export type JobCategory = "BACKEND" | "FRONTEND" | "AI" | "ETC";
-interface Prompt {
+export interface Prompt {
   id: number;
   userId: number;
   category: JobCategory;
@@ -27,20 +27,26 @@ interface Prompt {
   content: string;
   createdAt: string;
   updatedAt: string;
-  userName: string;
-  userIcon: string;
+  userName: string | null;
+  userIcon: string | null;
   userDesc: string;
   likes: number;
   isLiked: boolean;
+  promptId: string;
 }
 
-interface Comment {
-  commentId: number;
+export interface Comment {
+  commentId: string;
   nickName: string;
   comment: string;
-  parentId: number | null;
+  parentId: string | null;
   createdAt: string;
   updatedAt: string;
+  parentCommentId: string;
+  promptId: string;
+  isReply?: boolean;
+  currentUserIcon: string | null;
+  currentUserName: string | null;
 }
 
 export interface PromptCreateRequest extends Pick<Prompt, "title" | "content"> {
@@ -51,7 +57,15 @@ export type PromptUpdateRequest = Partial<PromptCreateRequest>;
 
 export interface PromptResponse extends Pick<
   Prompt,
-  "userId" | "category" | "title" | "content" | "createdAt" | "updatedAt"
+  | "userId"
+  | "category"
+  | "title"
+  | "content"
+  | "createdAt"
+  | "updatedAt"
+  | "userName"
+  | "userIcon"
+  | "userDesc"
 > {
   promptId: number;
   isLiked?: boolean;
@@ -69,7 +83,7 @@ export interface PromptCommentResponse extends Pick<
   Comment,
   "nickName" | "comment" | "parentId" | "createdAt" | "updatedAt"
 > {
-  commentId: number;
+  commentId: string;
 }
 
 export const promptApi = {
