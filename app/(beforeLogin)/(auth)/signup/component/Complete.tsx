@@ -3,14 +3,19 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 import { useSignupStore } from "@/app/store/signUpStore";
 import { BaseButton } from "@/components/shared/button";
 import { SectionHeader } from "@/components/shared/section-header";
+import { usePostComplete } from "@/hooks/use-onboarding";
+import { ROUTES } from "@/lib/routes";
 import { STATIC_IMAGES } from "@/lib/static-image";
 
 export default function Complete() {
   const router = useRouter();
+  const { mutate, isPending } = usePostComplete();
+
   const {
     isTermsAgreed,
     nickname,
@@ -49,7 +54,15 @@ export default function Complete() {
   ]);
 
   const handleNext = () => {
-    router.replace("/"); // 홈으로 이동
+    mutate(undefined, {
+      onSuccess: () => {
+        router.push(ROUTES.rank.ROOT);
+        toast.success("회원가입이 완료되었습니다!");
+      },
+      onError: () => {
+        toast.error("회원가입 완료 실패");
+      },
+    });
   };
 
   return (
@@ -83,7 +96,11 @@ export default function Complete() {
       />
 
       <div className="mx-auto lg:w-[55%]">
-        <BaseButton onClick={handleNext} className="w-full mt-6 py-3">
+        <BaseButton
+          onClick={handleNext}
+          disabled={isPending}
+          className="w-full mt-6 py-3"
+        >
           Prog 시작하기
         </BaseButton>
       </div>

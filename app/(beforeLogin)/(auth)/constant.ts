@@ -9,17 +9,25 @@ export const STATE_VALUES = {
   STUDENT: "재학중",
   JOB_SEEKER: "취업준비",
   CHANGING_JOB: "이직준비",
-  OTHER: "기타",
+  EMPLOYED: "취업중",
+  FREELANCER: "프리랜서",
+  CAREER_BREAK: "휴직중",
+  ETC: "기타",
 } as const;
 
 export const JOB_DATA = {
-  PLANNING: "기획",
-  MARKETING: "마케팅",
-  DESIGN: "디자인",
-  DEVELOPMENT: "개발",
-  SALES: "영업",
-  PM: "PM",
-  OTHER: "기타",
+  FRONTEND: "프론트엔드",
+  BACKEND: "백엔드",
+  FULLSTACK: "풀스택",
+  MOBILE: "모바일",
+  DEVOPS: "데브옵스",
+  DATA_ENGINEER: "데이터 엔지니어",
+  AI_ML: "AI/머신러닝",
+  SECURITY: "보안",
+  QA: "QA",
+  PM: "기획/PM",
+  DESIGNER: "디자이너",
+  ETC: "기타",
 } as const;
 
 export const STATE_MAP = new Map<string, string>(
@@ -43,7 +51,8 @@ export type EducationValue =
   | "ASSOCIATE"
   | "BACHELOR"
   | "MASTER"
-  | "DOCTOR";
+  | "DOCTORATE"
+  | "NONE";
 
 export const transformCareerInfoToState = (careerInfo: {
   currentStatus: string[];
@@ -71,10 +80,8 @@ export const transformStateToPayload = (state: {
   currentState: string;
   otherInput?: string;
   targetJobs: string[];
-  career: number;
-  educationLevel: string;
 }) => {
-  const isOther = state.currentState === STATE_VALUES.OTHER;
+  const isOther = state.currentState === STATE_VALUES.ETC;
   const stateCode = isOther
     ? state.otherInput || "OTHER"
     : REVERSE_STATE_MAP.get(state.currentState) || state.currentState;
@@ -84,10 +91,8 @@ export const transformStateToPayload = (state: {
   );
 
   return {
-    currentStatus: String(stateCode),
-    targetJob: jobCodes,
-    careerYear: state.career,
-    education: state.educationLevel,
+    currentStatuses: [String(stateCode)],
+    targetJobRoles: jobCodes,
   };
 };
 
@@ -98,5 +103,6 @@ export const EDUCATION_OPTIONS: SelectOption[] = [
   { label: "전문대 졸업", value: "ASSOCIATE" },
   { label: "대학교 졸업", value: "BACHELOR" },
   { label: "석사 졸업", value: "MASTER" },
-  { label: "박사 졸업", value: "DOCTOR" },
+  { label: "박사 졸업", value: "DOCTORATE" },
+  { label: "없음", value: "NONE" },
 ];

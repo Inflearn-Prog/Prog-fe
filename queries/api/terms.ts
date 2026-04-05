@@ -30,7 +30,7 @@ export interface PostTermsResponse {
 export async function fetchTerms() {
   await new Promise((resolve) => setTimeout(resolve, 500));
 
-  const res = await fetch(`${BASE_URL}/terms`, {
+  const res = await fetch(`${BASE_URL}/terms/`, {
     method: "GET",
   });
 
@@ -42,7 +42,7 @@ export async function fetchTerms() {
 }
 
 export async function postTerms(termIds: number[], token: string) {
-  const res = await fetch(`${BASE_URL}/users/me/terms-agreements`, {
+  const res = await fetch(`${BASE_URL}/users/terms-agreement`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

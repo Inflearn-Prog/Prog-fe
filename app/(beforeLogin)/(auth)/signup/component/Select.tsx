@@ -1,7 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { useSignupStore } from "@/app/store/signUpStore";
 import { BaseButton } from "@/components/shared/button";
@@ -12,6 +14,7 @@ import { usePostTerms, useTerms } from "@/hooks/use-terms-checks";
 export default function Select() {
   const router = useRouter();
   const { data, isLoading, error, isError } = useTerms();
+  const { data: session, update } = useSession();
   const { mutate, isPending } = usePostTerms();
   const [checks, setChecks] = useState<Map<number, boolean>>(new Map());
   const { updateField } = useSignupStore();
@@ -44,13 +47,16 @@ export default function Select() {
       .map(([id, _]) => id);
 
     mutate(agreedTermIds, {
-      onSuccess: () => {
+      onSuccess: async () => {
+        await update({
+          ...session,
+          registrationStatus: "TERMS_AGREED", // 백엔드 상태와 맞춤
+        });
         updateField("isTermsAgreed", true);
         router.push("?step=pick-option");
       },
-      onError: (error) => {
-        // eslint-disable-next-line no-console
-        console.error("약관 저장 실패:", error.message);
+      onError: () => {
+        toast.error("약관 저장 실패:");
       },
     });
   };

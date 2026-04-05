@@ -6,7 +6,6 @@ interface ApiError extends Error {
 
 export interface PutBasicParams {
   education: string;
-  major: string;
   career: number;
 }
 export interface PutCareerParams {
@@ -14,8 +13,36 @@ export interface PutCareerParams {
   targetJobRoles: string[];
 }
 
+export async function postNickname(nickname: string, token: string) {
+  const res = await fetch(`${BASE_URL}/users/nickname`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ nickname }),
+  });
+
+  if (!res.ok) {
+    let errorData;
+    try {
+      const result = await res.json();
+      errorData = result.data;
+    } catch {
+      // JSON 파싱 실패 시 기본 에러
+    }
+    const error: ApiError = new Error(
+      errorData?.message ?? `요청 실패 (${res.status})`
+    );
+    error.code = errorData?.errorClassName;
+    throw error;
+  }
+
+  const result = await res.json();
+  return result.data;
+}
 export async function putBasic(
-  { education, major, career }: PutBasicParams,
+  { education, career }: PutBasicParams,
   token: string
 ) {
   const res = await fetch(`${BASE_URL}/users/me/onboarding/basic`, {
@@ -24,7 +51,7 @@ export async function putBasic(
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ education, major, career }),
+    body: JSON.stringify({ education, career }),
   });
 
   if (!res.ok) {
@@ -54,6 +81,34 @@ export async function putCareer(params: PutCareerParams, token: string) {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(params),
+  });
+
+  if (!res.ok) {
+    let errorData;
+    try {
+      const result = await res.json();
+      errorData = result.data;
+    } catch {
+      // JSON 파싱 실패 시 기본 에러
+    }
+    const error: ApiError = new Error(
+      errorData?.message ?? `요청 실패 (${res.status})`
+    );
+    error.code = errorData?.errorClassName;
+    throw error;
+  }
+
+  const result = await res.json();
+  return result.data;
+}
+
+export async function postComplete(token: string) {
+  const res = await fetch(`${BASE_URL}/users/me/onboarding/complete`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (!res.ok) {

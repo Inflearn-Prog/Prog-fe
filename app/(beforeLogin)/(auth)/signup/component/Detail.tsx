@@ -2,13 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { useSignupStore } from "@/app/store/signUpStore";
 import { BaseButton } from "@/components/shared/button";
 import { SectionHeader } from "@/components/shared/section-header";
 import { usePutCareer } from "@/hooks/use-onboarding";
 
-import { JobType, STATE_VALUES } from "../../constant";
+import { JobType, STATE_VALUES, transformStateToPayload } from "../../constant";
 import { StatusSelect } from "./StatusSelect";
 import { Stepper } from "./Stepper";
 import { TargetJobsSelect } from "./TargetJobsSelect";
@@ -42,8 +43,7 @@ export default function Detail() {
   const isStep3Complete =
     targetJobs.length > 0 &&
     currentState !== "" &&
-    (currentState !== STATE_VALUES.OTHER ||
-      (otherInput || "").trim().length > 0);
+    (currentState !== STATE_VALUES.ETC || (otherInput || "").trim().length > 0);
 
   const handleJobClick = (option: string) => {
     const castedOption = option as JobType;
@@ -59,19 +59,19 @@ export default function Detail() {
   const handleNext = () => {
     if (isStep3Complete) {
       const finalStatus =
-        currentState === STATE_VALUES.OTHER ? otherInput.trim() : currentState;
+        currentState === STATE_VALUES.ETC ? otherInput.trim() : currentState;
 
-      const userCareerInfo = {
-        currentStatuses: [finalStatus],
-        targetJobRoles: targetJobs,
-      };
+      const userCareerInfo = transformStateToPayload({
+        currentState: finalStatus,
+        otherInput: otherInput,
+        targetJobs: targetJobs,
+      });
       mutate(userCareerInfo, {
         onSuccess: () => {
           router.push("?step=preview");
         },
         onError: (error) => {
-          // eslint-disable-next-line no-console
-          console.error("커리어 정보 저장 실패:", error.message);
+          toast.error("커리어 정보 저장 실패:");
         },
       });
     }
@@ -92,7 +92,7 @@ export default function Detail() {
           otherValue={otherInput}
           onSelect={(val) => {
             updateField("currentState", val);
-            if (val !== STATE_VALUES.OTHER) setOtherInput("");
+            if (val !== STATE_VALUES.ETC) setOtherInput("");
           }}
           onOtherChange={setOtherInput}
         />
