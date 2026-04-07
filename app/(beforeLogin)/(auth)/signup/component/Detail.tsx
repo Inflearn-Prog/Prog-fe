@@ -50,7 +50,7 @@ export default function Detail() {
           router.push("?step=preview");
         },
         onError: () => {
-          toast.error("커리어 정보 저장 실패:");
+          toast.error("커리어 정보 저장 실패");
         },
       });
     }

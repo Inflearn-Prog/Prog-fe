@@ -47,11 +47,10 @@ export interface UpdateProfileRequest {
     introduction: string;
   };
   careerInfo: {
-    currentStatus: string;
-    targetJob: string[];
-    careerYear: number;
-    education: string;
-    major: string;
+    currentStatuses: string[];
+    targetJobRoles: string[];
+    careerYears: number;
+    educationLevel: string;
   };
   selfIntro: {
     experiences: string[];

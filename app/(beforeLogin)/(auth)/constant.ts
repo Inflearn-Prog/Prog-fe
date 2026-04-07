@@ -87,6 +87,32 @@ export const transformStateToPayload = (state: {
   };
 };
 
+export const transformState = (state: {
+  currentState: string;
+  otherInput?: string;
+  targetJobs: string[];
+  careerYears: number;
+  educationLevel: string;
+}) => {
+  const isOther = state.currentState === STATE_VALUES.ETC;
+  const stateCode = isOther
+    ? state.otherInput || "OTHER"
+    : REVERSE_STATE_MAP.get(state.currentState) || state.currentState;
+
+  const jobCodes = state.targetJobs.map(
+    (label) => REVERSE_JOB_MAP.get(label) || label
+  );
+  const parsed = Number(state.careerYears);
+  const careerYears = !Number.isFinite(parsed) ? 0 : parsed;
+
+  return {
+    currentStatuses: [String(stateCode)],
+    targetJobRoles: jobCodes,
+    careerYears: careerYears,
+    educationLevel: state.educationLevel as EducationValue,
+  };
+};
+
 export const STATE_OPTIONS = Object.values(STATE_VALUES);
 export const JOB_OPTIONS = Object.values(JOB_DATA);
 export const EDUCATION_OPTIONS: SelectOption[] = [

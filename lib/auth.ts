@@ -51,7 +51,6 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
           // 신규 유저든 기존 유저든 일단 정보를 user 객체에 보관
           user.accessToken = accessToken;
           user.isNewUser = isNewUser;
-          user.refreshToken = refreshToken; // 신규 유저 여부 저장
           user.registrationStatus = registrationStatus;
           user.provider = account.provider; // 소셜 제공자 정보 저장
 
@@ -145,11 +144,12 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
       }
     );
 
-    const resData = await response.json();
     if (!response.ok) {
-      throw new Error(resData.message || "Refresh failed");
+      const errorText = await response.text();
+      throw new Error(`Refresh failed: ${response.status} - ${errorText}`);
     }
 
+    const resData = await response.json();
     // 2. 새 토큰 파싱
     const newAccessToken = resData.data.accessToken;
     const decoded = jwtDecode<{ exp: number }>(newAccessToken);

@@ -9,7 +9,7 @@ import {
   JobType,
   STATE_VALUES,
   transformCareerInfoToState,
-  transformStateToPayload,
+  transformState,
 } from "@/app/(beforeLogin)/(auth)/constant";
 import { StatusSelect } from "@/app/(beforeLogin)/(auth)/signup/component/StatusSelect";
 import { TargetJobsSelect } from "@/app/(beforeLogin)/(auth)/signup/component/TargetJobsSelect";
@@ -105,16 +105,16 @@ export default function MypageRightSection() {
   const handleGlobalSave = () => {
     if (!profile) return;
 
-    if (currentState === STATE_VALUES.OTHER && !otherInput.trim()) {
+    if (currentState === STATE_VALUES.ETC && !otherInput.trim()) {
       alert("기타 상태를 직접 입력해주세요.");
       //toasts.error("기타 상태를 직접 입력해주세요.");
       return;
     }
-    const careerPayload = transformStateToPayload({
+    const careerPayload = transformState({
       currentState,
-      targetJobs,
       otherInput,
-      career,
+      targetJobs,
+      careerYears: career,
       educationLevel,
     });
 
@@ -125,7 +125,6 @@ export default function MypageRightSection() {
       },
       careerInfo: {
         ...careerPayload,
-        major: profile.careerInfo.major || "",
       },
       selfIntro: {
         experiences,
@@ -153,7 +152,7 @@ export default function MypageRightSection() {
           otherValue={otherInput}
           onSelect={(val) => {
             updateField("currentState", val);
-            if (val !== STATE_VALUES.OTHER) setOtherInput("");
+            if (val !== STATE_VALUES.ETC) setOtherInput("");
           }}
           onOtherChange={setOtherInput}
         />
