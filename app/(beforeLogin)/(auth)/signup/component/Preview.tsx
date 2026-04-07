@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
 import { toast } from "sonner";
 
 import { useSignupStore } from "@/app/store/signUpStore";
@@ -11,7 +10,6 @@ import { BaseInput } from "@/components/shared/inputs";
 import { SectionHeader } from "@/components/shared/section-header";
 import { SelectBox } from "@/components/shared/select-box";
 import { usePutBasic } from "@/hooks/use-onboarding";
-import { ROUTES } from "@/lib/routes";
 
 import { EDUCATION_OPTIONS } from "../../constant";
 import { Stepper } from "./Stepper";
@@ -21,36 +19,10 @@ export default function Preview() {
   const { mutate, isPending } = usePutBasic();
   const { data: session, update } = useSession();
 
-  const {
-    isTermsAgreed,
-    nickname,
-    targetJobs,
-    currentState,
-    field,
-    career,
-    educationLevel,
-    updateField,
-  } = useSignupStore();
-
-  useEffect(() => {
-    if (!isTermsAgreed) {
-      router.replace(ROUTES.auth.SIGNUP_SELECT);
-      return;
-    }
-
-    if (!nickname) {
-      router.replace(ROUTES.auth.SIGNUP_PICK_OPTION);
-      return;
-    }
-
-    if (targetJobs.length === 0 || !currentState) {
-      router.replace(ROUTES.auth.SIGNUP_DETAIL);
-    }
-  }, [isTermsAgreed, nickname, targetJobs, currentState, router]);
+  const { career, educationLevel, updateField } = useSignupStore();
 
   const isCareerValid = career >= 0;
-  const isStep4Complete =
-    educationLevel !== "" && field !== "" && isCareerValid;
+  const isStep4Complete = educationLevel !== "" && isCareerValid;
 
   const handleNext = async () => {
     if (isStep4Complete) {
@@ -62,8 +34,8 @@ export default function Preview() {
         return;
       }
       const userBasicInfo = {
-        education: educationLevel,
-        career: career,
+        educationLevel: educationLevel,
+        careerYears: career,
       };
       mutate(
         { params: userBasicInfo },

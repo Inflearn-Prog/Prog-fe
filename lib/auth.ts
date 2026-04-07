@@ -44,13 +44,12 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
         }
 
         const resData = await response.json();
-
         if (resData.success) {
           const { isNewUser, accessToken, refreshToken, registrationStatus } =
             resData.data;
 
           // 신규 유저든 기존 유저든 일단 정보를 user 객체에 보관
-          user.accessToken = accessToken; // 신규 유저면 null이 들어감
+          user.accessToken = accessToken;
           user.isNewUser = isNewUser;
           user.refreshToken = refreshToken; // 신규 유저 여부 저장
           user.registrationStatus = registrationStatus;
@@ -69,7 +68,6 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
         token.registrationStatus = user.registrationStatus;
         token.isNewUser = user.isNewUser;
         token.provider = user.provider;
@@ -148,7 +146,6 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
     );
 
     const resData = await response.json();
-
     if (!response.ok) {
       throw new Error(resData.message || "Refresh failed");
     }
@@ -157,8 +154,6 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
     const newAccessToken = resData.data.accessToken;
     const decoded = jwtDecode<{ exp: number }>(newAccessToken);
 
-    console.log("✅ 토큰 갱신 성공!");
-
     return {
       ...token,
       accessToken: newAccessToken,
@@ -166,7 +161,6 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
       error: undefined,
     };
   } catch (error) {
-    console.error("🚨 토큰 자동 갱신 실패:", error);
     // 갱신 실패 시 세션을 만료시키기 위해 에러 표기
     return {
       ...token,

@@ -34,15 +34,7 @@ export default function PickOption() {
     profileImage,
     provider,
     updateField,
-    isTermsAgreed,
   } = useSignupStore();
-
-  useEffect(() => {
-    if (!isTermsAgreed) {
-      router.replace("?step=select");
-      alert("약관 동의를 먼저 완료해주세요.");
-    }
-  }, [isTermsAgreed, router]);
 
   const [duplicateMessage, setDuplicateMessage] = useState("");
   const [isAvailable, setIsAvailable] = useState(false);
@@ -77,7 +69,7 @@ export default function PickOption() {
             updateField("nickname", nickname);
             setIsAvailable(true);
             setDuplicateMessage("사용 가능한 닉네임입니다.");
-            router.push("?step=pick-option");
+            router.push("?step=detail");
           },
           onError: (error: ApiError) => {
             const errorCode = error.code;
@@ -106,7 +98,6 @@ export default function PickOption() {
           },
         }
       );
-      router.push("?step=detail"); // 다음 단계로 이동
     }
   };
 

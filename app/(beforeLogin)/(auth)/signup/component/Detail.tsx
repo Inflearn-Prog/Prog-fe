@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { useSignupStore } from "@/app/store/signUpStore";
@@ -19,26 +19,8 @@ export default function Detail() {
   const { mutate, isPending } = usePutCareer();
 
   const [otherInput, setOtherInput] = useState("");
-  const {
-    isTermsAgreed,
-    nickname,
-    targetJobs,
-    setTargetJobs,
-    currentState,
-    updateField,
-  } = useSignupStore();
-
-  useEffect(() => {
-    if (!isTermsAgreed) {
-      router.replace("/signup?step=select");
-      return;
-    }
-
-    if (!nickname) {
-      router.replace("/signup?step=pick-option");
-      alert("닉네임 설정이 완료되지 않았습니다.");
-    }
-  }, [isTermsAgreed, nickname, router]);
+  const { targetJobs, setTargetJobs, currentState, updateField } =
+    useSignupStore();
 
   const isStep3Complete =
     targetJobs.length > 0 &&
@@ -58,19 +40,16 @@ export default function Detail() {
 
   const handleNext = () => {
     if (isStep3Complete) {
-      const finalStatus =
-        currentState === STATE_VALUES.ETC ? otherInput.trim() : currentState;
-
       const userCareerInfo = transformStateToPayload({
-        currentState: finalStatus,
-        otherInput: otherInput,
+        currentState: currentState,
+        otherInput: otherInput.trim(),
         targetJobs: targetJobs,
       });
       mutate(userCareerInfo, {
         onSuccess: () => {
           router.push("?step=preview");
         },
-        onError: (error) => {
+        onError: () => {
           toast.error("커리어 정보 저장 실패:");
         },
       });

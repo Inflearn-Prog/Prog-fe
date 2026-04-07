@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
-import { useSignupStore } from "@/app/store/signUpStore";
 import { BaseButton } from "@/components/shared/button";
 import { SectionHeader } from "@/components/shared/section-header";
 import { usePostComplete } from "@/hooks/use-onboarding";
@@ -14,48 +13,18 @@ import { STATIC_IMAGES } from "@/lib/static-image";
 
 export default function Complete() {
   const router = useRouter();
+  const { data: session, update } = useSession();
   const { mutate, isPending } = usePostComplete();
-
-  const {
-    isTermsAgreed,
-    nickname,
-    targetJobs,
-    currentState,
-    isRegistrationSuccess,
-  } = useSignupStore();
-
-  useEffect(() => {
-    if (!isTermsAgreed) {
-      router.replace("/signup?step=select");
-      return;
-    }
-
-    if (!nickname) {
-      router.replace("/signup?step=pick-option");
-      return;
-    }
-
-    if (!targetJobs && !currentState) {
-      router.replace("/signup?step=detail");
-      return;
-    }
-
-    if (!isRegistrationSuccess) {
-      // 가입 절차를 거치지 않고 URL로 들어온 경우 첫 단계로 튕겨냄
-      router.replace("/signup?step=select");
-    }
-  }, [
-    isTermsAgreed,
-    nickname,
-    targetJobs,
-    currentState,
-    isRegistrationSuccess,
-    router,
-  ]);
 
   const handleNext = () => {
     mutate(undefined, {
-      onSuccess: () => {
+      onSuccess: async () => {
+        await update({
+          registrationStatus: "ONBOARDING_COMPLETED",
+          user: {
+            accessToken: session?.accessToken,
+          },
+        });
         router.push(ROUTES.rank.ROOT);
         toast.success("회원가입이 완료되었습니다!");
       },

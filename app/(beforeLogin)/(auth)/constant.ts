@@ -7,26 +7,17 @@ export enum AuthProvider {
 
 export const STATE_VALUES = {
   STUDENT: "재학중",
-  JOB_SEEKER: "취업준비",
-  CHANGING_JOB: "이직준비",
-  EMPLOYED: "취업중",
-  FREELANCER: "프리랜서",
-  CAREER_BREAK: "휴직중",
+  JOB_SEEKER: "취업 준비",
+  CAREER_CHANGE_PREP: "이직 준비",
   ETC: "기타",
 } as const;
 
 export const JOB_DATA = {
-  FRONTEND: "프론트엔드",
-  BACKEND: "백엔드",
-  FULLSTACK: "풀스택",
-  MOBILE: "모바일",
-  DEVOPS: "데브옵스",
-  DATA_ENGINEER: "데이터 엔지니어",
-  AI_ML: "AI/머신러닝",
-  SECURITY: "보안",
-  QA: "QA",
-  PM: "기획/PM",
-  DESIGNER: "디자이너",
+  DEVELOPMENT: "개발",
+  MARKETING_CONTENT: "마케팅/콘텐츠",
+  SERVICE_PLANNING: "서비스 기획",
+  HR_GA: "인사/총무",
+  DESIGN: "디자인",
   ETC: "기타",
 } as const;
 

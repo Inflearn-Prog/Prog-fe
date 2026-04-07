@@ -5,8 +5,8 @@ interface ApiError extends Error {
 }
 
 export interface PutBasicParams {
-  education: string;
-  career: number;
+  educationLevel: string;
+  careerYears: number;
 }
 export interface PutCareerParams {
   currentStatuses: string[];
@@ -42,7 +42,7 @@ export async function postNickname(nickname: string, token: string) {
   return result.data;
 }
 export async function putBasic(
-  { education, career }: PutBasicParams,
+  { educationLevel, careerYears }: PutBasicParams,
   token: string
 ) {
   const res = await fetch(`${BASE_URL}/users/me/onboarding/basic`, {
@@ -51,7 +51,7 @@ export async function putBasic(
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ education, career }),
+    body: JSON.stringify({ educationLevel, careerYears }),
   });
 
   if (!res.ok) {

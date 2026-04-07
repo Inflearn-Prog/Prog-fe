@@ -32,28 +32,42 @@ export default auth((req) => {
   const statusToStepMap: Record<string, string> = {
     SOCIAL_LOGIN_ONLY: "select",
     TERMS_AGREED: "pick-option",
-    NICKNAME_REGISTERED: "detail",
-    BASIC_INFO_COMPLETED: "preview",
-    CAREER_INFO_COMPLETED: "complete",
+    NICKNAME_REGISTERED: "detail", // DB 상태 기준 시작점
   };
 
   const targetStep = statusToStepMap[regStatus as string];
   const currentStep = nextUrl.searchParams.get("step");
 
   if (isSignIn) {
-    // 신규 유저인데 가입 페이지가 아닌 곳에 있다면 가입 페이지로
-    if (targetStep && currentStep !== targetStep) {
-      const url = new URL("/signup", nextUrl.origin);
-      url.searchParams.set("step", targetStep);
-      return NextResponse.redirect(url);
+    if (isNewUser) {
+      if (currentStep === "complete") {
+        return NextResponse.next();
+      }
+      if (regStatus === "NICKNAME_REGISTERED") {
+        const allowedFinalSteps = ["detail", "preview", "complete"];
+        if (!allowedFinalSteps.includes(currentStep as string)) {
+          const url = new URL("/signup", nextUrl.origin);
+          url.searchParams.set("step", "detail");
+          return NextResponse.redirect(url);
+        }
+      }
+      // 2. 그 외 이전 단계들 (SOCIAL_LOGIN_ONLY 등)
+      else if (targetStep && currentStep !== targetStep) {
+        const url = new URL("/signup", nextUrl.origin);
+        url.searchParams.set("step", targetStep);
+        return NextResponse.redirect(url);
+      }
     }
 
-    // 가입 완료 유저가 가입/로그인 페이지 접근 시 메인으로
-    if (!isNewUser && isAuthRoute) {
-      return NextResponse.redirect(new URL(ROUTES.rank.ROOT, nextUrl.origin));
+    // 3. 가입 완료 유저 처리
+    const isCompleted = regStatus === "ONBOARDING_COMPLETED";
+    if (isCompleted) {
+      if (isAuthRoute || pathname === "/") {
+        return NextResponse.redirect(new URL(ROUTES.rank.ROOT, nextUrl.origin));
+      }
     }
   }
-  // 그 외(메인, 랭킹 페이지 등)는 모두 통과
+
   return NextResponse.next();
 });
 
