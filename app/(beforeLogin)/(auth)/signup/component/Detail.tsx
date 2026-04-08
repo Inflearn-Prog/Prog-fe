@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { useSignupStore } from "@/app/store/signUpStore";
@@ -19,8 +19,14 @@ export default function Detail() {
   const { mutate, isPending } = usePutCareer();
 
   const [otherInput, setOtherInput] = useState("");
-  const { targetJobs, setTargetJobs, currentState, updateField } =
-    useSignupStore();
+  const {
+    isTermsAgreed,
+    nickname,
+    targetJobs,
+    setTargetJobs,
+    currentState,
+    updateField,
+  } = useSignupStore();
 
   const isStep3Complete =
     targetJobs.length > 0 &&
@@ -55,6 +61,12 @@ export default function Detail() {
       });
     }
   };
+
+  useEffect(() => {
+    if (!isTermsAgreed || !nickname) {
+      router.push("?step=select");
+    }
+  }, [isTermsAgreed, nickname, router]);
 
   return (
     <div>
