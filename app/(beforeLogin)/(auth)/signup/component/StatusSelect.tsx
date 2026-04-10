@@ -41,7 +41,7 @@ export const StatusSelect = ({
             {option}
           </button>
         ))}
-        {value === STATE_VALUES.OTHER && (
+        {value === STATE_VALUES.ETC && (
           <div className="col-span-full md:flex-1 mt-1 md:mt-0">
             <BaseInput
               placeholder="상태를 직접 입력해주세요"

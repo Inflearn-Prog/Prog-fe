@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { useSignupStore } from "@/app/store/signUpStore";
 import { ProfIcon } from "@/components/profile-icon/profile-icon";
@@ -10,8 +11,8 @@ import { BaseButton } from "@/components/shared/button";
 import { BaseInput } from "@/components/shared/inputs";
 import { SectionHeader } from "@/components/shared/section-header";
 import { ValidationMessage } from "@/components/shared/validation-message";
+import { usePostNickname } from "@/hooks/use-onboarding";
 import { cn } from "@/lib/utils";
-import { nicknameCheck } from "@/queries/api/nickname-check";
 
 import { Stepper } from "./Stepper";
 
@@ -22,7 +23,8 @@ interface ApiError extends Error {
 
 export default function PickOption() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
+  const { mutate, isPending } = usePostNickname();
 
   const {
     nickname,
@@ -32,76 +34,70 @@ export default function PickOption() {
     profileImage,
     provider,
     updateField,
-    isTermsAgreed,
   } = useSignupStore();
-
-  useEffect(() => {
-    if (!isTermsAgreed) {
-      router.replace("?step=select");
-      alert("약관 동의를 먼저 완료해주세요.");
-    }
-  }, [isTermsAgreed, router]);
 
   const [duplicateMessage, setDuplicateMessage] = useState("");
   const [isAvailable, setIsAvailable] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const isNicknameValid = nickname.length >= 2;
-  const isStep2Complete = isAvailable && selectedProfileType !== null;
-
-  const checkDuplicate = async () => {
-    if (!isNicknameValid || isLoading) return;
-
-    setIsLoading(true);
-    setDuplicateMessage("");
-
-    const token = session?.accessToken;
-
-    if (!token) {
-      setDuplicateMessage("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
-      setIsAvailable(false);
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const available = await nicknameCheck(nickname, session?.accessToken);
-
-      if (available) {
-        setDuplicateMessage("사용 가능한 닉네임입니다.");
-        setIsAvailable(true);
-      } else {
-        setDuplicateMessage("이미 사용 중인 닉네임입니다.");
-        setIsAvailable(false);
-      }
-    } catch (error: unknown) {
-      setIsAvailable(false);
-
-      const apiError = error as ApiError;
-      if (apiError.status === 409) {
-        setDuplicateMessage("이미 사용 중인 닉네임입니다.");
-      } else if (apiError.status === 400) {
-        setDuplicateMessage("올바르지 않은 닉네임 형식입니다.");
-      } else {
-        setDuplicateMessage(
-          apiError.message || "알 수 없는 오류가 발생했습니다."
-        );
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const isStep2Complete = selectedProfileType !== null;
 
   // 닉네임이 수정되면 중복 확인 상태 초기화
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNickname(e.target.value);
+    const value = e.target.value;
+    setNickname(value);
     setDuplicateMessage("");
     setIsAvailable(false);
+
+    if (value.length > 2 && !/^[a-zA-Z0-9가-힣]+$/.test(value)) {
+      setDuplicateMessage(
+        "닉네임은 2글자 이상, 한글, 영문, 숫자만 입력 가능합니다."
+      );
+      return;
+    }
   };
 
   const handleNext = () => {
     if (isStep2Complete) {
-      router.push("?step=detail"); // 다음 단계로 이동
+      mutate(
+        { params: nickname },
+        {
+          onSuccess: async () => {
+            await update({
+              ...session,
+              registrationStatus: "NICKNAME_REGISTERED",
+            });
+            updateField("nickname", nickname);
+            setIsAvailable(true);
+            setDuplicateMessage("사용 가능한 닉네임입니다.");
+            router.push("?step=detail");
+          },
+          onError: (error: ApiError) => {
+            const errorCode = error.code;
+            switch (errorCode) {
+              case "NICKNAME_ALREADY_USED":
+                setDuplicateMessage("이미 사용 중인 닉네임입니다.");
+                setIsAvailable(false);
+                break;
+              case "INVALID_NICKNAME_FORMAT":
+                setDuplicateMessage(
+                  "닉네임 형식이 올바르지 않습니다. (최대 12자)"
+                );
+                setIsAvailable(false);
+                break;
+              case "NICKNAME_CHANGE_TOO_FREQUENT":
+                toast.error("닉네임은 24시간 이내에 다시 변경할 수 없습니다.");
+                break;
+              case "USER_NOT_FOUND":
+                toast.error(
+                  "사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요."
+                );
+                break;
+              default:
+                toast.error("닉네임 등록 중 오류가 발생했습니다.");
+            }
+          },
+        }
+      );
     }
   };
 
@@ -195,17 +191,9 @@ export default function PickOption() {
               onChange={handleNicknameChange}
               viewLength={true}
               maxLength={12}
-              disabled={isLoading}
+              disabled={isPending}
             />
           </div>
-          <BaseButton
-            type="button"
-            className="min-w-[6.25rem]"
-            disabled={!isNicknameValid || isLoading}
-            onClick={checkDuplicate}
-          >
-            중복확인
-          </BaseButton>
         </div>
 
         <div className="w-full mt-2 md:my-2 min-h-6">
@@ -223,7 +211,7 @@ export default function PickOption() {
       <div className="mx-auto lg:w-[55%]">
         <BaseButton
           onClick={handleNext}
-          disabled={!isStep2Complete}
+          disabled={!isStep2Complete || isPending}
           className="w-full mt-6 py-3"
         >
           다음
