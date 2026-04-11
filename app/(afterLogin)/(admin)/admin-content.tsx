@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { AdminTabKey } from "./admin-tabs";
 import { DashboardTab } from "./dashboard/dashboard-tab";
 import { PromptsTab } from "./prompts/prompts-tab";
+import { UsersTab } from "./users/users-tab";
 
 export function AdminContent() {
   const searchParams = useSearchParams();
@@ -16,7 +17,7 @@ export function AdminContent() {
     case "prompts":
       return <PromptsTab />;
     case "users":
-      return <div className="text-gray-500">유저 관리 (준비 중)</div>;
+      return <UsersTab />;
     case "categories":
       return <div className="text-gray-500">카테고리 관리 (준비 중)</div>;
     case "notices":
