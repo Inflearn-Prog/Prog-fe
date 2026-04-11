@@ -10,7 +10,7 @@ import {
   ReportRejectRequest,
   StatsSummaryData,
   UserStatus,
-} from "@/app/(afterLogin)/(admin)/types";
+} from "@/app/(afterLogin)/admin/types";
 import { ApiResponse, fetcher } from "@/lib/fetcher";
 
 // --- 대시보드: 통계 ---
