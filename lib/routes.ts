@@ -46,4 +46,12 @@ export const ROUTES = {
     LIKED: "/mypage?tab=activity&sub=liked",
     POSTED: "/mypage?tab=activity&sub=posted",
   },
+  admin: {
+    ROOT: "/admin",
+    DASHBOARD: "/admin?tab=dashboard",
+    PROMPTS: "/admin?tab=prompts",
+    USERS: "/admin?tab=users",
+    CATEGORIES: "/admin?tab=categories",
+    NOTICES: "/admin?tab=notices",
+  },
 } as const;

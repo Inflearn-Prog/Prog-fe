@@ -1,10 +1,21 @@
-import React from "react";
+import React, { Suspense } from "react";
+
+import { AdminTabs } from "./admin-tabs";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // LATER admin auth guard 필요
-  return <>{children}</>;
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <h1 className="mb-6 text-2xl font-bold">관리자 페이지</h1>
+        <Suspense>
+          <AdminTabs />
+        </Suspense>
+        <div className="mt-8">{children}</div>
+      </div>
+    </div>
+  );
 }
