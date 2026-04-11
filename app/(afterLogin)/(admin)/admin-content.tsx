@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { AdminTabKey } from "./admin-tabs";
 import { CategoriesTab } from "./categories/categories-tab";
 import { DashboardTab } from "./dashboard/dashboard-tab";
+import { NoticesTab } from "./notices/notices-tab";
 import { PromptsTab } from "./prompts/prompts-tab";
 import { UsersTab } from "./users/users-tab";
 
@@ -22,7 +23,7 @@ export function AdminContent() {
     case "categories":
       return <CategoriesTab />;
     case "notices":
-      return <div className="text-gray-500">공지사항 (준비 중)</div>;
+      return <NoticesTab />;
     default:
       return <DashboardTab />;
   }
