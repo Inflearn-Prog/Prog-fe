@@ -83,17 +83,17 @@ export function PendingReportsTable() {
       <div className="rounded-lg bg-white shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="text-frog-600 font-semibold">
+            <TableRow className="bg-frog-600/5">
+              <TableHead className="text-center font-semibold text-frog-600">
                 신고 일시
               </TableHead>
-              <TableHead className="text-frog-600 font-semibold">
+              <TableHead className="text-center font-semibold text-frog-600">
                 분류
               </TableHead>
-              <TableHead className="text-frog-600 font-semibold">
+              <TableHead className="text-center font-semibold text-frog-600">
                 신고 관련글
               </TableHead>
-              <TableHead className="text-frog-600 font-semibold">
+              <TableHead className="text-center font-semibold text-frog-600">
                 상태
               </TableHead>
               <TableHead />
@@ -122,21 +122,21 @@ export function PendingReportsTable() {
             ) : (
               reports.map((report) => (
                 <TableRow key={report.reportId}>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-center text-sm text-gray-600">
                     {formatDate(report.reportedAt)}
                   </TableCell>
-                  <TableCell className="text-sm">
+                  <TableCell className="text-center text-sm">
                     {REPORT_REASON_LABEL[report.reasonCategory]}
                   </TableCell>
-                  <TableCell className="max-w-[300px] truncate text-sm">
+                  <TableCell className="max-w-[300px] truncate text-center text-sm">
                     {report.targetPromptTitle}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <span className="rounded bg-yellow-50 px-2 py-0.5 text-xs font-medium text-yellow-700">
                       대기
                     </span>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <button
                       onClick={() => setSelectedReport(report)}
                       className="text-sm font-medium text-frog-600 hover:underline"
