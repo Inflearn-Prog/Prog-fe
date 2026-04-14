@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { toast } from "sonner";
 
 import { AuthProvider } from "@/app/(beforeLogin)/(auth)/constant";
 import UserProfile from "@/components/mypage/user-profile";
@@ -25,11 +26,9 @@ export default function MypageLeftSection() {
       try {
         await postLogout();
         queryClient.clear();
-        toasts.success("로그아웃 되었습니다.");
-      } catch (error) {
-        //TODO: error 컴포넌트가 생기면 사용자 피드백 주기
-        alert("로그아웃 처리 중 오류가 발생했습니다.");
-        //toasts.error("로그아웃 처리 중 오류가 발생했습니다.");
+        toast.success("로그아웃 되었습니다.");
+      } catch {
+        toast.error("로그아웃 처리 중 오류가 발생했습니다.");
       } finally {
         await signOut({
           callbackUrl: ROUTES.rank.ROOT,
@@ -57,9 +56,8 @@ export default function MypageLeftSection() {
       toasts.success("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
       router.push(ROUTES.rank.ROOT);
       router.refresh();
-    } catch (error) {
-      alert("탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
-      //toasts.error("탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
+    } catch {
+      toast.error("탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
     }
   };
 

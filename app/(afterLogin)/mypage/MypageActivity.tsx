@@ -21,7 +21,6 @@ export default function MypageActivitySection() {
 
   const { data: session } = useSession();
   const userId = session?.user?.id;
-  //const userId = 1; //테스트 용 임시 값
 
   const activeSub = currentSub as "liked" | "posted";
 

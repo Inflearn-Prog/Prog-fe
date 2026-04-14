@@ -1,4 +1,5 @@
 import { jwtDecode } from "jwt-decode";
+import { cookies } from "next/headers";
 import NextAuth from "next-auth";
 import { JWT } from "next-auth/jwt";
 import KakaoProvider from "next-auth/providers/kakao";
@@ -45,9 +46,16 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 
         const resData = await response.json();
         if (resData.success) {
-          const { isNewUser, accessToken, refreshToken, registrationStatus } =
-            resData.data;
+          const { isNewUser, accessToken, registrationStatus } = resData.data;
 
+          const cookieStore = await cookies();
+          cookieStore.set("accessToken", accessToken, {
+            path: "/",
+            httpOnly: false, // 중요: 클라이언트 document.cookie로 접근해야 함
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 30 * 24 * 60 * 60, // 30일
+          });
           // 신규 유저든 기존 유저든 일단 정보를 user 객체에 보관
           user.accessToken = accessToken;
           user.isNewUser = isNewUser;
@@ -59,7 +67,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
           return true;
         }
         return false;
-      } catch (error) {
+      } catch {
         return false;
       }
     },
@@ -128,7 +136,6 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 
 async function refreshBackendToken(token: JWT): Promise<JWT> {
   try {
-    const { cookies } = await import("next/headers");
     const cookieStore = await cookies();
     const cookieString = cookieStore.toString();
 
@@ -154,13 +161,18 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
     const newAccessToken = resData.data.accessToken;
     const decoded = jwtDecode<{ exp: number }>(newAccessToken);
 
+    cookieStore.set("accessToken", newAccessToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
     return {
       ...token,
       accessToken: newAccessToken,
       accessTokenExpires: decoded.exp * 1000,
       error: undefined,
     };
-  } catch (error) {
+  } catch {
     // 갱신 실패 시 세션을 만료시키기 위해 에러 표기
     return {
       ...token,

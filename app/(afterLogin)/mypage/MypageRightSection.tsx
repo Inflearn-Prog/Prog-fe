@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import {
   EDUCATION_OPTIONS,
@@ -20,14 +21,21 @@ import { BaseButton } from "@/components/shared/button";
 import { BaseCheckBox } from "@/components/shared/checkbox";
 import { BaseInput } from "@/components/shared/inputs";
 import { SelectBox } from "@/components/shared/select-box";
-import { toasts } from "@/components/shared/toast";
-import { useUpdateProfile, useUserProfile } from "@/hooks/use-mypage";
-import { usePostTerms } from "@/hooks/use-terms-checks";
+import {
+  useAgreedTerms,
+  useUpdateProfile,
+  useUserProfile,
+  useWithdrawTerms,
+} from "@/hooks/use-mypage";
+import { usePostTerms, useTerms } from "@/hooks/use-terms-checks";
 import { UpdateProfileRequest } from "@/queries/api/mypage";
 
 export default function MypageRightSection() {
   const { data: profile, isLoading } = useUserProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
+  const { data: terms } = useTerms();
+  const { data } = useAgreedTerms();
+  const { mutate: withdrawMutation } = useWithdrawTerms();
   const { mutate: postTermsMutation, isPending: isTermsPending } =
     usePostTerms();
 
@@ -35,7 +43,7 @@ export default function MypageRightSection() {
   const [experiences, setExperiences] = useState<string[]>([]);
   const [keywords, setKeywords] = useState<string[]>([]);
   const [marketingAgree, setMarketingAgree] = useState(false);
-
+  const marketingLink = terms?.terms?.find((t) => t.termId === 3)?.link ?? "";
   const {
     targetJobs,
     setTargetJobs,
@@ -50,7 +58,6 @@ export default function MypageRightSection() {
     return () => reset();
   }, [reset]);
 
-  //TODO: 약관동의 동의 여부를 조회가능한 API 있는지 확인
   const initialized = useRef(false);
   useEffect(() => {
     if (profile) {
@@ -64,7 +71,7 @@ export default function MypageRightSection() {
       updateField("currentState", normalized.currentState);
       updateField("educationLevel", normalized.educationLevel);
       updateField("career", normalized.career);
-
+      setMarketingAgree(data?.isMarketingAgreed || false);
       setExperiences(selfIntro.experiences || []);
       setKeywords(selfIntro.keywords || []);
     }
@@ -77,7 +84,6 @@ export default function MypageRightSection() {
       </div>
     );
   }
-
   const handleJobClick = (option: string) => {
     const castedOption = option as JobType;
     if (targetJobs.includes(castedOption)) {
@@ -88,18 +94,33 @@ export default function MypageRightSection() {
   };
 
   const handleMarketingChange = () => {
-    const termIds = marketingAgree ? [1, 2, 3] : [1, 2];
+    const targetId = { termIds: [3] };
 
-    postTermsMutation(termIds, {
-      onSuccess: () => {
-        toasts.success("마케팅 수신 동의 설정이 저장되었습니다.");
-      },
-      onError: (error) => {
-        console.error("약관 업데이트 실패:", error);
-        alert("저장에 실패했습니다.");
-        //toasts.error("저장에 실패했습니다.");
-      },
-    });
+    const isCurrentlyAgreedOnServer = data?.isMarketingAgreed;
+
+    if (isCurrentlyAgreedOnServer) {
+      withdrawMutation(targetId, {
+        onSuccess: () => {
+          toast.success("마케팅 수신 동의가 철회되었습니다.");
+          setMarketingAgree(false);
+        },
+        onError: () => {
+          toast.error("철회 처리 중 오류가 발생했습니다.");
+          setMarketingAgree(true);
+        },
+      });
+    } else {
+      postTermsMutation([1, 2, 3], {
+        onSuccess: () => {
+          toast.success("마케팅 수신 동의가 완료되었습니다.");
+          setMarketingAgree(true);
+        },
+        onError: () => {
+          toast.error("동의 처리 중 오류가 발생했습니다.");
+          setMarketingAgree(false);
+        },
+      });
+    }
   };
 
   const handleGlobalSave = () => {
@@ -107,7 +128,7 @@ export default function MypageRightSection() {
 
     if (currentState === STATE_VALUES.ETC && !otherInput.trim()) {
       alert("기타 상태를 직접 입력해주세요.");
-      //toasts.error("기타 상태를 직접 입력해주세요.");
+      toast.error("기타 상태를 직접 입력해주세요.");
       return;
     }
     const careerPayload = transformState({
@@ -259,7 +280,7 @@ export default function MypageRightSection() {
             onCheckedChange={(checked) => setMarketingAgree(!!checked)}
           />
           <Link
-            href="#" // TODO: 실제 마케팅 동의 약관 URL로 교체
+            href={marketingLink}
             className="text-frog-600 label-medium hover:underline px-2"
             target="_blank"
           >
