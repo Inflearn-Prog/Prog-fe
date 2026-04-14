@@ -7,27 +7,28 @@ import {
 
 import { PromptBase, PromptPage } from "@/app/types/type";
 import { toasts } from "@/components/shared/toast";
+import { ApiResponse } from "@/lib/fetcher";
+import { fetchPrompts } from "@/queries/api/prompts";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8000/api/v1";
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
-export const useGetPrompts = (category: string) => {
-  return useInfiniteQuery({
-    queryKey: ["prompts", category],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await fetch(
-        `${BASE_URL}/prompts?category=${category}&page=${pageParam}&size=10`
-      );
-      if (!response.ok) throw new Error("Network error");
-      return response.json();
-    },
-    initialPageParam: 1,
+export const useGetPrompts = (category: string, q?: string) => {
+  return useInfiniteQuery<ApiResponse<PromptPage>>({
+    queryKey: ["prompts", category, q],
+    queryFn: ({ pageParam = 0 }) =>
+      fetchPrompts(category, pageParam as number, q),
+    initialPageParam: 0,
     getNextPageParam: (lastPage) => {
-      return lastPage.nextPage ?? undefined;
+      if (!lastPage || !lastPage.data) return undefined;
+
+      const { isLast, nextPage } = lastPage.data;
+
+      // isLast가 true이면 다음 페이지 없음
+      if (isLast) return undefined;
+
+      // nextPage가 null이거나 undefined이면 다음 페이지 없음
+      return nextPage ?? undefined;
     },
-    // 상세 페이지 이동 후 돌아왔을 때 데이터가 사라지거나 재호출되는 것을 방지
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
   });
 };
 

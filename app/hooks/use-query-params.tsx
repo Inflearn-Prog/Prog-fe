@@ -72,7 +72,9 @@ export default function useQueryParams() {
   const deleteParams = useCallback(
     (keys: string[]) => {
       const params = createParams();
-      keys.forEach((key) => params.delete(key));
+      keys.forEach((key) => {
+        params.delete(key);
+      });
       const query = params.toString();
       router.push(query ? `${pathname}?${query}` : pathname);
     },

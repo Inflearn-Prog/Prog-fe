@@ -15,13 +15,19 @@ function trimAndSanitizedValue(value: string) {
 export function HeaderSearch() {
   const inputId = useId();
 
-  const { getParam, setParam } = useQueryParams();
+  const { getParam, setParam, deleteParam } = useQueryParams();
+
   const q = getParam("q") || ""; // 검색어 파라미터에서 초기값 가져오기
   const [searchValue, setSearchValue] = useState(q);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setParam("q", trimAndSanitizedValue(searchValue));
+    const normalized = searchValue.trim();
+    if (!normalized) {
+      deleteParam("q");
+      return;
+    }
+    setParam("q", normalized);
   };
 
   useEffect(() => {
