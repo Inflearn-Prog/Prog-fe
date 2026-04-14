@@ -4,7 +4,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -13,13 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  bulkUpdateUserRole,
-  bulkUpdateUserStatus,
-  getAdminUsers,
-} from "@/queries/api/admin";
+import { bulkUpdateUserStatus, getAdminUsers } from "@/queries/api/admin";
 
-import { USER_STATUS_LABEL } from "../constant";
 import { UserStatus } from "../types";
 
 export function UsersTab() {
@@ -27,12 +21,11 @@ export function UsersTab() {
   const [page, setPage] = useState(0);
   const [keyword, setKeyword] = useState("");
   const [inputValue, setInputValue] = useState("");
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "users", { page, keyword }],
     queryFn: () =>
-      getAdminUsers({ page, size: 20, keyword: keyword || undefined }),
+      getAdminUsers({ page, size: 10, keyword: keyword || undefined }),
     select: (res) => res.data,
   });
 
@@ -40,15 +33,6 @@ export function UsersTab() {
     mutationFn: bulkUpdateUserStatus,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
-      setSelectedIds([]);
-    },
-  });
-
-  const roleMutation = useMutation({
-    mutationFn: bulkUpdateUserRole,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
-      setSelectedIds([]);
     },
   });
 
@@ -59,16 +43,14 @@ export function UsersTab() {
   const handleSearch = () => {
     setKeyword(inputValue);
     setPage(0);
-    setSelectedIds([]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleSearch();
   };
 
-  const handleStatusChange = (status: UserStatus) => {
-    if (selectedIds.length === 0) return;
-    statusMutation.mutate({ userIds: selectedIds, status });
+  const handleInlineStatusChange = (userId: number, status: UserStatus) => {
+    statusMutation.mutate({ userIds: [userId], status });
   };
 
   return (
@@ -85,49 +67,11 @@ export function UsersTab() {
         />
       </div>
 
-      {selectedIds.length > 0 && (
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">
-            {selectedIds.length}명 선택됨
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleStatusChange("SUSPENDED")}
-            disabled={statusMutation.isPending}
-          >
-            활동 제한
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleStatusChange("ACTIVE")}
-            disabled={statusMutation.isPending}
-          >
-            제한 해제
-          </Button>
-        </div>
-      )}
-
       <div className="rounded-lg bg-white shadow-sm">
         <Table>
           <TableHeader>
             <TableRow className="bg-frog-100">
-              <TableHead className="w-10 text-center">
-                <input
-                  type="checkbox"
-                  checked={
-                    users.length > 0 && selectedIds.length === users.length
-                  }
-                  onChange={() =>
-                    selectedIds.length === users.length
-                      ? setSelectedIds([])
-                      : setSelectedIds(users.map((u) => u.userId))
-                  }
-                  className="accent-frog-600"
-                />
-              </TableHead>
-              <TableHead className="text-center font-semibold text-frog-600">
+              <TableHead className="w-[35%] text-center font-semibold text-frog-600">
                 유저 이름
               </TableHead>
               <TableHead className="text-center font-semibold text-frog-600">
@@ -146,9 +90,9 @@ export function UsersTab() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
+              Array.from({ length: 10 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 6 }).map((_, j) => (
+                  {Array.from({ length: 5 }).map((_, j) => (
                     <TableCell key={j}>
                       <div className="h-4 w-16 animate-pulse rounded bg-gray-100" />
                     </TableCell>
@@ -158,7 +102,7 @@ export function UsersTab() {
             ) : users.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={5}
                   className="py-12 text-center text-gray-400"
                 >
                   유저가 없습니다.
@@ -168,41 +112,44 @@ export function UsersTab() {
               users.map((user) => (
                 <TableRow key={user.userId}>
                   <TableCell>
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.includes(user.userId)}
-                      onChange={() =>
-                        setSelectedIds((prev) =>
-                          prev.includes(user.userId)
-                            ? prev.filter((x) => x !== user.userId)
-                            : [...prev, user.userId]
-                        )
-                      }
-                      className="accent-frog-600"
-                    />
+                    <div className="flex items-center gap-3 pl-2">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-200">
+                        <span className="text-xs font-medium text-gray-500">
+                          {user.nickname.charAt(0)}
+                        </span>
+                      </div>
+                      <span className="text-sm font-medium">
+                        {user.nickname}
+                      </span>
+                    </div>
                   </TableCell>
-                  <TableCell className="text-sm font-medium">
-                    {user.nickname}
-                  </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-center text-sm text-gray-600">
                     {user.role}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-center text-sm text-gray-600">
                     {user.promptCount.toLocaleString()}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-center text-sm text-gray-600">
                     {user.commentCount.toLocaleString()}
                   </TableCell>
-                  <TableCell>
-                    <span
-                      className={`text-sm ${
+                  <TableCell className="text-center">
+                    <select
+                      value={user.status}
+                      onChange={(e) =>
+                        handleInlineStatusChange(
+                          user.userId,
+                          e.target.value as UserStatus
+                        )
+                      }
+                      className={`w-[120px] rounded border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-frog-600 ${
                         user.status === "SUSPENDED"
                           ? "font-medium text-red-500"
                           : "text-gray-600"
                       }`}
                     >
-                      {USER_STATUS_LABEL[user.status]}
-                    </span>
+                      <option value="ACTIVE">일반</option>
+                      <option value="SUSPENDED">제한</option>
+                    </select>
                   </TableCell>
                 </TableRow>
               ))

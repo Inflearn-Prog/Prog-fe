@@ -10,7 +10,6 @@ import {
   deleteCategory,
   getAdminCategories,
   updateCategory,
-  updateCategoryOrder,
 } from "@/queries/api/admin";
 
 import { AdminCategory } from "../types";
@@ -64,13 +63,6 @@ export function CategoriesTab() {
     },
   });
 
-  const orderMutation = useMutation({
-    mutationFn: updateCategoryOrder,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
-    },
-  });
-
   const categories = data?.categories ?? [];
   const tree = buildTree(categories);
 
@@ -88,28 +80,8 @@ export function CategoriesTab() {
     deleteMutation.mutate(id);
   };
 
-  const swapOrder = (fromIdx: number, toIdx: number) => {
-    const parentIds = tree.map((t) => t.categoryId);
-    const fromItem = parentIds.at(fromIdx);
-    const toItem = parentIds.at(toIdx);
-    if (fromItem === undefined || toItem === undefined) return;
-    const reordered = parentIds.map((id, i) => {
-      if (i === fromIdx) return toItem;
-      if (i === toIdx) return fromItem;
-      return id;
-    });
-    orderMutation.mutate(reordered);
-  };
-
-  const handleMoveUp = (index: number) => {
-    if (index <= 0) return;
-    swapOrder(index, index - 1);
-  };
-
-  const handleMoveDown = (index: number) => {
-    if (index >= tree.length - 1) return;
-    swapOrder(index, index + 1);
-  };
+  // TODO: 드래그 앤 드롭으로 카테고리 순서 변경 구현 (@dnd-kit 도입 필요)
+  // API: PUT /admin/categories/order { categoryIds: number[] }
 
   const startEdit = (cat: AdminCategory) => {
     setEditingId(cat.categoryId);
@@ -145,19 +117,13 @@ export function CategoriesTab() {
           </div>
         ) : (
           <div className="divide-y">
-            {tree.map((parent, idx) => (
+            {tree.map((parent) => (
               <div key={parent.categoryId}>
                 <div className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <button
-                      className="cursor-grab text-gray-400 hover:text-gray-600"
-                      title="순서 변경"
-                      onClick={() =>
-                        idx > 0 ? handleMoveUp(idx) : handleMoveDown(idx)
-                      }
-                    >
+                    <span className="cursor-grab text-gray-400">
                       <GripVertical className="h-4 w-4" />
-                    </button>
+                    </span>
                     {editingId === parent.categoryId ? (
                       <input
                         type="text"
@@ -186,14 +152,14 @@ export function CategoriesTab() {
                       onClick={() => startEdit(parent)}
                       className="text-gray-400 hover:text-gray-600"
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="h-3 w-3" fill="currentColor" />
                     </button>
                     <button
                       onClick={() => handleDelete(parent.categoryId)}
                       className="text-gray-400 hover:text-red-500"
                       disabled={deleteMutation.isPending}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3 w-3" fill="currentColor" />
                     </button>
                   </div>
                 </div>
@@ -228,6 +194,21 @@ export function CategoriesTab() {
                           </span>
                         </span>
                       )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => startEdit(child)}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <Pencil className="h-3 w-3" fill="currentColor" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(child.categoryId)}
+                        className="text-gray-400 hover:text-red-500"
+                        disabled={deleteMutation.isPending}
+                      >
+                        <Trash2 className="h-3 w-3" fill="currentColor" />
+                      </button>
                     </div>
                   </div>
                 ))}

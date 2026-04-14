@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { cn } from "@/lib/utils";
 import { getStatsSummary } from "@/queries/api/admin";
 
 import { MetricInfo } from "../types";
@@ -45,20 +44,13 @@ function MetricCard({
   }
 
   const isPositive = metric.increment > 0;
-  const isNegative = metric.increment < 0;
 
   return (
     <div className="flex-1 rounded-lg bg-white p-6 shadow-sm">
       <p className="text-sm text-gray-500">{label}</p>
       <div className="mt-2 flex items-end justify-end gap-2">
         {metric.increment !== 0 && (
-          <span
-            className={cn(
-              "mb-1 text-xs",
-              isPositive && "text-blue-600",
-              isNegative && "text-red-500"
-            )}
-          >
+          <span className="mb-1 text-xs text-gray-800">
             {isPositive ? "▲" : "▼"} {formatNumber(Math.abs(metric.increment))}{" "}
             ({metric.percentage.toFixed(1)}%)
           </span>

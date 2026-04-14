@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { bulkDeleteNotices, getAdminNotices } from "@/queries/api/admin";
 
+import { NoticeDetail } from "./notice-detail";
 import { NoticeWriteForm } from "./notice-write-form";
 
 function formatDate(dateStr: string) {
@@ -29,6 +30,7 @@ export function NoticesTab() {
   const [page, setPage] = useState(0);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [showWriteForm, setShowWriteForm] = useState(false);
+  const [viewNoticeId, setViewNoticeId] = useState<number | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "notices", page],
@@ -50,6 +52,15 @@ export function NoticesTab() {
   const allSelected =
     notices.length > 0 && selectedIds.length === notices.length;
 
+  if (viewNoticeId !== null) {
+    return (
+      <NoticeDetail
+        noticeId={viewNoticeId}
+        onBack={() => setViewNoticeId(null)}
+      />
+    );
+  }
+
   if (showWriteForm) {
     return (
       <NoticeWriteForm
@@ -69,30 +80,25 @@ export function NoticesTab() {
           onClick={() => setShowWriteForm(true)}
           className="bg-frog-600 hover:bg-frog-700"
         >
-          공지사항 조회
+          공지사항 추가
         </Button>
-        <div className="flex gap-2">
-          {selectedIds.length > 0 && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => deleteMutation.mutate(selectedIds)}
-              disabled={deleteMutation.isPending}
-            >
-              삭제
-            </Button>
-          )}
-          <Button onClick={() => setShowWriteForm(true)} variant="destructive">
-            작성
-          </Button>
-        </div>
+        <Button
+          variant="destructive"
+          onClick={() => {
+            if (selectedIds.length === 0) return;
+            deleteMutation.mutate(selectedIds);
+          }}
+          disabled={selectedIds.length === 0 || deleteMutation.isPending}
+        >
+          삭제
+        </Button>
       </div>
 
       <div className="rounded-lg bg-white shadow-sm">
         <Table>
           <TableHeader>
             <TableRow className="bg-frog-100">
-              <TableHead className="w-10 text-center">
+              <TableHead className="w-14 text-center">
                 <input
                   type="checkbox"
                   checked={allSelected}
@@ -110,7 +116,7 @@ export function NoticesTab() {
               <TableHead className="text-center font-semibold text-frog-600">
                 공지사항 내용
               </TableHead>
-              <TableHead className="text-center font-semibold text-frog-600">
+              <TableHead className="w-[100px] text-center font-semibold text-frog-600">
                 공지일
               </TableHead>
             </TableRow>
@@ -138,7 +144,7 @@ export function NoticesTab() {
             ) : (
               notices.map((notice) => (
                 <TableRow key={notice.noticeId}>
-                  <TableCell>
+                  <TableCell className="w-14 text-center">
                     <input
                       type="checkbox"
                       checked={selectedIds.includes(notice.noticeId)}
@@ -153,12 +159,17 @@ export function NoticesTab() {
                     />
                   </TableCell>
                   <TableCell className="max-w-[250px] truncate text-sm">
-                    {notice.title}
+                    <button
+                      onClick={() => setViewNoticeId(notice.noticeId)}
+                      className="text-left hover:text-frog-600 hover:underline"
+                    >
+                      {notice.title}
+                    </button>
                   </TableCell>
                   <TableCell className="max-w-[300px] truncate text-sm text-gray-500">
                     공지사항 내용...
                   </TableCell>
-                  <TableCell className="text-sm text-gray-500">
+                  <TableCell className="w-[100px] text-center text-sm text-gray-500">
                     {formatDate(notice.createdAt)}
                   </TableCell>
                 </TableRow>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useState } from "react";
 
 import {
@@ -129,7 +130,12 @@ export function PendingReportsTable() {
                     {REPORT_REASON_LABEL[report.reason]}
                   </TableCell>
                   <TableCell className="max-w-[300px] truncate text-center text-sm">
-                    {report.targetTitle}
+                    <Link
+                      href={`/community/${report.reportId}`}
+                      className="hover:text-frog-600 hover:underline"
+                    >
+                      {report.targetTitle}
+                    </Link>
                   </TableCell>
                   <TableCell className="text-center">
                     <span className="rounded bg-yellow-50 px-2 py-0.5 text-xs font-medium text-yellow-700">

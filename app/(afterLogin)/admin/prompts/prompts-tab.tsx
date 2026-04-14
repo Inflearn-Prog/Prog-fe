@@ -18,9 +18,31 @@ import {
   getAdminPrompts,
 } from "@/queries/api/admin";
 
-import { PROMPT_STATUS_LABEL } from "../constant";
 import { PromptStatus } from "../types";
 import { PromptFilters } from "./prompt-filters";
+
+const CATEGORY_OPTIONS = [
+  { value: "", label: "카테고리 변경" },
+  { value: "1", label: "개발" },
+  { value: "2", label: "마케팅/콘텐츠" },
+  { value: "3", label: "서비스기획" },
+  { value: "4", label: "인사/총무" },
+  { value: "5", label: "디자인" },
+] as const;
+
+const CATEGORY_NAME_TO_ID: Record<string, string> = {
+  개발: "1",
+  "마케팅/콘텐츠": "2",
+  서비스기획: "3",
+  "인사/총무": "4",
+  디자인: "5",
+};
+
+const STATUS_OPTIONS = [
+  { value: "", label: "상태 변경" },
+  { value: "PUBLIC", label: "공개" },
+  { value: "PRIVATE", label: "비공개" },
+] as const;
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
@@ -37,6 +59,8 @@ export function PromptsTab() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<PromptStatus | "">("");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [bulkCategory, setBulkCategory] = useState("");
+  const [bulkStatus, setBulkStatus] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: [
@@ -49,6 +73,7 @@ export function PromptsTab() {
         page,
         size: 10,
         keyword: keyword || undefined,
+        categoryId: categoryFilter ? Number(categoryFilter) : undefined,
         status: statusFilter || undefined,
       }),
     select: (res) => res.data,
@@ -67,6 +92,8 @@ export function PromptsTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "prompts"] });
       setSelectedIds([]);
+      setBulkCategory("");
+      setBulkStatus("");
     },
   });
 
@@ -114,58 +141,100 @@ export function PromptsTab() {
     deleteMutation.mutate(selectedIds);
   };
 
-  const handleBulkStatusChange = (status: PromptStatus) => {
-    if (selectedIds.length === 0) return;
+  const handleBulkCategoryChange = (value: string) => {
+    setBulkCategory(value);
+    if (!value || selectedIds.length === 0) return;
     updateMutation.mutate({
       promptIds: selectedIds,
-      updateFields: { status },
+      updateFields: { categoryId: Number(value) },
     });
   };
 
+  const handleBulkStatusChange = (value: string) => {
+    setBulkStatus(value);
+    if (!value || selectedIds.length === 0) return;
+    updateMutation.mutate({
+      promptIds: selectedIds,
+      updateFields: { status: value as PromptStatus },
+    });
+  };
+
+  const handleInlineCategory = (promptId: number, value: string) => {
+    if (!value) return;
+    updateMutation.mutate({
+      promptIds: [promptId],
+      updateFields: { categoryId: Number(value) },
+    });
+  };
+
+  const handleInlineStatus = (promptId: number, value: string) => {
+    if (!value) return;
+    updateMutation.mutate({
+      promptIds: [promptId],
+      updateFields: { status: value as PromptStatus },
+    });
+  };
+
+  const isPending = updateMutation.isPending || deleteMutation.isPending;
+
   return (
     <div className="space-y-4">
-      <PromptFilters
-        keyword={keyword}
-        categoryFilter={categoryFilter}
-        statusFilter={statusFilter}
-        onSearch={handleSearch}
-        onCategoryFilter={handleCategoryFilter}
-        onStatusFilter={handleStatusFilter}
-      />
-
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">
-          {selectedIds.length > 0 && `${selectedIds.length}개 선택됨`}
-        </p>
-        <div className="flex gap-2">
-          {selectedIds.length > 0 && (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleBulkStatusChange("PRIVATE")}
-                disabled={updateMutation.isPending}
-              >
-                비공개 전환
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={handleBulkDelete}
-                disabled={deleteMutation.isPending}
-              >
-                일괄 삭제
-              </Button>
-            </>
-          )}
-        </div>
+        <PromptFilters
+          keyword={keyword}
+          categoryFilter={categoryFilter}
+          statusFilter={statusFilter}
+          onSearch={handleSearch}
+          onCategoryFilter={handleCategoryFilter}
+          onStatusFilter={handleStatusFilter}
+        />
+
+        {selectedIds.length > 0 && (
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-500">
+              {selectedIds.length}개 수정
+            </span>
+            <select
+              value={bulkCategory}
+              onChange={(e) => handleBulkCategoryChange(e.target.value)}
+              disabled={isPending}
+              className="h-10 w-[160px] rounded-md border border-gray-200 bg-white px-3 text-sm outline-none focus:border-frog-600"
+            >
+              {CATEGORY_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+            <select
+              value={bulkStatus}
+              onChange={(e) => handleBulkStatusChange(e.target.value)}
+              disabled={isPending}
+              className="h-10 w-[160px] rounded-md border border-gray-200 bg-white px-3 text-sm outline-none focus:border-frog-600"
+            >
+              {STATUS_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+            <Button
+              variant="destructive"
+              onClick={handleBulkDelete}
+              disabled={isPending}
+              className="h-10"
+            >
+              삭제
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="rounded-lg bg-white shadow-sm">
         <Table>
           <TableHeader>
             <TableRow className="bg-frog-100">
-              <TableHead className="w-10 text-center">
+              <TableHead className="w-14 text-center">
                 <input
                   type="checkbox"
                   checked={allSelected}
@@ -213,7 +282,7 @@ export function PromptsTab() {
             ) : (
               prompts.map((prompt) => (
                 <TableRow key={prompt.promptId}>
-                  <TableCell>
+                  <TableCell className="w-14 text-center">
                     <input
                       type="checkbox"
                       checked={selectedIds.includes(prompt.promptId)}
@@ -221,19 +290,43 @@ export function PromptsTab() {
                       className="accent-frog-600"
                     />
                   </TableCell>
-                  <TableCell className="max-w-[250px] truncate text-sm">
+                  <TableCell className="max-w-[250px] truncate text-left text-sm">
                     {prompt.title}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-center text-sm text-gray-600">
                     {prompt.authorNickname}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
-                    {prompt.categoryName}
+                  <TableCell className="text-center">
+                    <select
+                      value={CATEGORY_NAME_TO_ID[prompt.categoryName] ?? ""}
+                      onChange={(e) =>
+                        handleInlineCategory(prompt.promptId, e.target.value)
+                      }
+                      className="rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:border-frog-600"
+                    >
+                      {CATEGORY_OPTIONS.filter((o) => o.value !== "").map(
+                        ({ value, label }) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        )
+                      )}
+                    </select>
                   </TableCell>
-                  <TableCell className="text-sm">
-                    {PROMPT_STATUS_LABEL[prompt.status] ?? prompt.status}
+                  <TableCell className="text-center">
+                    <select
+                      value={prompt.status}
+                      onChange={(e) =>
+                        handleInlineStatus(prompt.promptId, e.target.value)
+                      }
+                      className="rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:border-frog-600"
+                    >
+                      <option value="PUBLIC">공개</option>
+                      <option value="PRIVATE">비공개</option>
+                      <option value="DELETED">삭제</option>
+                    </select>
                   </TableCell>
-                  <TableCell className="text-sm text-gray-500">
+                  <TableCell className="text-center text-sm text-gray-500">
                     {formatDate(prompt.createdAt)}
                   </TableCell>
                 </TableRow>
