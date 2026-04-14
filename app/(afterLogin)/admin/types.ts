@@ -44,21 +44,16 @@ export interface StatsSummaryData {
 export interface PendingReport {
   reportId: number;
   reportedAt: string;
-  reasonCategory: ReportReason;
-  targetPromptTitle: string;
+  reason: ReportReason;
+  targetTitle: string;
   reporterNickname: string;
-  reportContent: string;
+  reasonContent: string;
   status: ReportStatus;
 }
 
 export interface PendingReportListData {
   content: PendingReport[];
-  pageInfo: {
-    currentPage: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-  };
+  pageInfo: PageInfo;
 }
 
 export interface ReportProcessRequest {

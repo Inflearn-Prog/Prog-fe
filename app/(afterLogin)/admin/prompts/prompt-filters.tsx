@@ -7,15 +7,28 @@ import { PromptStatus } from "../types";
 
 interface PromptFiltersProps {
   keyword: string;
+  categoryFilter: string;
   statusFilter: PromptStatus | "";
   onSearch: (value: string) => void;
+  onCategoryFilter: (value: string) => void;
   onStatusFilter: (value: PromptStatus | "") => void;
 }
 
+const CATEGORY_OPTIONS = [
+  { value: "", label: "카테고리" },
+  { value: "development", label: "개발" },
+  { value: "marketing_content", label: "마케팅/콘텐츠" },
+  { value: "service_planning", label: "서비스기획" },
+  { value: "hr_general_affairs", label: "인사/총무" },
+  { value: "design", label: "디자인" },
+] as const;
+
 export function PromptFilters({
   keyword,
+  categoryFilter,
   statusFilter,
   onSearch,
+  onCategoryFilter,
   onStatusFilter,
 }: PromptFiltersProps) {
   const [inputValue, setInputValue] = useState(keyword);
@@ -39,6 +52,18 @@ export function PromptFilters({
           className="rounded-md border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-frog-600"
         />
       </div>
+
+      <select
+        value={categoryFilter}
+        onChange={(e) => onCategoryFilter(e.target.value)}
+        className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-frog-600"
+      >
+        {CATEGORY_OPTIONS.map(({ value, label }) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </select>
 
       <select
         value={statusFilter}

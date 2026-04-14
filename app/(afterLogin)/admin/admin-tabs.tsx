@@ -24,13 +24,13 @@ export function AdminTabs() {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-5">
       {TABS.map(({ key, label }) => (
         <button
           key={key}
           onClick={() => handleTabClick(key)}
           className={cn(
-            "rounded-md px-5 py-2.5 text-sm font-medium transition-colors",
+            "w-[197px] rounded-md py-3 text-sm font-medium transition-colors",
             currentTab === key
               ? "bg-frog-600 text-white"
               : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"

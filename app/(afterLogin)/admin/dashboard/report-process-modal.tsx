@@ -59,8 +59,7 @@ export function ReportProcessModal({
           <div>
             <p className="mb-1 text-sm font-medium text-gray-700">신고 내용</p>
             <p className="text-sm text-gray-600">
-              [{REPORT_REASON_LABEL[report.reasonCategory]}]{" "}
-              {report.reportContent}
+              [{REPORT_REASON_LABEL[report.reason]}] {report.reasonContent}
             </p>
             <p className="mt-1 text-xs text-gray-400">
               신고자: {report.reporterNickname}

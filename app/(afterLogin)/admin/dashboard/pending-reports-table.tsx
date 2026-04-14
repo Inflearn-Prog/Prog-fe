@@ -83,7 +83,7 @@ export function PendingReportsTable() {
       <div className="rounded-lg bg-white shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow className="bg-frog-600/5">
+            <TableRow className="bg-frog-100">
               <TableHead className="text-center font-semibold text-frog-600">
                 신고 일시
               </TableHead>
@@ -126,10 +126,10 @@ export function PendingReportsTable() {
                     {formatDate(report.reportedAt)}
                   </TableCell>
                   <TableCell className="text-center text-sm">
-                    {REPORT_REASON_LABEL[report.reasonCategory]}
+                    {REPORT_REASON_LABEL[report.reason]}
                   </TableCell>
                   <TableCell className="max-w-[300px] truncate text-center text-sm">
-                    {report.targetPromptTitle}
+                    {report.targetTitle}
                   </TableCell>
                   <TableCell className="text-center">
                     <span className="rounded bg-yellow-50 px-2 py-0.5 text-xs font-medium text-yellow-700">

@@ -34,11 +34,16 @@ export function PromptsTab() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(0);
   const [keyword, setKeyword] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<PromptStatus | "">("");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "prompts", { page, keyword, status: statusFilter }],
+    queryKey: [
+      "admin",
+      "prompts",
+      { page, keyword, category: categoryFilter, status: statusFilter },
+    ],
     queryFn: () =>
       getAdminPrompts({
         page,
@@ -92,6 +97,12 @@ export function PromptsTab() {
     setSelectedIds([]);
   };
 
+  const handleCategoryFilter = (value: string) => {
+    setCategoryFilter(value);
+    setPage(0);
+    setSelectedIds([]);
+  };
+
   const handleStatusFilter = (value: PromptStatus | "") => {
     setStatusFilter(value);
     setPage(0);
@@ -115,8 +126,10 @@ export function PromptsTab() {
     <div className="space-y-4">
       <PromptFilters
         keyword={keyword}
+        categoryFilter={categoryFilter}
         statusFilter={statusFilter}
         onSearch={handleSearch}
+        onCategoryFilter={handleCategoryFilter}
         onStatusFilter={handleStatusFilter}
       />
 
@@ -151,8 +164,8 @@ export function PromptsTab() {
       <div className="rounded-lg bg-white shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-10">
+            <TableRow className="bg-frog-100">
+              <TableHead className="w-10 text-center">
                 <input
                   type="checkbox"
                   checked={allSelected}
@@ -160,19 +173,19 @@ export function PromptsTab() {
                   className="accent-frog-600"
                 />
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 게시글 제목
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 작성자명
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 카테고리·수정
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 게시글 상태
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 작성일
               </TableHead>
             </TableRow>

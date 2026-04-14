@@ -112,8 +112,8 @@ export function UsersTab() {
       <div className="rounded-lg bg-white shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-10">
+            <TableRow className="bg-frog-100">
+              <TableHead className="w-10 text-center">
                 <input
                   type="checkbox"
                   checked={
@@ -127,19 +127,19 @@ export function UsersTab() {
                   className="accent-frog-600"
                 />
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 유저 이름
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 역할
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 게시글
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 댓글
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 활동 제한
               </TableHead>
             </TableRow>

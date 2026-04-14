@@ -91,8 +91,8 @@ export function NoticesTab() {
       <div className="rounded-lg bg-white shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-10">
+            <TableRow className="bg-frog-100">
+              <TableHead className="w-10 text-center">
                 <input
                   type="checkbox"
                   checked={allSelected}
@@ -104,13 +104,13 @@ export function NoticesTab() {
                   className="accent-frog-600"
                 />
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 공지사항 제목
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 공지사항 내용
               </TableHead>
-              <TableHead className="font-semibold text-frog-600">
+              <TableHead className="text-center font-semibold text-frog-600">
                 공지일
               </TableHead>
             </TableRow>
