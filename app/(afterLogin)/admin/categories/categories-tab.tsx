@@ -121,7 +121,7 @@ export function CategoriesTab() {
               <div key={parent.categoryId}>
                 <div className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <span className="cursor-grab text-gray-400">
+                    <span className="cursor-default text-gray-400">
                       <GripVertical className="h-4 w-4" />
                     </span>
                     {editingId === parent.categoryId ? (

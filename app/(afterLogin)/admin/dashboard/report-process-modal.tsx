@@ -14,12 +14,11 @@ import {
 import { REPORT_REASON_LABEL } from "../constant";
 import { PendingReport, ReportAction } from "../types";
 
-type ProcessAction = ReportAction | "SUSPEND" | "REJECT";
+type ProcessAction = ReportAction | "REJECT";
 
 const ACTION_OPTIONS: { value: ProcessAction; label: string }[] = [
   { value: "DELETE", label: "게시글/댓글 삭제" },
-  { value: "PRIVATE", label: "게시글/댓글 숨김" },
-  { value: "SUSPEND", label: "작성자 이용 제한" },
+  { value: "PRIVATE", label: "게시글/댓글 숨김 + 작성자 제한" },
   { value: "REJECT", label: "신고 반려 (문제 없음)" },
 ];
 
@@ -43,8 +42,6 @@ export function ReportProcessModal({
   const handleSubmit = () => {
     if (selectedAction === "REJECT") {
       onReject();
-    } else if (selectedAction === "SUSPEND") {
-      onProcess("PRIVATE");
     } else {
       onProcess(selectedAction);
     }

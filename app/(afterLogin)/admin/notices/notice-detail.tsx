@@ -5,14 +5,11 @@ import { ArrowLeft } from "lucide-react";
 
 import { getAdminNoticeDetail } from "@/queries/api/admin";
 
+import { formatDateKo } from "../utils";
+
 interface NoticeDetailProps {
   noticeId: number;
   onBack: () => void;
-}
-
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
 }
 
 export function NoticeDetail({ noticeId, onBack }: NoticeDetailProps) {
@@ -53,7 +50,7 @@ export function NoticeDetail({ noticeId, onBack }: NoticeDetailProps) {
       <div className="rounded-lg bg-white p-6 shadow-sm">
         <h2 className="text-lg font-bold">{data.title}</h2>
         <p className="mt-1 text-sm text-gray-400">
-          {formatDate(data.createdAt)}
+          {formatDateKo(data.createdAt)}
         </p>
         <hr className="my-4" />
         <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700">

@@ -14,16 +14,9 @@ import {
 } from "@/components/ui/table";
 import { bulkDeleteNotices, getAdminNotices } from "@/queries/api/admin";
 
+import { formatDate } from "../utils";
 import { NoticeDetail } from "./notice-detail";
 import { NoticeWriteForm } from "./notice-write-form";
-
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  const year = String(d.getFullYear()).slice(2);
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}.${month}.${day}`;
-}
 
 export function NoticesTab() {
   const queryClient = useQueryClient();
@@ -113,9 +106,6 @@ export function NoticesTab() {
               <TableHead className="text-center font-semibold text-frog-600">
                 공지사항 제목
               </TableHead>
-              <TableHead className="text-center font-semibold text-frog-600">
-                공지사항 내용
-              </TableHead>
               <TableHead className="w-[100px] text-center font-semibold text-frog-600">
                 공지일
               </TableHead>
@@ -125,7 +115,7 @@ export function NoticesTab() {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 4 }).map((_, j) => (
+                  {Array.from({ length: 3 }).map((_, j) => (
                     <TableCell key={j}>
                       <div className="h-4 w-24 animate-pulse rounded bg-gray-100" />
                     </TableCell>
@@ -135,7 +125,7 @@ export function NoticesTab() {
             ) : notices.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={4}
+                  colSpan={3}
                   className="py-12 text-center text-gray-400"
                 >
                   공지사항이 없습니다.
@@ -165,9 +155,6 @@ export function NoticesTab() {
                     >
                       {notice.title}
                     </button>
-                  </TableCell>
-                  <TableCell className="max-w-[300px] truncate text-sm text-gray-500">
-                    공지사항 내용...
                   </TableCell>
                   <TableCell className="w-[100px] text-center text-sm text-gray-500">
                     {formatDate(notice.createdAt)}

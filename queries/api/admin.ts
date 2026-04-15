@@ -64,7 +64,8 @@ export const getAdminPrompts = async (params: {
     size: params.size ?? 10,
   };
   if (params.keyword) searchParams["keyword"] = params.keyword;
-  if (params.categoryId) searchParams["categoryId"] = params.categoryId;
+  if (params.categoryId !== undefined)
+    searchParams["categoryId"] = params.categoryId;
   if (params.status) searchParams["status"] = params.status;
 
   return await fetcher

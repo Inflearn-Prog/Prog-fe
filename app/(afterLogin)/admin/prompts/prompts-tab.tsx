@@ -19,6 +19,7 @@ import {
 } from "@/queries/api/admin";
 
 import { PromptStatus } from "../types";
+import { formatDate } from "../utils";
 import { PromptFilters } from "./prompt-filters";
 
 const CATEGORY_OPTIONS = [
@@ -43,14 +44,6 @@ const STATUS_OPTIONS = [
   { value: "PUBLIC", label: "공개" },
   { value: "PRIVATE", label: "비공개" },
 ] as const;
-
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  const year = String(d.getFullYear()).slice(2);
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}.${month}.${day}`;
-}
 
 export function PromptsTab() {
   const queryClient = useQueryClient();

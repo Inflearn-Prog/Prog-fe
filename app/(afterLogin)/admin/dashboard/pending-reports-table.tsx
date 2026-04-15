@@ -1,7 +1,6 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
 import { useState } from "react";
 
 import {
@@ -20,17 +19,8 @@ import {
 
 import { REPORT_REASON_LABEL } from "../constant";
 import { PendingReport } from "../types";
+import { formatDateTime } from "../utils";
 import { ReportProcessModal } from "./report-process-modal";
-
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  const year = String(d.getFullYear()).slice(2);
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  const hour = String(d.getHours()).padStart(2, "0");
-  const min = String(d.getMinutes()).padStart(2, "0");
-  return `${year}.${month}.${day} ${hour}:${min}`;
-}
 
 export function PendingReportsTable() {
   const queryClient = useQueryClient();
@@ -124,18 +114,13 @@ export function PendingReportsTable() {
               reports.map((report) => (
                 <TableRow key={report.reportId}>
                   <TableCell className="text-center text-sm text-gray-600">
-                    {formatDate(report.reportedAt)}
+                    {formatDateTime(report.reportedAt)}
                   </TableCell>
                   <TableCell className="text-center text-sm">
                     {REPORT_REASON_LABEL[report.reason]}
                   </TableCell>
                   <TableCell className="max-w-[300px] truncate text-center text-sm">
-                    <Link
-                      href={`/community/${report.reportId}`}
-                      className="hover:text-frog-600 hover:underline"
-                    >
-                      {report.targetTitle}
-                    </Link>
+                    {report.targetTitle}
                   </TableCell>
                   <TableCell className="text-center">
                     <span className="rounded bg-yellow-50 px-2 py-0.5 text-xs font-medium text-yellow-700">
