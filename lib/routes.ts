@@ -20,7 +20,7 @@ export const ROUTES = {
    * 외부 노션 링크 이동
    */
   question: {
-    ROOT: "https://www.notion.so/joelchoi/533a7ca9265b836596e901c824581c31",
+    ROOT: "https://grass-course-656.notion.site/FAQ-3140036df24080089babe3feb0d69df8",
   },
   search: {
     ROOT: "/search",
@@ -35,6 +35,9 @@ export const ROUTES = {
     SERVICE_PLANNING: "/community?category=service_planning",
     HR_GENERAL_AFFAIRS: "/community?category=hr_general_affairs",
     DESIGN: "/community?category=design",
+  },
+  prompt: {
+    DETAIL: (id: string) => `/prompt/${id}`,
   },
   mypage: {
     ROOT: "/mypage",

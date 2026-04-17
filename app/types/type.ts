@@ -14,8 +14,10 @@ export interface PromptBase {
   userIcon: string;
   userName: string;
   userDesc: string;
+  copyCount?: number;
   isLiked?: boolean;
   likes?: number;
+  createdAt?: string;
 }
 
 export interface PromptCardProps extends PromptBase {
@@ -27,6 +29,7 @@ export interface PromptCardProps extends PromptBase {
 
 export interface PromptPage {
   items: PromptBase[];
+  totalCount: number;
   nextPage: number | null;
   isLast: boolean;
 }

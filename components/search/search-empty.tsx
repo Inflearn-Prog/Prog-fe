@@ -27,7 +27,7 @@ export function SearchEmpty() {
           첫 번째 개척자가 되어 지식을 공유해주시겠어요?
         </EmptyDescription>
       </div>
-      <BaseButton className="min-w-[197px]" onClick={handleClick}>
+      <BaseButton className="min-w-49.25" onClick={handleClick}>
         글쓰기
       </BaseButton>
     </Empty>

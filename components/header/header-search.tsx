@@ -1,10 +1,9 @@
 "use client";
 
 import { SearchIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
-import { ROUTES } from "@/lib/routes";
+import useQueryParams from "@/app/hooks/use-query-params";
 
 import { IconInput } from "../shared/inputs";
 
@@ -14,24 +13,26 @@ function trimAndSanitizedValue(value: string) {
 }
 
 export function HeaderSearch() {
-  // const searchParams = useSearchParams();
-  // const initialQuery = searchParams.get("q") || "";
-
-  const router = useRouter();
-  const [searchValue, setSearchValue] = useState("");
   const inputId = useId();
+
+  const { getParam, setParam, deleteParam } = useQueryParams();
+
+  const q = getParam("q") || ""; // 검색어 파라미터에서 초기값 가져오기
+  const [searchValue, setSearchValue] = useState(q);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    try {
-      const searchParams = new URLSearchParams();
-      searchParams.set("q", trimAndSanitizedValue(searchValue));
-      router.push(`${ROUTES.search.ROOT}?${searchParams.toString()}`);
-    } catch (error) {
-      console.error("검색어 처리 중 오류 발생:", error);
+    const normalized = searchValue.trim();
+    if (!normalized) {
+      deleteParam("q");
+      return;
     }
+    setParam("q", normalized);
   };
+
+  useEffect(() => {
+    setSearchValue(q);
+  }, [q]);
 
   return (
     <form onSubmit={onSubmit}>
