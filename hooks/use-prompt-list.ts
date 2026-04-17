@@ -25,10 +25,16 @@ export const getNextPromptPageParam = (lastPage: ApiResponse<PromptPage>) => {
 };
 
 export const useGetPrompts = (category: string, q?: string) => {
-  return useInfiniteQuery<ApiResponse<PromptPage>>({
-    queryKey: ["prompts", category, q],
-    queryFn: ({ pageParam = 0 }) =>
-      fetchPrompts(category, pageParam as number, q),
+  const normalizedQ = q?.trim() || undefined;
+  return useInfiniteQuery<
+    ApiResponse<PromptPage>,
+    Error,
+    InfiniteData<ApiResponse<PromptPage>>,
+    readonly [string, string, string | undefined],
+    number
+  >({
+    queryKey: ["prompts", category, normalizedQ] as const,
+    queryFn: ({ pageParam }) => fetchPrompts(category, pageParam, normalizedQ),
     initialPageParam: 0,
     getNextPageParam: getNextPromptPageParam,
   });
