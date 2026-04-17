@@ -2,54 +2,36 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
-import { useSignupStore } from "@/app/store/signUpStore";
 import { BaseButton } from "@/components/shared/button";
 import { SectionHeader } from "@/components/shared/section-header";
+import { usePostComplete } from "@/hooks/use-onboarding";
+import { ROUTES } from "@/lib/routes";
 import { STATIC_IMAGES } from "@/lib/static-image";
 
 export default function Complete() {
   const router = useRouter();
-  const {
-    isTermsAgreed,
-    nickname,
-    targetJobs,
-    currentState,
-    isRegistrationSuccess,
-  } = useSignupStore();
-
-  useEffect(() => {
-    if (!isTermsAgreed) {
-      router.replace("/signup?step=select");
-      return;
-    }
-
-    if (!nickname) {
-      router.replace("/signup?step=pick-option");
-      return;
-    }
-
-    if (!targetJobs && !currentState) {
-      router.replace("/signup?step=detail");
-      return;
-    }
-
-    if (!isRegistrationSuccess) {
-      // 가입 절차를 거치지 않고 URL로 들어온 경우 첫 단계로 튕겨냄
-      router.replace("/signup?step=select");
-    }
-  }, [
-    isTermsAgreed,
-    nickname,
-    targetJobs,
-    currentState,
-    isRegistrationSuccess,
-    router,
-  ]);
+  const { data: session, update } = useSession();
+  const { mutate, isPending } = usePostComplete();
 
   const handleNext = () => {
-    router.replace("/"); // 홈으로 이동
+    mutate(undefined, {
+      onSuccess: async () => {
+        await update({
+          registrationStatus: "ONBOARDING_COMPLETED",
+          user: {
+            accessToken: session?.accessToken,
+          },
+        });
+        router.push(ROUTES.rank.ROOT);
+        toast.success("회원가입이 완료되었습니다!");
+      },
+      onError: () => {
+        toast.error("회원가입 완료 실패");
+      },
+    });
   };
 
   return (
@@ -83,7 +65,11 @@ export default function Complete() {
       />
 
       <div className="mx-auto lg:w-[55%]">
-        <BaseButton onClick={handleNext} className="w-full mt-6 py-3">
+        <BaseButton
+          onClick={handleNext}
+          disabled={isPending}
+          className="w-full mt-6 py-3"
+        >
           Prog 시작하기
         </BaseButton>
       </div>

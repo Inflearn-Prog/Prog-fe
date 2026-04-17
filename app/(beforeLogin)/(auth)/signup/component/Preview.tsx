@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { toast } from "sonner";
 
 import { useSignupStore } from "@/app/store/signUpStore";
 import { BaseButton } from "@/components/shared/button";
@@ -10,13 +10,8 @@ import { BaseInput } from "@/components/shared/inputs";
 import { SectionHeader } from "@/components/shared/section-header";
 import { SelectBox } from "@/components/shared/select-box";
 import { usePutBasic } from "@/hooks/use-onboarding";
-import { ROUTES } from "@/lib/routes";
 
-import {
-  EDUCATION_OPTIONS,
-  JOB_OPTIONS,
-  REVERSE_JOB_MAP,
-} from "../../constant";
+import { EDUCATION_OPTIONS } from "../../constant";
 import { Stepper } from "./Stepper";
 
 export default function Preview() {
@@ -24,36 +19,10 @@ export default function Preview() {
   const { mutate, isPending } = usePutBasic();
   const { data: session, update } = useSession();
 
-  const {
-    isTermsAgreed,
-    nickname,
-    targetJobs,
-    currentState,
-    field,
-    career,
-    educationLevel,
-    updateField,
-  } = useSignupStore();
-
-  useEffect(() => {
-    if (!isTermsAgreed) {
-      router.replace(ROUTES.auth.SIGNUP_SELECT);
-      return;
-    }
-
-    if (!nickname) {
-      router.replace(ROUTES.auth.SIGNUP_PICK_OPTION);
-      return;
-    }
-
-    if (targetJobs.length === 0 || !currentState) {
-      router.replace(ROUTES.auth.SIGNUP_DETAIL);
-    }
-  }, [isTermsAgreed, nickname, targetJobs, currentState, router]);
+  const { career, educationLevel, updateField } = useSignupStore();
 
   const isCareerValid = career >= 0;
-  const isStep4Complete =
-    educationLevel !== "" && field !== "" && isCareerValid;
+  const isStep4Complete = educationLevel !== "" && isCareerValid;
 
   const handleNext = async () => {
     if (isStep4Complete) {
@@ -65,12 +34,11 @@ export default function Preview() {
         return;
       }
       const userBasicInfo = {
-        education: educationLevel,
-        major: field,
-        career: career,
+        educationLevel: educationLevel,
+        careerYears: career,
       };
       mutate(
-        { params: userBasicInfo, token: token },
+        { params: userBasicInfo },
         {
           onSuccess: async () => {
             try {
@@ -90,10 +58,8 @@ export default function Preview() {
               console.error("세션 업데이트 실패:", e);
             }
           },
-          onError: (error) => {
-            // eslint-disable-next-line no-console
-            console.error("기본 정보 저장 실패:", error.message);
-            alert("기본 정보 저장에 실패했습니다. 다시 시도해주세요.");
+          onError: () => {
+            toast.error("기본 정보 저장에 실패했습니다. 다시 시도해주세요.");
           },
         }
       );
@@ -118,20 +84,6 @@ export default function Preview() {
             value={educationLevel}
             onValueChange={(val) => updateField("educationLevel", val)}
             selectOptions={EDUCATION_OPTIONS}
-          />
-        </div>
-
-        {/* 계열 선택 */}
-        <div className="flex flex-col gap-2">
-          <label className="font-semibold text-gray-700">계열</label>
-          <SelectBox
-            placeholder="계열을 선택해주세요"
-            value={field}
-            onValueChange={(val) => updateField("field", val)}
-            selectOptions={JOB_OPTIONS.map((label) => ({
-              label: label,
-              value: REVERSE_JOB_MAP.get(label) || label,
-            }))}
           />
         </div>
 

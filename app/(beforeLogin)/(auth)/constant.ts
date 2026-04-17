@@ -7,19 +7,18 @@ export enum AuthProvider {
 
 export const STATE_VALUES = {
   STUDENT: "재학중",
-  JOB_SEEKER: "취업준비",
-  CHANGING_JOB: "이직준비",
-  OTHER: "기타",
+  JOB_SEEKER: "취업 준비",
+  CAREER_CHANGE_PREP: "이직 준비",
+  ETC: "기타",
 } as const;
 
 export const JOB_DATA = {
-  PLANNING: "기획",
-  MARKETING: "마케팅",
-  DESIGN: "디자인",
   DEVELOPMENT: "개발",
-  SALES: "영업",
-  PM: "PM",
-  OTHER: "기타",
+  MARKETING_CONTENT: "마케팅/콘텐츠",
+  SERVICE_PLANNING: "서비스 기획",
+  HR_GA: "인사/총무",
+  DESIGN: "디자인",
+  ETC: "기타",
 } as const;
 
 export const STATE_MAP = new Map<string, string>(
@@ -43,7 +42,8 @@ export type EducationValue =
   | "ASSOCIATE"
   | "BACHELOR"
   | "MASTER"
-  | "DOCTOR";
+  | "DOCTORATE"
+  | "NONE";
 
 export const transformCareerInfoToState = (careerInfo: {
   currentStatus: string[];
@@ -71,10 +71,8 @@ export const transformStateToPayload = (state: {
   currentState: string;
   otherInput?: string;
   targetJobs: string[];
-  career: number;
-  educationLevel: string;
 }) => {
-  const isOther = state.currentState === STATE_VALUES.OTHER;
+  const isOther = state.currentState === STATE_VALUES.ETC;
   const stateCode = isOther
     ? state.otherInput || "OTHER"
     : REVERSE_STATE_MAP.get(state.currentState) || state.currentState;
@@ -84,10 +82,34 @@ export const transformStateToPayload = (state: {
   );
 
   return {
-    currentStatus: String(stateCode),
-    targetJob: jobCodes,
-    careerYear: state.career,
-    education: state.educationLevel,
+    currentStatuses: [String(stateCode)],
+    targetJobRoles: jobCodes,
+  };
+};
+
+export const transformState = (state: {
+  currentState: string;
+  otherInput?: string;
+  targetJobs: string[];
+  careerYears: number;
+  educationLevel: string;
+}) => {
+  const isOther = state.currentState === STATE_VALUES.ETC;
+  const stateCode = isOther
+    ? state.otherInput || "OTHER"
+    : REVERSE_STATE_MAP.get(state.currentState) || state.currentState;
+
+  const jobCodes = state.targetJobs.map(
+    (label) => REVERSE_JOB_MAP.get(label) || label
+  );
+  const parsed = Number(state.careerYears);
+  const careerYears = !Number.isFinite(parsed) ? 0 : parsed;
+
+  return {
+    currentStatuses: [String(stateCode)],
+    targetJobRoles: jobCodes,
+    careerYears: careerYears,
+    educationLevel: state.educationLevel as EducationValue,
   };
 };
 
@@ -98,5 +120,6 @@ export const EDUCATION_OPTIONS: SelectOption[] = [
   { label: "전문대 졸업", value: "ASSOCIATE" },
   { label: "대학교 졸업", value: "BACHELOR" },
   { label: "석사 졸업", value: "MASTER" },
-  { label: "박사 졸업", value: "DOCTOR" },
+  { label: "박사 졸업", value: "DOCTORATE" },
+  { label: "없음", value: "NONE" },
 ];
