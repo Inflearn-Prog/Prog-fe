@@ -12,23 +12,25 @@ import { fetchPrompts } from "@/queries/api/prompts";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
+export const getNextPromptPageParam = (lastPage: ApiResponse<PromptPage>) => {
+  if (!lastPage || !lastPage.data) return undefined;
+
+  const { isLast, nextPage } = lastPage.data;
+
+  // isLast가 true이면 다음 페이지 없음
+  if (isLast) return undefined;
+
+  // nextPage가 null이거나 undefined이면 다음 페이지 없음
+  return nextPage ?? undefined;
+};
+
 export const useGetPrompts = (category: string, q?: string) => {
   return useInfiniteQuery<ApiResponse<PromptPage>>({
     queryKey: ["prompts", category, q],
     queryFn: ({ pageParam = 0 }) =>
       fetchPrompts(category, pageParam as number, q),
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage || !lastPage.data) return undefined;
-
-      const { isLast, nextPage } = lastPage.data;
-
-      // isLast가 true이면 다음 페이지 없음
-      if (isLast) return undefined;
-
-      // nextPage가 null이거나 undefined이면 다음 페이지 없음
-      return nextPage ?? undefined;
-    },
+    getNextPageParam: getNextPromptPageParam,
   });
 };
 
