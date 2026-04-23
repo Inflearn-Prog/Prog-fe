@@ -23,6 +23,9 @@ export function NoticeWriteForm({ onBack, onSuccess }: NoticeWriteFormProps) {
       toasts.success("공지가 성공적으로 등록되었습니다.");
       onSuccess();
     },
+    onError: () => {
+      toasts.error("공지 등록에 실패했습니다.");
+    },
   });
 
   const handleSubmit = () => {
@@ -37,7 +40,7 @@ export function NoticeWriteForm({ onBack, onSuccess }: NoticeWriteFormProps) {
         className="mb-6 flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
       >
         <ArrowLeft className="h-4 w-4" />
-        공지 작성하기
+        목록으로 돌아가기
       </button>
 
       <div className="space-y-4 rounded-lg bg-white p-6 shadow-sm">

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { GripVertical, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 
+import { toasts } from "@/components/shared/toast";
 import { Button } from "@/components/ui/button";
 import {
   createCategory,
@@ -32,6 +33,7 @@ export function CategoriesTab() {
   const [newName, setNewName] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const { data } = useQuery({
     queryKey: ["admin", "categories"],
@@ -45,6 +47,9 @@ export function CategoriesTab() {
       queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
       setNewName("");
     },
+    onError: () => {
+      toasts.error("카테고리 추가에 실패했습니다.");
+    },
   });
 
   const updateMutation = useMutation({
@@ -54,12 +59,20 @@ export function CategoriesTab() {
       queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
       setEditingId(null);
     },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
+      toasts.error("카테고리 수정에 실패했습니다.");
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
+      toasts.error("카테고리 삭제에 실패했습니다.");
     },
   });
 
@@ -76,6 +89,19 @@ export function CategoriesTab() {
     updateMutation.mutate({ id, name: editName.trim() });
   };
 
+  const handleCancelEdit = () => {
+    setIsCancelling(true);
+    setEditingId(null);
+  };
+
+  const handleBlurEdit = (id: number) => {
+    if (isCancelling) {
+      setIsCancelling(false);
+      return;
+    }
+    handleUpdate(id);
+  };
+
   const handleDelete = (id: number) => {
     deleteMutation.mutate(id);
   };
@@ -86,6 +112,7 @@ export function CategoriesTab() {
   const startEdit = (cat: AdminCategory) => {
     setEditingId(cat.categoryId);
     setEditName(cat.name);
+    setIsCancelling(false);
   };
 
   return (
@@ -132,9 +159,9 @@ export function CategoriesTab() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter")
                             handleUpdate(parent.categoryId);
-                          if (e.key === "Escape") setEditingId(null);
+                          if (e.key === "Escape") handleCancelEdit();
                         }}
-                        onBlur={() => handleUpdate(parent.categoryId)}
+                        onBlur={() => handleBlurEdit(parent.categoryId)}
                         className="rounded border px-2 py-1 text-sm outline-none focus:border-frog-600"
                         autoFocus
                       />
@@ -180,9 +207,9 @@ export function CategoriesTab() {
                           onKeyDown={(e) => {
                             if (e.key === "Enter")
                               handleUpdate(child.categoryId);
-                            if (e.key === "Escape") setEditingId(null);
+                            if (e.key === "Escape") handleCancelEdit();
                           }}
-                          onBlur={() => handleUpdate(child.categoryId)}
+                          onBlur={() => handleBlurEdit(child.categoryId)}
                           className="rounded border px-2 py-1 text-sm outline-none focus:border-frog-600"
                           autoFocus
                         />

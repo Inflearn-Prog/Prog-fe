@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
+import { toasts } from "@/components/shared/toast";
 import {
   Table,
   TableBody,
@@ -29,7 +30,7 @@ export function PendingReportsTable() {
     null
   );
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["admin", "reports", "pending", page],
     queryFn: () => getPendingReports(page, 5),
     select: (res) => res.data,
@@ -49,6 +50,9 @@ export function PendingReportsTable() {
       queryClient.invalidateQueries({ queryKey: ["admin", "reports"] });
       setSelectedReport(null);
     },
+    onError: () => {
+      toasts.error("신고 처리에 실패했습니다.");
+    },
   });
 
   const rejectMutation = useMutation({
@@ -62,6 +66,9 @@ export function PendingReportsTable() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "reports"] });
       setSelectedReport(null);
+    },
+    onError: () => {
+      toasts.error("신고 반려에 실패했습니다.");
     },
   });
 
@@ -101,6 +108,15 @@ export function PendingReportsTable() {
                   ))}
                 </TableRow>
               ))
+            ) : isError ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="py-12 text-center text-red-500"
+                >
+                  신고 목록을 불러오는 데 실패했습니다.
+                </TableCell>
+              </TableRow>
             ) : reports.length === 0 ? (
               <TableRow>
                 <TableCell

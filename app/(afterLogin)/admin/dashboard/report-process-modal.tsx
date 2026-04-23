@@ -38,12 +38,14 @@ export function ReportProcessModal({
   onClose,
 }: ReportProcessModalProps) {
   const [selectedAction, setSelectedAction] = useState<ProcessAction>("DELETE");
+  const [adminRemark, setAdminRemark] = useState("");
 
   const handleSubmit = () => {
+    const remark = adminRemark.trim() || undefined;
     if (selectedAction === "REJECT") {
-      onReject();
+      onReject(remark);
     } else {
-      onProcess(selectedAction);
+      onProcess(selectedAction, remark);
     }
   };
 
@@ -88,6 +90,18 @@ export function ReportProcessModal({
                 </label>
               ))}
             </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-sm font-bold text-gray-900">관리자 메모</p>
+            <textarea
+              value={adminRemark}
+              onChange={(e) => setAdminRemark(e.target.value)}
+              placeholder="처리 사유를 입력해 주세요. (선택)"
+              maxLength={500}
+              rows={3}
+              className="w-full resize-none rounded-md border border-gray-200 p-3 text-sm outline-none placeholder:text-gray-400 focus:border-frog-600"
+            />
           </div>
         </div>
 

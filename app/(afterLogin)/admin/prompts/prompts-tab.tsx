@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
+import { toasts } from "@/components/shared/toast";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -78,6 +79,10 @@ export function PromptsTab() {
       queryClient.invalidateQueries({ queryKey: ["admin", "prompts"] });
       setSelectedIds([]);
     },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "prompts"] });
+      toasts.error("게시글 삭제에 실패했습니다.");
+    },
   });
 
   const updateMutation = useMutation({
@@ -87,6 +92,10 @@ export function PromptsTab() {
       setSelectedIds([]);
       setBulkCategory("");
       setBulkStatus("");
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "prompts"] });
+      toasts.error("게시글 수정에 실패했습니다.");
     },
   });
 

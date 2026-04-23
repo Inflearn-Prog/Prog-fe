@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
+import { toasts } from "@/components/shared/toast";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -25,7 +26,7 @@ export function NoticesTab() {
   const [showWriteForm, setShowWriteForm] = useState(false);
   const [viewNoticeId, setViewNoticeId] = useState<number | null>(null);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["admin", "notices", page],
     queryFn: () => getAdminNotices(page, 10),
     select: (res) => res.data,
@@ -36,6 +37,10 @@ export function NoticesTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "notices"] });
       setSelectedIds([]);
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "notices"] });
+      toasts.error("공지사항 삭제에 실패했습니다.");
     },
   });
 
@@ -122,6 +127,15 @@ export function NoticesTab() {
                   ))}
                 </TableRow>
               ))
+            ) : isError ? (
+              <TableRow>
+                <TableCell
+                  colSpan={3}
+                  className="py-12 text-center text-red-500"
+                >
+                  공지사항을 불러오는 데 실패했습니다.
+                </TableCell>
+              </TableRow>
             ) : notices.length === 0 ? (
               <TableRow>
                 <TableCell
@@ -168,7 +182,10 @@ export function NoticesTab() {
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 border-t px-4 py-3">
             <button
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              onClick={() => {
+                setPage((p) => Math.max(0, p - 1));
+                setSelectedIds([]);
+              }}
               disabled={page === 0}
               className="rounded px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-40"
             >
@@ -177,7 +194,10 @@ export function NoticesTab() {
             {Array.from({ length: totalPages }).map((_, i) => (
               <button
                 key={i}
-                onClick={() => setPage(i)}
+                onClick={() => {
+                  setPage(i);
+                  setSelectedIds([]);
+                }}
                 className={`rounded px-3 py-1 text-sm ${
                   i === page
                     ? "bg-frog-600 text-white"
@@ -188,7 +208,10 @@ export function NoticesTab() {
               </button>
             ))}
             <button
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+              onClick={() => {
+                setPage((p) => Math.min(totalPages - 1, p + 1));
+                setSelectedIds([]);
+              }}
               disabled={page >= totalPages - 1}
               className="rounded px-2 py-1 text-sm text-gray-500 hover:bg-gray-100 disabled:opacity-40"
             >

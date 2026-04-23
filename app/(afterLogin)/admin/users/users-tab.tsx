@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
+import { toasts } from "@/components/shared/toast";
 import {
   Table,
   TableBody,
@@ -33,6 +34,10 @@ export function UsersTab() {
     mutationFn: bulkUpdateUserStatus,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      toasts.error("유저 상태 변경에 실패했습니다.");
     },
   });
 
