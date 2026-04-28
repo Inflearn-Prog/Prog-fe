@@ -46,7 +46,8 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 
         const resData = await response.json();
         if (resData.success) {
-          const { isNewUser, accessToken, registrationStatus } = resData.data;
+          const { isNewUser, accessToken, refreshToken, registrationStatus } =
+            resData.data;
 
           const cookieStore = await cookies();
           cookieStore.set("accessToken", accessToken, {
@@ -56,8 +57,20 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
             sameSite: "lax",
             maxAge: 30 * 24 * 60 * 60, // 30일
           });
+
+          if (refreshToken) {
+            cookieStore.set("refreshToken", refreshToken, {
+              path: "/",
+              httpOnly: false, // Mypage 등에서 접근 가능하도록 false (필요시 true로 변경)
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "lax",
+              maxAge: 30 * 24 * 60 * 60,
+            });
+          }
+
           // 신규 유저든 기존 유저든 일단 정보를 user 객체에 보관
           user.accessToken = accessToken;
+          user.refreshToken = refreshToken;
           user.isNewUser = isNewUser;
           user.registrationStatus = registrationStatus;
           user.provider = account.provider; // 소셜 제공자 정보 저장
@@ -75,6 +88,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
         token.registrationStatus = user.registrationStatus;
         token.isNewUser = user.isNewUser;
         token.provider = user.provider;
@@ -140,40 +154,60 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
     const cookieString = cookieStore.toString();
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/post`,
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/refresh`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token.accessToken}`,
-          Cookie: cookieString,
+          ...(cookieString && { Cookie: cookieString }),
         },
       }
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Refresh failed: ${response.status} - ${errorText}`);
+      throw new Error(`Refresh failed: ${response.status}`);
     }
 
     const resData = await response.json();
-    // 2. 새 토큰 파싱
-    const newAccessToken = resData.data.accessToken;
+
+    if (!resData.success) {
+      throw new Error("Backend refresh failed");
+    }
+
+    // 백엔드 응답 구조에 따라 대응 (문자열 또는 객체)
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+      typeof resData.data === "string"
+        ? { accessToken: resData.data, refreshToken: undefined }
+        : resData.data;
+
     const decoded = jwtDecode<{ exp: number }>(newAccessToken);
 
     cookieStore.set("accessToken", newAccessToken, {
       httpOnly: false,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       path: "/",
     });
+
+    if (newRefreshToken) {
+      cookieStore.set("refreshToken", newRefreshToken, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+      });
+    }
+
     return {
       ...token,
       accessToken: newAccessToken,
+      refreshToken: newRefreshToken || token.refreshToken,
       accessTokenExpires: decoded.exp * 1000,
       error: undefined,
     };
-  } catch {
-    // 갱신 실패 시 세션을 만료시키기 위해 에러 표기
+  } catch (error) {
+    console.error("Token refresh error:", error);
+    // 갱신 실패 시 세션을 만료시키거나 클라이언트에서 로그아웃 처리를 유도하기 위해 에러 표기
     return {
       ...token,
       error: "AccessTokenExpired",

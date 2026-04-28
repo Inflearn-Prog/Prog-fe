@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { BaseButton } from "@/components/shared/button";
 import { ProgSidebar } from "@/components/sidebar/category-sidebar";
@@ -29,7 +30,13 @@ export default async function layout({
               <Link href={ROUTES.community.WRITE}>글쓰기</Link>
             </BaseButton>
           )}
-          <ProgSidebar />
+          <Suspense
+            fallback={
+              <div className="h-60 w-full animate-pulse bg-gray-100 rounded-10" />
+            }
+          >
+            <ProgSidebar />
+          </Suspense>
         </aside>
 
         {/* 오른쪽: 메인 아이템 */}

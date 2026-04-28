@@ -1,32 +1,27 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 
 import { ROUTES } from "@/lib/routes";
 
 import { BaseButton } from "../shared/button";
 
-// 지금 authjs가 붙지 않은고로, 대체 props 사용
-export function LoginAndLogoutButton({
-  user,
-}: {
-  user?: {
-    accessToken: string;
-  };
-}) {
+export function LoginAndLogoutButton() {
+  const { data: session } = useSession();
   const router = useRouter();
+
   const handleGoingLogin = () => {
     router.push(ROUTES.auth.SIGNIN);
   };
-  if (user?.accessToken) {
+
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: ROUTES.auth.SIGNIN });
+  };
+
+  if (session?.accessToken) {
     return (
-      <BaseButton
-        onClick={() => {
-          // SIGNOUT 함수 사용
-        }}
-        shape="round"
-        variant="outline"
-      >
+      <BaseButton onClick={handleSignOut} shape="round" variant="outline">
         로그아웃
       </BaseButton>
     );

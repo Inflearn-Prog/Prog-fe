@@ -2,6 +2,8 @@
 
 import { ChevronRightIcon, MenuIcon, SearchIcon, XIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 
 import {
@@ -46,9 +48,19 @@ function HeaderSearchMobile() {
   );
 }
 
-const isLogin = true; // LATER: 실제 로그인 상태에 따른 조건 처리 필요
-
 function HeaderMoreButton() {
+  const { data: session } = useSession();
+  const isLogin = !!session?.accessToken;
+  const router = useRouter();
+
+  const handleGoingLogin = () => {
+    router.push(ROUTES.auth.SIGNIN);
+  };
+
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: ROUTES.auth.SIGNIN });
+  };
+
   return (
     <Drawer direction="right">
       <DrawerTrigger asChild>
@@ -67,24 +79,33 @@ function HeaderMoreButton() {
           </DrawerClose>
         </DrawerHeader>
         <div className="no-scrollbar overflow-y-auto px-5 py-5 space-y-5">
-          {/* LATER 로그인 유무에 따른 UI변경 */}
           {isLogin ? (
-            <BaseButton shape="round" className="w-full">
-              로그인
+            <BaseButton
+              onClick={handleSignOut}
+              shape="round"
+              variant="outline"
+              className="w-full"
+            >
+              로그아웃
             </BaseButton>
           ) : (
-            <BaseButton>로그아웃</BaseButton>
+            <BaseButton
+              onClick={handleGoingLogin}
+              shape="round"
+              className="w-full"
+            >
+              로그인
+            </BaseButton>
           )}
 
-          <>
+          <div className="pt-5 space-y-5">
             <LinkItem href={ROUTES.rank.ROOT} label="랭킹" />
             <LinkItem href={ROUTES.community.ROOT} label="커뮤니티" />
             <LinkItem href={ROUTES.question.ROOT} label="자주 묻는 질문" />
-            {/* // LATER 로그인 유무에 따른 히든 여부 */}
             {isLogin && (
               <LinkItem href={ROUTES.mypage.ROOT} label="마이페이지" />
             )}
-          </>
+          </div>
         </div>
       </DrawerContent>
     </Drawer>

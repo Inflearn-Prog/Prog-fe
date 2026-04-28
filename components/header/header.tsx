@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 import { ROUTES } from "@/lib/routes";
 import { STATIC_IMAGES } from "@/lib/static-image";
@@ -34,14 +35,15 @@ export function HeaderLogo() {
 }
 
 export function HeaderNavigation() {
+  const { data: session } = useSession();
+  const isLogin = !!session?.accessToken;
+
   return (
     <nav aria-label="메인 네비게이션">
       <ul className="flex items-center gap-x-15" role="list">
         {HEADER_NAV_LIST.map((nav) => {
-          // LATER: 실제 로그인 상태에 따른 조건 처리 필요
-          const isLogin = true;
           const isMypage = nav.href === ROUTES.mypage.ROOT;
-          if (isLogin && isMypage) {
+          if (isMypage && !isLogin) {
             return null;
           }
           return (
