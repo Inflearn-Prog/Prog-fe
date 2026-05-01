@@ -2,7 +2,7 @@
 
 import { ChevronRightIcon, MenuIcon, SearchIcon, XIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 import {
   Drawer,
@@ -22,11 +22,23 @@ export function HeaderRightSection() {
   return (
     <div>
       <div className="lg:flex items-center gap-x-5 hidden">
-        <HeaderSearch />
+        <Suspense
+          fallback={
+            <div className="w-64 h-10 bg-gray-50 rounded-full animate-pulse" />
+          }
+        >
+          <HeaderSearch />
+        </Suspense>
         <LoginAndLogoutButton />
       </div>
       <div className="flex lg:hidden items-center gap-x-5">
-        <HeaderSearchMobile />
+        <Suspense
+          fallback={
+            <div className="size-9 bg-gray-50 rounded-full animate-pulse" />
+          }
+        >
+          <HeaderSearchMobile />
+        </Suspense>
         <HeaderMoreButton />
       </div>
     </div>
@@ -46,7 +58,7 @@ function HeaderSearchMobile() {
   );
 }
 
-const isLogin = true; // LATER: 실제 로그인 상태에 따른 조건 처리 필요
+const isLogin = true;
 
 function HeaderMoreButton() {
   return (
@@ -69,11 +81,13 @@ function HeaderMoreButton() {
         <div className="no-scrollbar overflow-y-auto px-5 py-5 space-y-5">
           {/* LATER 로그인 유무에 따른 UI변경 */}
           {isLogin ? (
-            <BaseButton shape="round" className="w-full">
+            <BaseButton className="w-full rounded-[6px] text-white">
               로그인
             </BaseButton>
           ) : (
-            <BaseButton>로그아웃</BaseButton>
+            <BaseButton className="rounded-[6px] text-gray-700">
+              로그아웃
+            </BaseButton>
           )}
 
           <>

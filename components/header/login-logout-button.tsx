@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation";
 
+import { useLogout } from "@/hooks/use-logout";
 import { ROUTES } from "@/lib/routes";
 
 import { BaseButton } from "../shared/button";
 
-// 지금 authjs가 붙지 않은고로, 대체 props 사용
 export function LoginAndLogoutButton({
   user,
 }: {
@@ -15,17 +15,18 @@ export function LoginAndLogoutButton({
   };
 }) {
   const router = useRouter();
+  const { mutate: logout } = useLogout();
+
   const handleGoingLogin = () => {
     router.push(ROUTES.auth.SIGNIN);
   };
   if (user?.accessToken) {
     return (
       <BaseButton
-        onClick={() => {
-          // SIGNOUT 함수 사용
-        }}
-        shape="round"
+        onClick={() => logout()}
         variant="outline"
+        shape="round"
+        className="text-gray-700 border-gray-200 hover:bg-gray-50"
       >
         로그아웃
       </BaseButton>
@@ -33,7 +34,11 @@ export function LoginAndLogoutButton({
   }
 
   return (
-    <BaseButton onClick={handleGoingLogin} shape="round">
+    <BaseButton
+      onClick={handleGoingLogin}
+      shape="round"
+      className="text-white bg-frog-600 hover:bg-frog-700"
+    >
       로그인
     </BaseButton>
   );

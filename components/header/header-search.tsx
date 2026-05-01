@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchIcon } from "lucide-react";
+import { SearchIcon, XIcon } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 
 import useQueryParams from "@/app/hooks/use-query-params";
@@ -12,7 +12,7 @@ function trimAndSanitizedValue(value: string) {
   return value.trim().replace(/[<>\"\'&]/g, "");
 }
 
-export function HeaderSearch() {
+export function HeaderSearch({ onClose }: { onClose?: () => void }) {
   const inputId = useId();
 
   const { getParam, setParam, deleteParam } = useQueryParams();
@@ -25,9 +25,11 @@ export function HeaderSearch() {
     const normalized = searchValue.trim();
     if (!normalized) {
       deleteParam("q");
+      if (onClose) onClose();
       return;
     }
     setParam("q", normalized);
+    if (onClose) onClose();
   };
 
   useEffect(() => {
@@ -35,18 +37,25 @@ export function HeaderSearch() {
   }, [q]);
 
   return (
-    <form onSubmit={onSubmit}>
-      <IconInput
-        icon={<SearchIcon width={20} height={20} />}
-        name="header-search"
-        rounded
-        placeholder="검색어를 입력하세요"
-        id={`${inputId}-header-search`}
-        value={searchValue}
-        onChange={(e) => setSearchValue(e.target.value)}
-        autoComplete="off"
-        aria-label="검색어 입력"
-      />
+    <form onSubmit={onSubmit} className="relative flex items-center gap-2">
+      <div className="flex-1">
+        <IconInput
+          icon={<SearchIcon width={20} height={20} />}
+          name="header-search"
+          rounded
+          placeholder="검색어를 입력하세요"
+          id={`${inputId}-header-search`}
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          autoComplete="off"
+          aria-label="검색어 입력"
+        />
+      </div>
+      {onClose && (
+        <button type="button" onClick={onClose} className="p-2 lg:hidden">
+          <XIcon className="size-5 text-gray-400" />
+        </button>
+      )}
     </form>
   );
 }
