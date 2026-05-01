@@ -11,7 +11,7 @@ export function LoginAndLogoutButton({
   user,
 }: {
   user?: {
-    accessToken: string;
+    accessToken?: string;
   };
 }) {
   const router = useRouter();
