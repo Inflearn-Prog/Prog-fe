@@ -49,9 +49,11 @@ export interface PromptResponse {
   content: string;
   createdAt: string;
   updatedAt: string;
-  // TODO: 서버에 GET /users/{userId} 엔드포인트 추가 필요
-  // 현재 서버 PromptResponse에는 아래 필드 없음 — 추후 서버 확장 또는 별도 API 호출로 해결
-  // userName, userIcon, userDesc, likes, isLiked
+  userName: string;
+  userIcon: string | null;
+  userDesc: string | null;
+  isLiked: boolean;
+  likes: number;
 }
 
 export interface PromptSummaryResponse {

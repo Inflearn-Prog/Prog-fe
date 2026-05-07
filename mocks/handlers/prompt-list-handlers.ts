@@ -22,6 +22,11 @@ const MOCK_PROMPTS = [
     content: "가상 DOM에 대해 설명해주세요.",
     createdAt: "2024-03-01T10:00:00",
     updatedAt: "2024-03-01T10:00:00",
+    userName: "김개발",
+    userIcon: null,
+    userDesc: "프론트엔드 개발자입니다.",
+    isLiked: false,
+    likes: 0,
   },
   {
     promptId: 2,
@@ -31,6 +36,11 @@ const MOCK_PROMPTS = [
     content: "MSA 아키텍처 설계 방법",
     createdAt: "2024-03-02T11:00:00",
     updatedAt: "2024-03-02T11:00:00",
+    userName: "이서버",
+    userIcon: null,
+    userDesc: "백엔드 엔지니어입니다.",
+    isLiked: false,
+    likes: 0,
   },
   {
     promptId: 3,
@@ -40,6 +50,11 @@ const MOCK_PROMPTS = [
     content: "LLM 최적화 방법",
     createdAt: "2024-03-03T12:00:00",
     updatedAt: "2024-03-03T12:00:00",
+    userName: "박에이아이",
+    userIcon: null,
+    userDesc: null,
+    isLiked: false,
+    likes: 0,
   },
 ];
 
@@ -127,6 +142,11 @@ export const promptListHandlers = [
         content: body.content,
         createdAt: getTimestamp(),
         updatedAt: getTimestamp(),
+        userName: "작성자",
+        userIcon: null,
+        userDesc: null,
+        isLiked: false,
+        likes: 0,
       },
       timestamp: getTimestamp(),
     });

@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
+import { ApiError } from "@/lib/fetcher";
 import { PromptCommentResponse } from "@/queries/api/prompts";
 import { promptQueries } from "@/queries/options/prompt-query";
 
@@ -23,7 +24,11 @@ export function CommentList({
 }: CommentListProps) {
   const [sortType, setSortType] = useState<SortType>("시간순");
 
-  const { data: comments = [] } = useQuery({
+  const {
+    data: comments = [],
+    error,
+    isError,
+  } = useQuery({
     ...promptQueries.comments(promptId),
   });
 
@@ -58,6 +63,20 @@ export function CommentList({
         (repliesByParent.get(a.commentId)?.length ?? 0)
     );
   }, [sortType, topLevelComments, repliesByParent]);
+
+  if (isError) {
+    const isAccessDenied = error instanceof ApiError && error.status === 403;
+
+    return (
+      <div className="flex flex-col gap-5 w-full">
+        <p className="body-medium text-gray-500 text-center py-8">
+          {isAccessDenied
+            ? "댓글을 볼 수 없습니다."
+            : "댓글을 불러오는 중 오류가 발생했습니다."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-5 w-full">

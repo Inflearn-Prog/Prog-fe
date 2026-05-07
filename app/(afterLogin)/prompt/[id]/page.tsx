@@ -9,6 +9,7 @@ import { ROUTES } from "@/lib/routes";
 
 import { PostDetailSkeleton } from "./_components/post-detail-skeleton";
 import { PromptDetailContent } from "./_components/prompt-detail-content";
+import { PromptErrorBoundary } from "./_components/prompt-error-boundary";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -50,7 +51,7 @@ function PromptDetailSkeleton() {
 export default async function PromptDetailPage({ params }: PageProps) {
   const { id } = await params;
   const session = await auth();
-  const user = session?.user;
+  const user = session?.user ?? null;
 
   return (
     <div className="mx-auto max-w-7xl px-5 py-8 bg-gray-50">
@@ -67,9 +68,11 @@ export default async function PromptDetailPage({ params }: PageProps) {
 
         {/* 오른쪽: 게시글 상세 + 댓글 (Skeleton 적용) */}
         <main className="col-span-4 lg:col-span-9">
-          <Suspense fallback={<PromptDetailSkeleton />}>
-            <PromptDetailContent id={id} user={user} />
-          </Suspense>
+          <PromptErrorBoundary>
+            <Suspense fallback={<PromptDetailSkeleton />}>
+              <PromptDetailContent id={id} user={user} />
+            </Suspense>
+          </PromptErrorBoundary>
         </main>
       </div>
     </div>

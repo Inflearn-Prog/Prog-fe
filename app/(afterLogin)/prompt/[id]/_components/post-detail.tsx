@@ -17,50 +17,67 @@ import { formatCommentDate } from "./utils";
 interface PostDetailProps {
   promptId: string | number;
   prompt: PromptResponse;
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  } | null;
 }
 
-// TODO: 서버에 GET /users/{userId} 엔드포인트 없음
-// 현재는 프로필 영역을 userId 기반 placeholder로 표시
-// 서버 엔드포인트 추가 후 실제 사용자 정보로 교체 필요
-function AuthorProfileCard({ userId }: { userId: number }) {
+function AuthorProfileCard({
+  userName,
+  userIcon,
+  userDesc,
+}: {
+  userName: string;
+  userIcon: string | null;
+  userDesc: string | null;
+}) {
   return (
     <div className="bg-white border border-gray-100 rounded-10 shadow-sm p-5 flex gap-5 items-end">
       <ProfIcon
-        src={null}
+        src={userIcon}
         width={88}
         height={88}
-        alt={`사용자 ${userId}`}
-        fallback={`U${userId}`}
+        alt={userName}
+        fallback={userName || "U"}
       />
       <div className="flex flex-1 flex-col gap-1">
-        <p className="heading-small text-gray-900">{`사용자 ${userId}`}</p>
+        <p className="heading-small text-gray-900">{userName}</p>
         <p className="body-medium text-gray-500">
-          프로필 정보를 불러올 수 없습니다.
+          {userDesc ?? "소개가 없습니다."}
         </p>
       </div>
     </div>
   );
 }
 
-export function PostDetail({ promptId, prompt }: PostDetailProps) {
-  // TODO: 좋아요 상태를 서버에서 가져오는 방법 필요 (현재 PromptResponse에 isLiked 없음)
-  const [isLiked, setIsLiked] = useState(false);
+export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
+  const [isLiked, setIsLiked] = useState(prompt.isLiked);
+  const [likesCount, setLikesCount] = useState(prompt.likes);
   const queryClient = useQueryClient();
 
   const categoryLabel = prompt.category.name;
 
   const { mutate: toggleLike } = useMutation({
-    mutationFn: () => promptQueries.toggleLike(promptId),
-    onMutate: () => {
+    mutationFn: (_vars: { currentlyLiked: boolean }) =>
+      promptQueries.toggleLike(promptId),
+    onMutate: ({ currentlyLiked }) => {
       setIsLiked((prev) => !prev);
+      setLikesCount((prev) =>
+        currentlyLiked ? Math.max(prev - 1, 0) : prev + 1
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: promptQueries.detail(promptId).queryKey,
       });
     },
-    onError: () => {
+    onError: (_, { currentlyLiked }) => {
       setIsLiked((prev) => !prev);
+      setLikesCount((prev) =>
+        currentlyLiked ? prev + 1 : Math.max(prev - 1, 0)
+      );
     },
   });
 
@@ -73,9 +90,29 @@ export function PostDetail({ promptId, prompt }: PostDetailProps) {
     }
   }, [prompt.content]);
 
+  const handleLikeClick = useCallback(() => {
+    if (!user) {
+      toasts.error("로그인 후 이용할 수 있습니다.");
+      return;
+    }
+    toggleLike({ currentlyLiked: isLiked });
+  }, [user, toggleLike, isLiked]);
+
+  const handleReportClick = useCallback(() => {
+    if (!user) {
+      toasts.error("로그인 후 이용할 수 있습니다.");
+      return;
+    }
+    // 신고 로직은 기존과 동일하게 유지
+  }, [user]);
+
   return (
     <div className="flex flex-col gap-4 w-full">
-      <AuthorProfileCard userId={prompt.userId} />
+      <AuthorProfileCard
+        userName={prompt.userName}
+        userIcon={prompt.userIcon}
+        userDesc={prompt.userDesc}
+      />
 
       <div className="bg-white border border-gray-100 rounded-10 shadow-sm p-5 flex flex-col gap-3">
         <div className="flex items-end justify-between">
@@ -110,17 +147,19 @@ export function PostDetail({ promptId, prompt }: PostDetailProps) {
               <button
                 type="button"
                 aria-label="좋아요"
-                onClick={() => toggleLike()}
+                onClick={handleLikeClick}
                 className={cn(
-                  "hover:opacity-70 transition-300",
+                  "flex items-center gap-1 hover:opacity-70 transition-300",
                   isLiked ? "text-frog-600" : "text-gray-700"
                 )}
               >
                 <ThumbsUp size={20} fill="currentColor" strokeWidth={0} />
+                <span className="label-small">{likesCount}</span>
               </button>
               <button
                 type="button"
                 aria-label="신고"
+                onClick={handleReportClick}
                 className="hover:opacity-70 transition-300 text-gray-700"
               >
                 <Siren size={20} fill="currentColor" strokeWidth={0} />

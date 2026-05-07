@@ -14,7 +14,7 @@ interface PromptDetailContentProps {
     name?: string | null;
     email?: string | null;
     image?: string | null;
-  };
+  } | null;
 }
 
 export function PromptDetailContent({ id, user }: PromptDetailContentProps) {
@@ -27,15 +27,20 @@ export function PromptDetailContent({ id, user }: PromptDetailContentProps) {
   return (
     <div className="flex flex-col gap-8">
       {/* 게시글 상세 (작성자 프로필 + 게시글 카드) */}
+      <PostDetail promptId={id} prompt={prompt} user={user} />
 
-      <PostDetail promptId={id} prompt={prompt} />
-
-      {/* 댓글 작성 폼 */}
-      <CommentForm
-        promptId={id}
-        userIcon={user?.image ?? null}
-        userName={user?.name ?? ""}
-      />
+      {/* 댓글 작성 폼 — 로그인한 사용자만 표시 */}
+      {user ? (
+        <CommentForm
+          promptId={id}
+          userIcon={user?.image ?? null}
+          userName={user?.name ?? ""}
+        />
+      ) : (
+        <p className="body-medium text-gray-500 text-center py-4">
+          로그인 후 댓글을 작성할 수 있습니다.
+        </p>
+      )}
 
       {/* 댓글 목록 */}
       <CommentList
