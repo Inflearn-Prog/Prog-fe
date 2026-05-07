@@ -15,7 +15,7 @@ function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
 function BoardSkeleton() {
   return (
     <Skeleton
-      className="h-159.5 p-4 bg-gray-100/60"
+      className="h-[638px] p-4 bg-gray-100/60"
       data-slot="board-skeleton"
       aria-hidden
     />

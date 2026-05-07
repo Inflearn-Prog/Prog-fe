@@ -8,15 +8,17 @@ export const boardSchema = z.object({
   title: z
     .string()
     .min(1, "제목은 필수입니다.")
-    .max(100, "제목은 최대 100자까지 입력 가능합니다."),
+    .max(200, "제목은 최대 200자까지 입력 가능합니다."),
   category: z.string().min(1, "카테고리는 필수입니다."),
   content: z
     .string()
     .min(1, "내용은 필수입니다.")
+    .refine((val) => stripHtml(val).length > 0, {
+      message: "내용은 필수입니다.",
+    })
     .refine((val) => stripHtml(val).length <= MAX_BOARD_CONTENT_LENGTH, {
       message: `내용은 최대 ${MAX_BOARD_CONTENT_LENGTH}자까지 입력 가능합니다.`,
     }),
-  // category:
 });
 
 export type BoardFormData = z.infer<typeof boardSchema>;

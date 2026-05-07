@@ -1,8 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { Board } from "@/components/board/board";
@@ -15,6 +16,7 @@ import {
   PromptResponse,
   PromptUpdateRequest,
 } from "@/queries/api/prompts";
+import { promptQueries } from "@/queries/options/prompt-query";
 
 import { BoardFormData, boardSchema } from "../board-schema";
 import usePromptQuery from "../hook/use-prompt-query";
@@ -26,14 +28,18 @@ interface PromptFormProps {
 
 export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
   const router = useRouter();
-  const layout = cn("mx-auto max-w-7xl lg:px-0 px-5 min-w-90 mx-auto");
+  const layout = cn("max-w-7xl lg:px-0 px-5 min-w-90 mx-auto");
+
+  const { data: categories = [] } = useQuery({
+    ...promptQueries.categories(),
+  });
 
   const form = useForm<BoardFormData>({
     mode: "onTouched",
     resolver: zodResolver(boardSchema),
     defaultValues: {
       title: initialData?.title || "",
-      category: initialData?.category || "",
+      category: initialData?.category.categoryId.toString() || "",
       content: initialData?.content || "",
     },
   });
@@ -42,7 +48,7 @@ export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
     if (initialData) {
       form.reset({
         title: initialData.title,
-        category: initialData.category,
+        category: initialData.category.categoryId.toString(),
         content: initialData.content,
       });
     }
@@ -52,17 +58,19 @@ export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
     usePromptQuery();
 
   const handleSubmit = (data: BoardFormData) => {
+    const categoryId = Number(data.category);
+
     if (isEdit && initialData) {
       const body: PromptUpdateRequest = {
         title: data.title,
-        categoryId: data.category,
+        categoryId,
         content: data.content,
       };
-      updatePrompt({ id: initialData.id, data: body });
+      updatePrompt({ id: initialData.promptId, data: body });
     } else {
       const body: PromptCreateRequest = {
         title: data.title,
-        categoryId: data.category,
+        categoryId,
         content: data.content,
       };
       createPrompt(body);
@@ -70,6 +78,15 @@ export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
   };
 
   const isPending = isCreating || isUpdating;
+
+  const selectOptions = useMemo(
+    () =>
+      categories.map((c) => ({
+        value: c.categoryId.toString(),
+        label: c.name,
+      })),
+    [categories]
+  );
 
   return (
     <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -114,12 +131,7 @@ export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
                 <SelectBox
                   {...field}
                   onValueChange={field.onChange}
-                  selectOptions={[
-                    { value: "BACKEND", label: "Backend" },
-                    { value: "FRONTEND", label: "Frontend" },
-                    { value: "AI", label: "AI" },
-                    { value: "ETC", label: "ETC" },
-                  ]}
+                  selectOptions={selectOptions}
                 />
               </div>
             )}

@@ -4,18 +4,18 @@ import { Reply, Siren, ThumbsUp } from "lucide-react";
 import { useState } from "react";
 
 import { ProfIcon } from "@/components/profile-icon/profile-icon";
-import { Comment, PromptCommentResponse } from "@/queries/api/prompts";
+import { PromptCommentResponse } from "@/queries/api/prompts";
 
 import { CommentForm } from "./comment-form";
 import { formatCommentDate } from "./utils";
 
-type CommentItemProps = {
+interface CommentItemProps {
   comment: PromptCommentResponse;
-  promptId: Comment["promptId"];
-  isReply?: Comment["isReply"];
-  currentUserIcon: Comment["currentUserIcon"];
-  currentUserName: Comment["currentUserName"];
-};
+  promptId: string | number;
+  isReply?: boolean;
+  currentUserIcon?: string | null;
+  currentUserName?: string | null;
+}
 
 export function CommentItem({
   comment,
@@ -33,7 +33,6 @@ export function CommentItem({
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="flex gap-5 items-start w-full">
-        {/* 프로필 아이콘 */}
         <ProfIcon
           src={null}
           width={60}
@@ -42,9 +41,7 @@ export function CommentItem({
           fallback={comment.nickName}
         />
 
-        {/* 댓글 내용 카드 */}
         <div className="flex-1 flex flex-col gap-2 bg-white border border-gray-100 rounded-10 shadow-sm px-5 py-3">
-          {/* 닉네임 + 날짜 + 내용 */}
           <div className="flex flex-col gap-1">
             <div className="flex gap-2.5 items-end">
               <span className="body-large font-normal text-gray-900">
@@ -57,10 +54,8 @@ export function CommentItem({
             <p className="body-medium text-gray-900">{comment.comment}</p>
           </div>
 
-          {/* 액션 버튼 영역 */}
           <div className="flex items-center justify-between">
             <div className="flex gap-2 items-center">
-              {/* 답글달기 버튼 (대댓글에서는 숨김) */}
               {!isReply && (
                 <button
                   type="button"
@@ -76,7 +71,6 @@ export function CommentItem({
                   />
                 </button>
               )}
-              {/* 좋아요 버튼 */}
               <button
                 type="button"
                 aria-label="좋아요"
@@ -91,7 +85,6 @@ export function CommentItem({
               </button>
             </div>
 
-            {/* 신고 버튼 */}
             <button
               type="button"
               aria-label="신고"
@@ -108,7 +101,6 @@ export function CommentItem({
         </div>
       </div>
 
-      {/* 대댓글 작성 폼 (답글달기 클릭 시 표시) */}
       {showReplyForm && (
         <div className="pl-20">
           <CommentForm

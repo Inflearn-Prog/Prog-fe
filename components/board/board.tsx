@@ -38,7 +38,6 @@ export function Board({
   setValue,
   placeholder = "",
   error = false,
-  ...props
 }: BoardProps) {
   const borderColor = error ? "border border-red-500" : "";
 
@@ -49,10 +48,11 @@ export function Board({
         setValue={setValue}
         placeholder={placeholder}
         className="bg-white"
-        {...props}
       />
       <div className="flex absolute bottom-1 right-2 w-full justify-end px-2 py-1">
-        <p className="text-xs text-gray-500">
+        <p
+          className={`text-xs ${stripHtml(value).length > MAX_BOARD_CONTENT_LENGTH ? "text-red-500 font-semibold" : "text-gray-500"}`}
+        >
           {stripHtml(value).length} / {MAX_BOARD_CONTENT_LENGTH}
         </p>
       </div>

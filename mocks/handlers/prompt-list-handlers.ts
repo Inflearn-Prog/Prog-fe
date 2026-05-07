@@ -1,48 +1,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { http, HttpResponse } from "msw";
 
+const MOCK_CATEGORIES = [
+  { categoryId: 1, name: "개발", description: "개발 관련 프롬프트" },
+  { categoryId: 2, name: "마케팅/콘텐츠", description: "마케팅 관련 프롬프트" },
+  {
+    categoryId: 3,
+    name: "서비스기획",
+    description: "서비스 기획 관련 프롬프트",
+  },
+  { categoryId: 4, name: "인사/총무", description: "인사/총무 관련 프롬프트" },
+  { categoryId: 5, name: "디자인", description: "디자인 관련 프롬프트" },
+];
+
 const MOCK_PROMPTS = [
   {
-    id: 1,
+    promptId: 1,
     userId: 101,
-    category: "FRONTEND",
+    category: MOCK_CATEGORIES[0],
     title: "React의 가상 DOM 원리",
     content: "가상 DOM에 대해 설명해주세요.",
-    createdAt: "2024-03-01T10:00:00Z",
-    updatedAt: "2024-03-01T10:00:00Z",
-    userName: "프론트엔드마스터",
-    userIcon: "https://example.com/user101.png",
-    userDesc: "프론트엔드 개발자입니다.",
-    likes: 120,
-    isLiked: true,
+    createdAt: "2024-03-01T10:00:00",
+    updatedAt: "2024-03-01T10:00:00",
   },
   {
-    id: 2,
+    promptId: 2,
     userId: 102,
-    category: "BACKEND",
+    category: MOCK_CATEGORIES[0],
     title: "백엔드 아키텍처 설계",
     content: "MSA 아키텍처 설계 방법",
-    createdAt: "2024-03-02T11:00:00Z",
-    updatedAt: "2024-03-02T11:00:00Z",
-    userName: "백엔드고수",
-    userIcon: "https://example.com/user102.png",
-    userDesc: "백엔드 개발자입니다.",
-    likes: 85,
-    isLiked: false,
+    createdAt: "2024-03-02T11:00:00",
+    updatedAt: "2024-03-02T11:00:00",
   },
   {
-    id: 3,
+    promptId: 3,
     userId: 103,
-    category: "AI",
+    category: MOCK_CATEGORIES[0],
     title: "오늘의 핫한 AI 프롬프트",
     content: "LLM 최적화 방법",
-    createdAt: "2024-03-03T12:00:00Z",
-    updatedAt: "2024-03-03T12:00:00Z",
-    userName: "AI연구원",
-    userIcon: "https://example.com/user103.png",
-    userDesc: "AI 연구원입니다.",
-    likes: 200,
-    isLiked: false,
+    createdAt: "2024-03-03T12:00:00",
+    updatedAt: "2024-03-03T12:00:00",
   },
 ];
 
@@ -52,20 +49,21 @@ const MOCK_COMMENTS = [
     nickName: "개발왕",
     comment: "좋은 프롬프트네요!",
     parentId: null,
-    createdAt: "2024-03-04T10:00:00Z",
-    updatedAt: "2024-03-04T10:00:00Z",
+    createdAt: "2024-03-04T10:00:00",
+    updatedAt: "2024-03-04T10:00:00",
   },
   {
     commentId: 2,
     nickName: "코딩맨",
     comment: "동의합니다!",
     parentId: 1,
-    createdAt: "2024-03-04T11:00:00Z",
-    updatedAt: "2024-03-04T11:00:00Z",
+    createdAt: "2024-03-04T11:00:00",
+    updatedAt: "2024-03-04T11:00:00",
   },
 ];
 
-const getTimestamp = () => new Date().toISOString();
+const getTimestamp = () => new Date().toISOString().split(".")[0];
+
 interface ReportRequestBody {
   targetType: "PROMPT" | "COMMENT";
   targetId: number;
@@ -81,60 +79,254 @@ interface ReportRequestBody {
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export const promptListHandlers = [
-  //API 명세서 업데이트되면 맞춰서 수정해야함.
-  http.get(`${BASE_URL}/prompts`, ({ request }) => {
-    const url = new URL(request.url);
-    const category = url.searchParams.get("category");
-
-    const page = parseInt(url.searchParams.get("page") || "1");
-    const size = parseInt(url.searchParams.get("size") || "10");
-
-    let filteredData =
-      !category || category === "all"
-        ? MOCK_PROMPTS
-        : MOCK_PROMPTS.filter((p) => p.category === category);
-
-    const rankedData = filteredData.map((item, index) => ({
-      ...item,
-      rank: index + 1,
-    }));
-
-    const start = (page - 1) * size;
-    const end = start + size;
-    const slicedData = rankedData.slice(start, end);
-
-    const isLast = end >= rankedData.length;
-
+  // 카테고리 목록 조회
+  http.get(`${BASE_URL}/categories`, () => {
     return HttpResponse.json({
-      items: slicedData,
-      nextPage: isLast ? null : page + 1,
-      isLast: isLast,
+      success: true,
+      code: "200",
+      data: { categories: MOCK_CATEGORIES },
+      timestamp: getTimestamp(),
     });
   }),
-  http.post(`${BASE_URL}/prompts/like/:promptId`, ({ params }) => {
-    const { promptId } = params;
 
-    return HttpResponse.json(
-      {
-        message: "좋아요 처리가 완료되었습니다.",
-        id: promptId,
+  // 프롬프트 목록 조회
+  http.get(`${BASE_URL}/prompts`, ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get("page") || "0");
+    const size = parseInt(url.searchParams.get("size") || "20");
+
+    const start = page * size;
+    const end = start + size;
+    const slicedData = MOCK_PROMPTS.slice(start, end);
+
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: {
+        prompts: slicedData,
+        totalCount: MOCK_PROMPTS.length,
       },
-      { status: 200 }
-    );
+      timestamp: getTimestamp(),
+    });
   }),
-  http.delete(`${BASE_URL}/prompts/like/:promptId`, ({ params }) => {
-    const { promptId } = params;
 
-    console.log(`Prompt ${promptId} 좋아요 취소됨`);
-
-    return HttpResponse.json(
-      {
-        message: "좋아요 취소가 완료되었습니다.",
-        id: promptId,
+  // 프롬프트 생성
+  http.post(`${BASE_URL}/prompts`, async ({ request }) => {
+    const body = (await request.json()) as any;
+    const category =
+      MOCK_CATEGORIES.find((c) => c.categoryId === body.categoryId) ??
+      MOCK_CATEGORIES[0];
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: {
+        promptId: 999,
+        userId: 1,
+        category,
+        title: body.title,
+        content: body.content,
+        createdAt: getTimestamp(),
+        updatedAt: getTimestamp(),
       },
-      { status: 200 }
-    );
+      timestamp: getTimestamp(),
+    });
   }),
+
+  // 프롬프트 상세 조회
+  http.get(`${BASE_URL}/prompts/:promptId`, ({ params }) => {
+    const { promptId } = params;
+    const prompt =
+      MOCK_PROMPTS.find((p) => p.promptId === Number(promptId)) ??
+      MOCK_PROMPTS[0];
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: prompt,
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 프롬프트 수정
+  http.put(`${BASE_URL}/prompts/:promptId`, async ({ params, request }) => {
+    const { promptId } = params;
+    const body = (await request.json()) as any;
+    const existing =
+      MOCK_PROMPTS.find((p) => p.promptId === Number(promptId)) ??
+      MOCK_PROMPTS[0];
+    const category = body.categoryId
+      ? (MOCK_CATEGORIES.find((c) => c.categoryId === body.categoryId) ??
+        existing.category)
+      : existing.category;
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: {
+        ...existing,
+        ...body,
+        category,
+        promptId: Number(promptId),
+        updatedAt: getTimestamp(),
+      },
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 프롬프트 삭제
+  http.delete(`${BASE_URL}/prompts/:promptId`, () => {
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: null,
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 최신순 조회
+  http.get(`${BASE_URL}/prompts/createDesc`, () => {
+    const sorted = [...MOCK_PROMPTS].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: { prompts: sorted, totalCount: sorted.length },
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 좋아요순 조회
+  http.get(`${BASE_URL}/prompts/likeDesc`, () => {
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: { prompts: MOCK_PROMPTS, totalCount: MOCK_PROMPTS.length },
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 오늘 핫한 프롬프트
+  http.get(`${BASE_URL}/prompts/today-hot`, () => {
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: MOCK_PROMPTS.slice(0, 5),
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 제목 검색
+  http.get(`${BASE_URL}/prompts/search/:keyword`, ({ params }) => {
+    const { keyword } = params;
+    const filtered = MOCK_PROMPTS.filter((p) =>
+      p.title.includes(keyword as string)
+    );
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: { prompts: filtered, totalCount: filtered.length },
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 좋아요 토글
+  http.post(`${BASE_URL}/prompts/:promptId/like`, () => {
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: { likeStatus: "LIKE" },
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 댓글 목록 조회
+  http.get(`${BASE_URL}/comment/:promptId`, () => {
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: {
+        content: MOCK_COMMENTS,
+        hasNext: false,
+        numberOfElements: MOCK_COMMENTS.length,
+        size: 20,
+        number: 0,
+        first: true,
+        last: true,
+        empty: false,
+      },
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 댓글 작성
+  http.post(`${BASE_URL}/comment/:promptId`, async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: {
+        commentId: 100,
+        nickName: "작성자",
+        comment: body.comment,
+        parentId: null,
+        createdAt: getTimestamp(),
+        updatedAt: getTimestamp(),
+      },
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 대댓글 작성
+  http.post(
+    `${BASE_URL}/comment/:promptId/:commentId`,
+    async ({ params, request }) => {
+      const { commentId } = params;
+      const body = (await request.json()) as any;
+      return HttpResponse.json({
+        success: true,
+        code: "200",
+        data: {
+          commentId: 200,
+          nickName: "답글작성자",
+          comment: body.comment,
+          parentId: Number(commentId),
+          createdAt: getTimestamp(),
+          updatedAt: getTimestamp(),
+        },
+        timestamp: getTimestamp(),
+      });
+    }
+  ),
+
+  // 댓글 수정
+  http.patch(`${BASE_URL}/comment/:commentId`, async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: {
+        commentId: Number(params.commentId),
+        nickName: "작성자",
+        comment: body.comment,
+        parentId: null,
+        createdAt: "2024-03-04T10:00:00",
+        updatedAt: getTimestamp(),
+      },
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 댓글 삭제
+  http.delete(`${BASE_URL}/comment/:commentId`, () => {
+    return HttpResponse.json({
+      success: true,
+      code: "200",
+      data: null,
+      timestamp: getTimestamp(),
+    });
+  }),
+
+  // 신고
   http.post(`${BASE_URL}/reports`, async ({ request }) => {
     const body = (await request.json()) as ReportRequestBody;
     const { targetType, targetId, reason, reasonDetail } = body;
@@ -181,7 +373,6 @@ export const promptListHandlers = [
         { status: 400 }
       );
     }
-
     if (targetId === 888) {
       return HttpResponse.json(
         {
@@ -196,6 +387,7 @@ export const promptListHandlers = [
         { status: 409 }
       );
     }
+
     return HttpResponse.json(
       {
         success: true,
@@ -204,197 +396,11 @@ export const promptListHandlers = [
           targetType,
           targetId,
           reporterId: 22,
-          createdAt: getTimestamp().split(".")[0],
+          createdAt: getTimestamp(),
         },
         timestamp: getTimestamp(),
       },
       { status: 201 }
     );
-  }),
-
-  http.post(`${BASE_URL}/prompts`, async ({ request }) => {
-    const body = (await request.json()) as any;
-    return HttpResponse.json({
-      status: 201,
-      success: true,
-      data: {
-        promptId: 999,
-        ...body,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      message: "프롬프트가 생성되었습니다.",
-    });
-  }),
-
-  // 프롬프트 상세 조회
-  http.get(`${BASE_URL}/prompts/:promptId`, ({ params }) => {
-    const { promptId } = params;
-    const prompt =
-      MOCK_PROMPTS.find((p) => p.id === Number(promptId)) || MOCK_PROMPTS[0];
-    return HttpResponse.json({
-      status: 200,
-      success: true,
-      data: prompt,
-      message: "프롬프트 상세 조회가 완료되었습니다.",
-    });
-  }),
-
-  // 프롬프트 수정
-  http.put(`${BASE_URL}/prompts/:promptId`, async ({ params, request }) => {
-    const { promptId } = params;
-    const body = (await request.json()) as any;
-    return HttpResponse.json({
-      status: 200,
-      success: true,
-      data: {
-        promptId: Number(promptId),
-        ...body,
-        updatedAt: new Date().toISOString(),
-      },
-      message: "프롬프트가 수정되었습니다.",
-    });
-  }),
-
-  // 프롬프트 삭제
-  http.delete(`${BASE_URL}/prompts/:promptId`, ({ params }) => {
-    const { promptId } = params;
-    return HttpResponse.json({
-      status: 200,
-      success: true,
-      message: "프롬프트가 삭제되었습니다.",
-    });
-  }),
-
-  // 2. 프롬프트 조회 및 검색 (User)
-  // 최신순 조회
-  http.get(`${BASE_URL}/prompts/createDesc`, () => {
-    const sorted = [...MOCK_PROMPTS].sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    return HttpResponse.json({
-      status: 200,
-      success: true,
-      data: sorted,
-    });
-  }),
-
-  // 좋아요순 조회
-  http.get(`${BASE_URL}/prompts/likeDesc`, () => {
-    const sorted = [...MOCK_PROMPTS].sort(
-      (a, b) => (b.likes || 0) - (a.likes || 0)
-    );
-    return HttpResponse.json({
-      status: 200,
-      success: true,
-      data: sorted,
-    });
-  }),
-
-  // 오늘 핫한 프롬프트
-  http.get(`${BASE_URL}/prompts/today-hot`, () => {
-    return HttpResponse.json({
-      status: 200,
-      success: true,
-      data: MOCK_PROMPTS.slice(0, 5),
-    });
-  }),
-
-  // 제목 검색
-  http.get(`${BASE_URL}/prompts/search/:keyword`, ({ params }) => {
-    const { keyword } = params;
-    const filtered = MOCK_PROMPTS.filter((p) =>
-      p.title.includes(keyword as string)
-    );
-    return HttpResponse.json({
-      status: 200,
-      success: true,
-      data: filtered,
-    });
-  }),
-
-  // 좋아요/취소 토글
-  http.post(`${BASE_URL}/prompts/:promptId/like`, ({ params }) => {
-    const { promptId } = params;
-    return HttpResponse.json({
-      status: 200,
-      success: true,
-      message: `프롬프트 ${promptId} 좋아요 처리 완료`,
-    });
-  }),
-
-  // 3. 프롬프트 댓글 관리 (User)
-  // 댓글 목록 조회
-  http.get(`${BASE_URL}/api/v1/comment/:promptId`, ({ params }) => {
-    return HttpResponse.json({
-      status: 200,
-      success: true,
-      data: MOCK_COMMENTS,
-    });
-  }),
-
-  // 댓글 작성
-  http.post(`${BASE_URL}/api/v1/comment/:promptId`, async ({ request }) => {
-    const body = (await request.json()) as any;
-    return HttpResponse.json({
-      status: 201,
-      success: true,
-      data: {
-        commentId: 100,
-        nickName: "작성자",
-        ...body,
-        parentId: null,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    });
-  }),
-
-  // 대댓글 작성
-  http.post(
-    `${BASE_URL}/api/v1/comment/:promptId/:commentId`,
-    async ({ params, request }) => {
-      const { commentId } = params;
-      const body = (await request.json()) as any;
-      return HttpResponse.json({
-        status: 201,
-        success: true,
-        data: {
-          commentId: 200,
-          nickName: "답글작성자",
-          ...body,
-          parentId: Number(commentId),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      });
-    }
-  ),
-
-  // 댓글 수정
-  http.patch(
-    `${BASE_URL}/api/v1/comment/:commentId`,
-    async ({ params, request }) => {
-      const body = (await request.json()) as any;
-      return HttpResponse.json({
-        status: 200,
-        success: true,
-        data: {
-          commentId: Number(params.commentId),
-          ...body,
-          updatedAt: new Date().toISOString(),
-        },
-      });
-    }
-  ),
-
-  // 댓글 삭제
-  http.delete(`${BASE_URL}/api/v1/comment/:commentId`, ({ params }) => {
-    return HttpResponse.json({
-      status: 200,
-      success: true,
-      message: "댓글이 삭제되었습니다.",
-    });
   }),
 ];

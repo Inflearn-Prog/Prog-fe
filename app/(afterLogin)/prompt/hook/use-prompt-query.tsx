@@ -1,8 +1,6 @@
 "use client";
-// 2024-11-23 - /app/(afterLogin)/prompt/hook/use-prompt-query.tsx
-// 공식 문서: https://tanstack.com/query/latest/docs/react/overview
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-// 공식 문서: https://nextjs.org/docs/app/api-reference/functions/use-router
 import { useRouter } from "next/navigation";
 
 import { toasts } from "@/components/shared/toast";
@@ -25,8 +23,7 @@ export default function usePromptQuery() {
       toasts.success("프롬프트가 성공적으로 생성되었습니다!");
       router.push("/prompt");
     },
-    onError: (error) => {
-      console.error("프롬프트 생성 실패:", error);
+    onError: () => {
       toasts.error("프롬프트 생성에 실패했습니다.");
     },
   });
@@ -39,18 +36,17 @@ export default function usePromptQuery() {
       id: string | number;
       data: PromptUpdateRequest;
     }) => promptQueries.update(id, data),
-    onSuccess: (data) => {
+    onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({
         queryKey: promptQueries.lists(),
       });
       queryClient.invalidateQueries({
-        queryKey: promptQueries.detail(data.promptId).queryKey,
+        queryKey: promptQueries.detail(id).queryKey,
       });
       toasts.success("프롬프트가 성공적으로 수정되었습니다!");
-      router.push(`/prompt/${data.promptId}`);
+      router.push(`/prompt/${id}`);
     },
-    onError: (error) => {
-      console.error("프롬프트 수정 실패:", error);
+    onError: () => {
       toasts.error("프롬프트 수정에 실패했습니다.");
     },
   });

@@ -1,6 +1,7 @@
 import { PromptPage } from "@/app/types/type";
 import { ApiResponse, fetcher } from "@/lib/fetcher";
 
+// 다른 화면(랭킹, 검색 등)에서 사용하는 레거시 함수 — 이 브랜치에서는 수정하지 않음
 export const fetchPrompts = async (
   category: string,
   pageParam: number,
@@ -18,74 +19,85 @@ export const fetchPrompts = async (
   return response.json();
 };
 
-export type JobCategory = "BACKEND" | "FRONTEND" | "AI" | "ETC";
-export interface Prompt {
-  id: number;
-  userId: number;
-  category: JobCategory;
+// --- 카테고리 ---
+
+export interface CategoryResponse {
+  categoryId: number;
+  name: string;
+  description: string;
+}
+
+export interface CategoryListResponse {
+  categories: CategoryResponse[];
+}
+
+// --- 프롬프트 ---
+
+export interface PromptCreateRequest {
+  categoryId: number;
   title: string;
   content: string;
-  createdAt: string;
-  updatedAt: string;
-  userName: string | null;
-  userIcon: string | null;
-  userDesc: string;
-  likes: number;
-  isLiked: boolean;
-  promptId: string;
-}
-
-export interface Comment {
-  commentId: string;
-  nickName: string;
-  comment: string;
-  parentId: string | null;
-  createdAt: string;
-  updatedAt: string;
-  parentCommentId: string;
-  promptId: string;
-  isReply?: boolean;
-  currentUserIcon: string | null;
-  currentUserName: string | null;
-}
-
-export interface PromptCreateRequest extends Pick<Prompt, "title" | "content"> {
-  categoryId: string;
 }
 
 export type PromptUpdateRequest = Partial<PromptCreateRequest>;
 
-export interface PromptResponse extends Pick<
-  Prompt,
-  | "id"
-  | "userId"
-  | "category"
-  | "title"
-  | "content"
-  | "createdAt"
-  | "updatedAt"
-  | "userName"
-  | "userIcon"
-  | "userDesc"
-  | "promptId"
-> {
-  isLiked?: boolean;
-  likes?: number;
+export interface PromptResponse {
+  promptId: number;
+  userId: number;
+  category: CategoryResponse;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  // TODO: 서버에 GET /users/{userId} 엔드포인트 추가 필요
+  // 현재 서버 PromptResponse에는 아래 필드 없음 — 추후 서버 확장 또는 별도 API 호출로 해결
+  // userName, userIcon, userDesc, likes, isLiked
 }
 
-export interface PromptPageResponse {
-  items: PromptResponse[];
-  nextPage?: number;
+export interface PromptSummaryResponse {
+  promptId: number;
+  category: CategoryResponse;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type PromptCommentRequest = Pick<Comment, "comment">;
-
-export interface PromptCommentResponse extends Pick<
-  Comment,
-  "nickName" | "comment" | "parentId" | "createdAt" | "updatedAt"
-> {
-  commentId: string;
+export interface PromptListResponse {
+  prompts: PromptSummaryResponse[];
+  totalCount: number;
 }
+
+export interface PromptLikeResponse {
+  likeStatus: "LIKE" | "UNLIKE";
+}
+
+// --- 댓글 ---
+
+export interface PromptCommentRequest {
+  comment: string;
+}
+
+export interface PromptCommentResponse {
+  commentId: number;
+  nickName: string;
+  comment: string;
+  parentId: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CommentSliceResponse {
+  content: PromptCommentResponse[];
+  hasNext: boolean;
+  numberOfElements: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+// --- API ---
 
 export const promptApi = {
   createPrompt: (data: PromptCreateRequest) =>
@@ -94,10 +106,10 @@ export const promptApi = {
   getPromptDetail: (promptId: string | number) =>
     fetcher.get(`prompts/${promptId}`).json<ApiResponse<PromptResponse>>(),
 
-  getPrompts: (params: { categoryId?: number; page?: number; size?: number }) =>
+  getPrompts: (params?: { page?: number; size?: number; sort?: string }) =>
     fetcher
       .get("prompts", { searchParams: params })
-      .json<ApiResponse<PromptPageResponse>>(),
+      .json<ApiResponse<PromptListResponse>>(),
 
   updatePrompt: (promptId: string | number, data: PromptUpdateRequest) =>
     fetcher
@@ -105,28 +117,36 @@ export const promptApi = {
       .json<ApiResponse<PromptResponse>>(),
 
   deletePrompt: (promptId: string | number) =>
-    fetcher.delete(`prompts/${promptId}`).json<ApiResponse<void>>(),
+    fetcher.delete(`prompts/${promptId}`).json<ApiResponse<null>>(),
 
-  getPromptsLatest: () =>
-    fetcher.get("prompts/createDesc").json<ApiResponse<PromptResponse[]>>(),
+  getPromptsLatest: (params?: { page?: number; size?: number }) =>
+    fetcher
+      .get("prompts/createDesc", { searchParams: params })
+      .json<ApiResponse<PromptListResponse>>(),
 
-  getPromptsMostLiked: () =>
-    fetcher.get("prompts/likeDesc").json<ApiResponse<PromptResponse[]>>(),
+  getPromptsMostLiked: (params?: { page?: number; size?: number }) =>
+    fetcher
+      .get("prompts/likeDesc", { searchParams: params })
+      .json<ApiResponse<PromptListResponse>>(),
 
   getTodayHotPrompts: () =>
-    fetcher.get("prompts/today-hot").json<ApiResponse<PromptResponse[]>>(),
-
-  searchPrompts: (keyword: string) =>
     fetcher
-      .get(`prompts/search/${keyword}`)
-      .json<ApiResponse<PromptResponse[]>>(),
+      .get("prompts/today-hot")
+      .json<ApiResponse<PromptSummaryResponse[]>>(),
+
+  searchPrompts: (keyword: string, params?: { page?: number; size?: number }) =>
+    fetcher
+      .get(`prompts/search/${keyword}`, { searchParams: params })
+      .json<ApiResponse<PromptListResponse>>(),
 
   togglePromptLike: (promptId: string | number) =>
-    fetcher.post(`prompts/${promptId}/like`).json<ApiResponse<void>>(),
+    fetcher
+      .post(`prompts/${promptId}/like`)
+      .json<ApiResponse<PromptLikeResponse>>(),
 
   createComment: (promptId: string | number, data: PromptCommentRequest) =>
     fetcher
-      .post(`api/v1/comment/${promptId}`, { json: data })
+      .post(`comment/${promptId}`, { json: data })
       .json<ApiResponse<PromptCommentResponse>>(),
 
   createReply: (
@@ -135,19 +155,22 @@ export const promptApi = {
     data: PromptCommentRequest
   ) =>
     fetcher
-      .post(`api/v1/comment/${promptId}/${commentId}`, { json: data })
+      .post(`comment/${promptId}/${commentId}`, { json: data })
       .json<ApiResponse<PromptCommentResponse>>(),
 
   updateComment: (commentId: string | number, data: PromptCommentRequest) =>
     fetcher
-      .patch(`api/v1/comment/${commentId}`, { json: data })
+      .patch(`comment/${commentId}`, { json: data })
       .json<ApiResponse<PromptCommentResponse>>(),
 
   deleteComment: (commentId: string | number) =>
-    fetcher.delete(`api/v1/comment/${commentId}`).json<ApiResponse<void>>(),
+    fetcher.delete(`comment/${commentId}`).json<ApiResponse<null>>(),
 
   getComments: (promptId: string | number) =>
     fetcher
-      .get(`api/v1/comment/${promptId}`)
-      .json<ApiResponse<PromptCommentResponse[]>>(),
+      .get(`comment/${promptId}`)
+      .json<ApiResponse<CommentSliceResponse>>(),
+
+  getCategories: () =>
+    fetcher.get("categories").json<ApiResponse<CategoryListResponse>>(),
 };

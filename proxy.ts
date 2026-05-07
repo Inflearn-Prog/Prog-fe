@@ -11,9 +11,9 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  const isDevelopment = process.env.NODE_ENV === "development";
-  const isSignIn = isDevelopment ? true : !!session;
-  const isNewUser = session?.isNewUser;
+  const bypassAuth = process.env.NEXT_PUBLIC_BYPASS_AUTH === "true";
+  const isSignIn = bypassAuth ? true : !!session;
+  const isNewUser = bypassAuth ? false : session?.isNewUser;
   const regStatus = session?.registrationStatus;
   const protectedRoutes = [ROUTES.mypage.ROOT];
 
