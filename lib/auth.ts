@@ -52,16 +52,16 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
           const cookieStore = await cookies();
           cookieStore.set("accessToken", accessToken, {
             path: "/",
-            httpOnly: false, // 중요: 클라이언트 document.cookie로 접근해야 함
+            httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
             maxAge: 30 * 24 * 60 * 60, // 30일
           });
 
           if (refreshToken) {
-            cookieStore.set("refreshToken", refreshToken, {
+            cookieStore.set("refresh_token", refreshToken, {
               path: "/",
-              httpOnly: false, // Mypage 등에서 접근 가능하도록 false (필요시 true로 변경)
+              httpOnly: true,
               secure: process.env.NODE_ENV === "production",
               sameSite: "lax",
               maxAge: 30 * 24 * 60 * 60,
@@ -74,6 +74,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
           user.isNewUser = isNewUser;
           user.registrationStatus = registrationStatus;
           user.provider = account.provider; // 소셜 제공자 정보 저장
+          user.email = user.email ?? undefined;
 
           // 여기서 리다이렉트 하지 않고 무조건 true 반환 (로그인 처리)
           // 추후 회원가입 페이지에서 세션 정보에서 -> Zustand로 store.
@@ -92,6 +93,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
         token.registrationStatus = user.registrationStatus;
         token.isNewUser = user.isNewUser;
         token.provider = user.provider;
+        token.email = user.email;
 
         if (user.accessToken) {
           try {
@@ -139,6 +141,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
       session.registrationStatus = token.registrationStatus as string;
       session.isNewUser = token.isNewUser as boolean;
       session.provider = token.provider as string;
+      session.email = token.email as string;
       session.error = token.error as string;
       return session;
     },
@@ -174,34 +177,41 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
       throw new Error("Backend refresh failed");
     }
 
-    // 백엔드 응답 구조에 따라 대응 (문자열 또는 객체)
-    const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-      typeof resData.data === "string"
-        ? { accessToken: resData.data, refreshToken: undefined }
-        : resData.data;
-
+    // API 스펙: data는 새 accessToken 문자열
+    const newAccessToken = resData.data as string;
     const decoded = jwtDecode<{ exp: number }>(newAccessToken);
 
+    // 새 accessToken을 쿠키에 저장
     cookieStore.set("accessToken", newAccessToken, {
-      httpOnly: false,
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      maxAge: 30 * 24 * 60 * 60, // 30일
     });
 
-    if (newRefreshToken) {
-      cookieStore.set("refreshToken", newRefreshToken, {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-      });
+    // 백엔드가 Set-Cookie로 보낸 refresh_token을 Next.js 서버에서 수동 전달
+    const setCookieHeader = response.headers.getSetCookie?.();
+    if (setCookieHeader) {
+      for (const cookie of setCookieHeader) {
+        if (cookie.startsWith("refresh_token=")) {
+          const refreshTokenValue = cookie.split(";")[0].split("=")[1];
+          if (refreshTokenValue) {
+            cookieStore.set("refresh_token", refreshTokenValue, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "lax",
+              path: "/",
+              maxAge: 30 * 24 * 60 * 60, // 30일
+            });
+          }
+        }
+      }
     }
 
     return {
       ...token,
       accessToken: newAccessToken,
-      refreshToken: newRefreshToken || token.refreshToken,
       accessTokenExpires: decoded.exp * 1000,
       error: undefined,
     };

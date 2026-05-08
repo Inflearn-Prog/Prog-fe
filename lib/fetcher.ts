@@ -49,10 +49,13 @@ export const fetcher = ky.create({
           }
           // [CSR / Client Component]
         } else {
-          token = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("accessToken="))
-            ?.split("=")[1];
+          try {
+            const { getSession } = await import("next-auth/react");
+            const session = await getSession();
+            token = session?.accessToken;
+          } catch (error) {
+            console.error("Failed to get session on client:", error);
+          }
         }
 
         if (token) {

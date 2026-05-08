@@ -1,14 +1,13 @@
 "use client";
 import { useQueryClient } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { toast } from "sonner";
 
 import { AuthProvider } from "@/app/(beforeLogin)/(auth)/constant";
+import { clearAuthCookies } from "@/app/actions/auth-actions";
 import UserProfile from "@/components/mypage/user-profile";
 import { BaseButton } from "@/components/shared/button";
-import { toasts } from "@/components/shared/toast";
 import { useUserProfile } from "@/hooks/use-mypage";
 import { ROUTES } from "@/lib/routes";
 import { deleteUserAccount, postLogout } from "@/queries/api/auth";
@@ -49,11 +48,10 @@ export default function MypageLeftSection() {
     try {
       await deleteUserAccount(userData.basicInfo.uid);
 
-      Cookies.remove("refreshToken");
-      Cookies.remove("accessToken");
+      await clearAuthCookies();
       queryClient.clear();
 
-      toasts.success("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
+      toast.success("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
       router.push(ROUTES.rank.ROOT);
       router.refresh();
     } catch {

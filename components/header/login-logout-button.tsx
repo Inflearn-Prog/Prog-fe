@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
 
 import { useLogout } from "@/hooks/use-logout";
 import { ROUTES } from "@/lib/routes";
@@ -21,12 +20,7 @@ export function LoginAndLogoutButton({
   const handleGoingLogin = () => {
     router.push(ROUTES.auth.SIGNIN);
   };
-
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: ROUTES.auth.SIGNIN });
-  };
-
-  if (session?.accessToken) {
+  if (user?.accessToken) {
     return (
       <BaseButton
         onClick={() => logout()}

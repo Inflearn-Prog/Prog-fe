@@ -75,7 +75,7 @@ export default function MypageRightSection() {
       setExperiences(selfIntro.experiences || []);
       setKeywords(selfIntro.keywords || []);
     }
-  }, [profile, setTargetJobs, updateField]);
+  }, [profile, data, setTargetJobs, updateField]);
 
   if (isLoading) {
     return (
@@ -127,7 +127,6 @@ export default function MypageRightSection() {
     if (!profile) return;
 
     if (currentState === STATE_VALUES.ETC && !otherInput.trim()) {
-      alert("기타 상태를 직접 입력해주세요.");
       toast.error("기타 상태를 직접 입력해주세요.");
       return;
     }

@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { toasts } from "@/components/shared/toast";
 import { ApiError } from "@/lib/fetcher";
+import { ROUTES } from "@/lib/routes";
 import {
   getAgreedTerms,
   getLikedPrompts,
@@ -61,18 +61,19 @@ export const useLikedPrompts = ({
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: (data: UpdateProfileRequest) => updateUserProfile(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user", "profile"] });
-      toasts.success("프로필 정보가 성공적으로 저장되었습니다.");
+      toast.success("프로필 정보가 성공적으로 저장되었습니다.");
     },
     onError: (error: Error) => {
       if (error instanceof ApiError) {
         if (error.status === 401) {
           toast.error("세션이 만료되었습니다. 다시 로그인해주세요.");
-          router.push("/signin"); // 필요시 이동
+          router.push(ROUTES.auth.SIGNIN);
           return;
         }
         // 그 외 서버가 보내준 메시지 표시
@@ -87,19 +88,22 @@ export const useUpdateProfile = () => {
 
 export const useWithdrawTerms = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: (data: { termIds: number[] }) => withdrawTerms(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users", "me", "terms"] });
+      queryClient.invalidateQueries({
+        queryKey: ["users", "me", "terms-agreements"],
+      });
       queryClient.invalidateQueries({ queryKey: ["users", "me", "profile"] });
-      toasts.success("약관이 성공적으로 철회 완료되었습니다.");
+      toast.success("약관이 성공적으로 철회 완료되었습니다.");
     },
     onError: (error: Error) => {
       if (error instanceof ApiError) {
         if (error.status === 401) {
           toast.error("세션이 만료되었습니다. 다시 로그인해주세요.");
-          router.push("/signin"); // 필요시 이동
+          router.push(ROUTES.auth.SIGNIN);
           return;
         }
         // 그 외 서버가 보내준 메시지 표시
