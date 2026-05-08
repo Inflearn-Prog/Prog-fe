@@ -6,6 +6,14 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export interface PagedResponse<T> {
+  prompts: T[];
+  totalCount: number;
+  pageable: {
+    pageNumber: number;
+  };
+}
+
 export interface ApiErrorData {
   errorClassName: string;
   message: string;
@@ -55,11 +63,29 @@ export const fetcher = ky.create({
     afterResponse: [
       async (request, options, response) => {
         if (!response.ok) {
-          // 이부분에 에러 코드 및 상황에 따른 처리 로직 추가
-          // 예시 `/users/me` 호출 시 토큰 만료 처리
-          // if (errorData?.errorClassName === "ACCESS_TOKEN_EXPIRED") {
-          //   로그아웃 처리 등
-          // }
+          const errorData = (await response.json()) as {
+            success: boolean;
+            code: string;
+            error: ApiErrorData;
+            timestamp: string;
+          } | null;
+          if (errorData && errorData.success === false) {
+            if (
+              ["TOKEN_EXPIRED", "INVALID_TOKEN"].includes(
+                errorData.error.errorClassName
+              )
+            ) {
+              // 예: 로그아웃 처리 또는 토큰 재발급 로직 호출
+            }
+
+            // 커스텀 ApiError 던지기
+            throw new ApiError(response.status, errorData.error);
+          }
+
+          // 3. 만약 백엔드에서 정의한 에러 포맷이 아닐 경우의 폴백(Fallback)
+          throw new Error(
+            `서버 에러가 발생했습니다. (Status: ${response.status})`
+          );
         }
         return response;
       },

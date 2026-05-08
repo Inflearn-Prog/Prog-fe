@@ -30,11 +30,7 @@ export default async function layout({
               <Link href={ROUTES.community.WRITE}>글쓰기</Link>
             </BaseButton>
           )}
-          <Suspense
-            fallback={
-              <div className="h-60 w-full animate-pulse bg-gray-100 rounded-10" />
-            }
-          >
+          <Suspense>
             <ProgSidebar />
           </Suspense>
         </aside>

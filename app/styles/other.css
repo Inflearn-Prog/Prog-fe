@@ -58,3 +58,18 @@
     padding-left: 1rem;
   }
 }
+
+/* 스크롤바 숨김 유틸리티 */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* 모바일 safe area 하단 패딩 (기본 패딩 12px + 안전 영역) */
+.safe-area-bottom {
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+}

@@ -36,11 +36,22 @@ export const ROUTES = {
     HR_GENERAL_AFFAIRS: "/community?category=hr_general_affairs",
     DESIGN: "/community?category=design",
   },
+  prompt: {
+    DETAIL: (id: string) => `/prompt/${id}`,
+  },
   mypage: {
     ROOT: "/mypage",
     PROFILE: "/mypage?tab=profile",
     ACTIVITY: "/mypage?tab=activity",
     LIKED: "/mypage?tab=activity&sub=liked",
     POSTED: "/mypage?tab=activity&sub=posted",
+  },
+  admin: {
+    ROOT: "/admin",
+    DASHBOARD: "/admin?tab=dashboard",
+    PROMPTS: "/admin?tab=prompts",
+    USERS: "/admin?tab=users",
+    CATEGORIES: "/admin?tab=categories",
+    NOTICES: "/admin?tab=notices",
   },
 } as const;

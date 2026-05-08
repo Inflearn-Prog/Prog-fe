@@ -1,17 +1,19 @@
-const BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8080";
+import { PromptPage } from "@/app/types/type";
+import { ApiResponse, fetcher } from "@/lib/fetcher";
 
-export const fetchPrompts = async (category: string, pageParam: number) => {
-  const pageSize = 10;
+export const fetchPrompts = async (
+  category: string,
+  pageParam: number,
+  q?: string
+): Promise<ApiResponse<PromptPage>> => {
   const params = new URLSearchParams({
     category,
     page: String(pageParam),
-    size: String(pageSize),
+    size: "10",
   });
-  const response = await fetch(`${BASE_URL}/api/prompts?${params}`);
+  if (q) params.append("q", q);
 
-  if (!response.ok) {
-    throw new Error("데이터를 불러오는 데 실패했습니다.");
-  }
+  const response = await fetcher.get(`prompts?${params.toString()}`);
+
   return response.json();
 };
