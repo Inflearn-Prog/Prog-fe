@@ -58,10 +58,13 @@ export interface PromptResponse {
 
 export interface PromptSummaryResponse {
   promptId: number;
+  userId: number;
+  nickname: string;
   category: CategoryResponse;
   title: string;
   createdAt: string;
   updatedAt: string;
+  isLiked: boolean;
 }
 
 export interface PromptListResponse {
@@ -70,7 +73,7 @@ export interface PromptListResponse {
 }
 
 export interface PromptLikeResponse {
-  likeStatus: "LIKE" | "UNLIKE";
+  likeStatus: "LIKED" | "UNLIKED";
 }
 
 // --- 댓글 ---

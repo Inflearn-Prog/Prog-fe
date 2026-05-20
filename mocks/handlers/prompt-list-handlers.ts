@@ -13,7 +13,7 @@ const MOCK_CATEGORIES = [
   { categoryId: 5, name: "디자인", description: "디자인 관련 프롬프트" },
 ];
 
-const MOCK_PROMPTS = [
+const MOCK_PROMPTS_DETAIL = [
   {
     promptId: 1,
     userId: 101,
@@ -27,6 +27,7 @@ const MOCK_PROMPTS = [
     userDesc: "프론트엔드 개발자입니다.",
     isLiked: false,
     likes: 0,
+    visibility: "PUBLIC" as const,
   },
   {
     promptId: 2,
@@ -41,6 +42,7 @@ const MOCK_PROMPTS = [
     userDesc: "백엔드 엔지니어입니다.",
     isLiked: false,
     likes: 0,
+    visibility: "PUBLIC" as const,
   },
   {
     promptId: 3,
@@ -55,8 +57,53 @@ const MOCK_PROMPTS = [
     userDesc: null,
     isLiked: false,
     likes: 0,
+    visibility: "PUBLIC" as const,
+  },
+  {
+    promptId: 100,
+    userId: 101,
+    category: MOCK_CATEGORIES[1],
+    title: "비공개 마케팅 프롬프트",
+    content: "비공개 내용입니다.",
+    createdAt: "2024-03-04T09:00:00",
+    updatedAt: "2024-03-04T09:00:00",
+    userName: "김개발",
+    userIcon: null,
+    userDesc: "프론트엔드 개발자입니다.",
+    isLiked: false,
+    likes: 0,
+    visibility: "PRIVATE" as const,
   },
 ];
+
+const toSummary = (p: (typeof MOCK_PROMPTS_DETAIL)[number]) => ({
+  promptId: p.promptId,
+  userId: p.userId,
+  nickname: p.userName,
+  category: p.category,
+  title: p.title,
+  createdAt: p.createdAt,
+  updatedAt: p.updatedAt,
+  isLiked: p.isLiked,
+});
+
+const toDetail = (p: (typeof MOCK_PROMPTS_DETAIL)[number]) => ({
+  promptId: p.promptId,
+  userId: p.userId,
+  category: p.category,
+  title: p.title,
+  content: p.content,
+  createdAt: p.createdAt,
+  updatedAt: p.updatedAt,
+  userName: p.userName,
+  userIcon: p.userIcon,
+  userDesc: p.userDesc,
+  isLiked: p.isLiked,
+  likes: p.likes,
+});
+
+const publicPrompts = () =>
+  MOCK_PROMPTS_DETAIL.filter((p) => p.visibility === "PUBLIC");
 
 const MOCK_COMMENTS = [
   {
@@ -110,16 +157,17 @@ export const promptListHandlers = [
     const page = parseInt(url.searchParams.get("page") || "0");
     const size = parseInt(url.searchParams.get("size") || "20");
 
+    const all = publicPrompts();
     const start = page * size;
     const end = start + size;
-    const slicedData = MOCK_PROMPTS.slice(start, end);
+    const slicedData = all.slice(start, end).map(toSummary);
 
     return HttpResponse.json({
       success: true,
       code: "200",
       data: {
         prompts: slicedData,
-        totalCount: MOCK_PROMPTS.length,
+        totalCount: all.length,
       },
       timestamp: getTimestamp(),
     });
@@ -152,16 +200,47 @@ export const promptListHandlers = [
     });
   }),
 
-  // 프롬프트 상세 조회
+  // 프롬프트 상세 조회 (비로그인 허용, PRIVATE은 작성자만)
   http.get(`${BASE_URL}/prompts/:promptId`, ({ params }) => {
     const { promptId } = params;
-    const prompt =
-      MOCK_PROMPTS.find((p) => p.promptId === Number(promptId)) ??
-      MOCK_PROMPTS[0];
+    const prompt = MOCK_PROMPTS_DETAIL.find(
+      (p) => p.promptId === Number(promptId)
+    );
+
+    if (!prompt) {
+      return HttpResponse.json(
+        {
+          success: false,
+          code: "404",
+          error: {
+            errorClassName: "PROMPT_NOT_FOUND",
+            message: "존재하지 않는 프롬프트입니다.",
+          },
+          timestamp: getTimestamp(),
+        },
+        { status: 404 }
+      );
+    }
+
+    if (prompt.visibility === "PRIVATE") {
+      return HttpResponse.json(
+        {
+          success: false,
+          code: "403",
+          error: {
+            errorClassName: "ACCESS_DENIED",
+            message: "접근 권한이 없습니다.",
+          },
+          timestamp: getTimestamp(),
+        },
+        { status: 403 }
+      );
+    }
+
     return HttpResponse.json({
       success: true,
       code: "200",
-      data: prompt,
+      data: toDetail(prompt),
       timestamp: getTimestamp(),
     });
   }),
@@ -171,8 +250,8 @@ export const promptListHandlers = [
     const { promptId } = params;
     const body = (await request.json()) as any;
     const existing =
-      MOCK_PROMPTS.find((p) => p.promptId === Number(promptId)) ??
-      MOCK_PROMPTS[0];
+      MOCK_PROMPTS_DETAIL.find((p) => p.promptId === Number(promptId)) ??
+      MOCK_PROMPTS_DETAIL[0];
     const category = body.categoryId
       ? (MOCK_CATEGORIES.find((c) => c.categoryId === body.categoryId) ??
         existing.category)
@@ -180,13 +259,13 @@ export const promptListHandlers = [
     return HttpResponse.json({
       success: true,
       code: "200",
-      data: {
+      data: toDetail({
         ...existing,
         ...body,
         category,
         promptId: Number(promptId),
         updatedAt: getTimestamp(),
-      },
+      }),
       timestamp: getTimestamp(),
     });
   }),
@@ -201,66 +280,84 @@ export const promptListHandlers = [
     });
   }),
 
-  // 최신순 조회
+  // 최신순 조회 (PUBLIC만, 비로그인 허용)
   http.get(`${BASE_URL}/prompts/createDesc`, () => {
-    const sorted = [...MOCK_PROMPTS].sort(
+    const sorted = publicPrompts().sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
     return HttpResponse.json({
       success: true,
       code: "200",
-      data: { prompts: sorted, totalCount: sorted.length },
+      data: { prompts: sorted.map(toSummary), totalCount: sorted.length },
       timestamp: getTimestamp(),
     });
   }),
 
-  // 좋아요순 조회
+  // 좋아요순 조회 (PUBLIC만, 비로그인 허용)
   http.get(`${BASE_URL}/prompts/likeDesc`, () => {
+    const list = publicPrompts();
     return HttpResponse.json({
       success: true,
       code: "200",
-      data: { prompts: MOCK_PROMPTS, totalCount: MOCK_PROMPTS.length },
+      data: { prompts: list.map(toSummary), totalCount: list.length },
       timestamp: getTimestamp(),
     });
   }),
 
-  // 오늘 핫한 프롬프트
+  // 오늘 핫한 프롬프트 (PUBLIC만, 비로그인 허용)
   http.get(`${BASE_URL}/prompts/today-hot`, () => {
     return HttpResponse.json({
       success: true,
       code: "200",
-      data: MOCK_PROMPTS.slice(0, 5),
+      data: publicPrompts().slice(0, 5).map(toSummary),
       timestamp: getTimestamp(),
     });
   }),
 
-  // 제목 검색
+  // 제목 검색 (PUBLIC만, 비로그인 허용)
   http.get(`${BASE_URL}/prompts/search/:keyword`, ({ params }) => {
     const { keyword } = params;
-    const filtered = MOCK_PROMPTS.filter((p) =>
+    const filtered = publicPrompts().filter((p) =>
       p.title.includes(keyword as string)
     );
     return HttpResponse.json({
       success: true,
       code: "200",
-      data: { prompts: filtered, totalCount: filtered.length },
+      data: { prompts: filtered.map(toSummary), totalCount: filtered.length },
       timestamp: getTimestamp(),
     });
   }),
 
-  // 좋아요 토글
+  // 좋아요 토글 (인증 필수)
   http.post(`${BASE_URL}/prompts/:promptId/like`, () => {
     return HttpResponse.json({
       success: true,
       code: "200",
-      data: { likeStatus: "LIKE" },
+      data: { likeStatus: "LIKED" },
       timestamp: getTimestamp(),
     });
   }),
 
-  // 댓글 목록 조회
-  http.get(`${BASE_URL}/comment/:promptId`, () => {
+  // 댓글 목록 조회 (PRIVATE 프롬프트는 작성자만)
+  http.get(`${BASE_URL}/comment/:promptId`, ({ params }) => {
+    const prompt = MOCK_PROMPTS_DETAIL.find(
+      (p) => p.promptId === Number(params.promptId)
+    );
+    if (prompt?.visibility === "PRIVATE") {
+      return HttpResponse.json(
+        {
+          success: false,
+          code: "403",
+          error: {
+            errorClassName: "ACCESS_DENIED",
+            message: "접근 권한이 없습니다.",
+          },
+          timestamp: getTimestamp(),
+        },
+        { status: 403 }
+      );
+    }
     return HttpResponse.json({
       success: true,
       code: "200",
@@ -278,8 +375,25 @@ export const promptListHandlers = [
     });
   }),
 
-  // 댓글 작성
-  http.post(`${BASE_URL}/comment/:promptId`, async ({ request }) => {
+  // 댓글 작성 (PRIVATE 프롬프트에는 작성 불가)
+  http.post(`${BASE_URL}/comment/:promptId`, async ({ params, request }) => {
+    const prompt = MOCK_PROMPTS_DETAIL.find(
+      (p) => p.promptId === Number(params.promptId)
+    );
+    if (prompt?.visibility === "PRIVATE") {
+      return HttpResponse.json(
+        {
+          success: false,
+          code: "403",
+          error: {
+            errorClassName: "ACCESS_DENIED",
+            message: "접근 권한이 없습니다.",
+          },
+          timestamp: getTimestamp(),
+        },
+        { status: 403 }
+      );
+    }
     const body = (await request.json()) as any;
     return HttpResponse.json({
       success: true,
@@ -296,10 +410,27 @@ export const promptListHandlers = [
     });
   }),
 
-  // 대댓글 작성
+  // 대댓글 작성 (PRIVATE 프롬프트에는 작성 불가)
   http.post(
     `${BASE_URL}/comment/:promptId/:commentId`,
     async ({ params, request }) => {
+      const prompt = MOCK_PROMPTS_DETAIL.find(
+        (p) => p.promptId === Number(params.promptId)
+      );
+      if (prompt?.visibility === "PRIVATE") {
+        return HttpResponse.json(
+          {
+            success: false,
+            code: "403",
+            error: {
+              errorClassName: "ACCESS_DENIED",
+              message: "접근 권한이 없습니다.",
+            },
+            timestamp: getTimestamp(),
+          },
+          { status: 403 }
+        );
+      }
       const { commentId } = params;
       const body = (await request.json()) as any;
       return HttpResponse.json({
