@@ -16,7 +16,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  useGetPrompts,
+  useCategoryIdFromSlug,
+  useGetPromptsLatest,
   useReportMutation,
   useToggleLikeMutation,
 } from "@/hooks/use-prompt-list";
@@ -109,8 +110,9 @@ export default function RankingList({ category }: { category: string }) {
       }
     );
   };
+  const categoryId = useCategoryIdFromSlug(category);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetPrompts(category);
+    useGetPromptsLatest(categoryId);
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -119,11 +121,12 @@ export default function RankingList({ category }: { category: string }) {
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const allPrompts =
-    data?.pages.flatMap((page) => {
-      const d = page.data as unknown as Record<string, unknown>;
-      const items = (d?.items ?? d?.prompts ?? []) as ApiPromptItem[];
-      return items.map(toPromptInfo);
-    }) ?? [];
+    data?.pages?.flatMap(
+      (page) =>
+        (page?.data?.prompts ?? []).map((item) =>
+          toPromptInfo(item as ApiPromptItem)
+        ) ?? []
+    ) ?? [];
 
   return (
     <div className="flex flex-col gap-4">

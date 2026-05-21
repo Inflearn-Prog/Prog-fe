@@ -124,7 +124,12 @@ export const promptApi = {
   deletePrompt: (promptId: string | number) =>
     fetcher.delete(`prompts/${promptId}`).json<ApiResponse<null>>(),
 
-  getPromptsLatest: (params?: { page?: number; size?: number }) =>
+  getPromptsLatest: (params?: {
+    page?: number;
+    size?: number;
+    /** 백엔드는 "all" 또는 categoryId 숫자 문자열을 받음. number 전달 시 Ky가 문자열로 변환. */
+    category?: number | "all";
+  }) =>
     fetcher
       .get("prompts/createDesc", { searchParams: params })
       .json<ApiResponse<PromptListResponse>>(),
