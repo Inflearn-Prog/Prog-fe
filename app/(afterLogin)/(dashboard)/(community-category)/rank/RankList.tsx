@@ -84,7 +84,11 @@ export default function RankingList({ category }: { category: string }) {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const allPrompts = data?.pages.flatMap((page) => page.data.items) ?? [];
+  const allPrompts =
+    data?.pages.flatMap((page) => {
+      const d = page.data as unknown as Record<string, unknown>;
+      return (d?.items ?? d?.prompts ?? []) as PromptInfo[];
+    }) ?? [];
 
   return (
     <div className="flex flex-col gap-4">
