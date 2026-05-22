@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -93,17 +94,15 @@ export default function RankingList({ category }: { category: string }) {
   return (
     <div className="flex flex-col gap-4">
       {allPrompts?.map((prompt: PromptInfo) => (
-        <div
-          key={prompt.promptId}
+        <Link
+          href={ROUTES.prompt.DETAIL(prompt.promptId.toString())}
+          className="block cursor-pointer"
           onClick={(e) => {
             const target = e.target as HTMLElement;
-            // 버튼이나 버튼 내부 요소를 클릭한 경우 네비게이션 방지
             if (target.closest("button")) {
-              return;
+              e.preventDefault();
             }
-            router.push(ROUTES.prompt.DETAIL(prompt.promptId.toString()));
           }}
-          className="cursor-pointer"
         >
           <PromptCard
             {...prompt}
@@ -117,7 +116,7 @@ export default function RankingList({ category }: { category: string }) {
               }))
             }
           />
-        </div>
+        </Link>
       ))}
       <div ref={ref} className="flex flex-col gap-4">
         {isFetchingNextPage && (

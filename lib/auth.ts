@@ -159,7 +159,17 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
 
     const resData = await response.json();
     // 2. 새 토큰 파싱
-    const newAccessToken = resData.data;
+    const newAccessToken =
+      typeof resData?.data === "string"
+        ? resData.data
+        : typeof resData?.data?.accessToken === "string"
+          ? resData.data.accessToken
+          : null;
+
+    if (!newAccessToken) {
+      throw new Error("Invalid refresh response: access token is missing");
+    }
+
     const decoded = jwtDecode<{ exp: number }>(newAccessToken);
 
     return {
