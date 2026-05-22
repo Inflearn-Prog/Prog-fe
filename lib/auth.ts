@@ -45,8 +45,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 
         const resData = await response.json();
         if (resData.success) {
-          const { isNewUser, accessToken, refreshToken, registrationStatus } =
-            resData.data;
+          const { isNewUser, accessToken, registrationStatus } = resData.data;
 
           // 신규 유저든 기존 유저든 일단 정보를 user 객체에 보관
           user.accessToken = accessToken;
@@ -70,6 +69,10 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
         token.registrationStatus = user.registrationStatus;
         token.isNewUser = user.isNewUser;
         token.provider = user.provider;
+        token.name = user.name;
+        token.email = user.email;
+        token.picture = user.image;
+        token.sub = user.id;
 
         if (user.accessToken) {
           try {
@@ -118,6 +121,12 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
       session.isNewUser = token.isNewUser as boolean;
       session.provider = token.provider as string;
       session.error = token.error as string;
+
+      if (session.user) {
+        session.user.accessToken = token.accessToken as string;
+        session.user.id = token.sub as string;
+      }
+
       return session;
     },
   },
@@ -133,12 +142,11 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
     const cookieString = cookieStore.toString();
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/post`,
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/refresh`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token.accessToken}`,
           Cookie: cookieString,
         },
       }
@@ -151,7 +159,7 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
 
     const resData = await response.json();
     // 2. 새 토큰 파싱
-    const newAccessToken = resData.data.accessToken;
+    const newAccessToken = resData.data;
     const decoded = jwtDecode<{ exp: number }>(newAccessToken);
 
     return {

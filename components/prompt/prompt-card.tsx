@@ -6,7 +6,6 @@ import { PromptCardProps } from "@/app/types/type";
 
 import { ProfIcon } from "../profile-icon/profile-icon";
 import { BaseButton } from "../shared/button";
-import { CATEGORY_MAP } from "./constants";
 
 const STYLES = {
   CARD_CONTAINER:
@@ -24,10 +23,11 @@ const STYLES = {
 };
 
 export default function PromptCard({
-  id,
+  promptId,
   category,
   title,
-  content,
+  contentSummary,
+  nickname,
   userIcon,
   userName,
   userDesc,
@@ -35,31 +35,31 @@ export default function PromptCard({
   onCopy,
   onLike,
   onReport,
-  onPreview,
 }: PromptCardProps) {
-  const categoryLabel = CATEGORY_MAP.get(category) || category;
+  const categoryLabel = category?.name || "";
+  const displayUserName = nickname || userName || "알 수 없는 유저";
 
   return (
     <article className={STYLES.CARD_CONTAINER}>
       {/* 카테고리 태그 */}
-      <div className={STYLES.TAG}>{categoryLabel}</div>
+      {categoryLabel && <div className={STYLES.TAG}>{categoryLabel}</div>}
 
       {/* 텍스트 콘텐츠 */}
       <h2 className={STYLES.TITLE}>{title}</h2>
-      <p className={STYLES.DESCRIPTION}>{content}</p>
+      {contentSummary && <p className={STYLES.DESCRIPTION}>{contentSummary}</p>}
 
       {/* 유저 정보 */}
       <div className={STYLES.USER_SECTION}>
         <ProfIcon
-          src={userIcon}
+          src={userIcon || ""}
           width={50}
           height={50}
-          alt={userName}
-          fallback={userName}
+          alt={displayUserName}
+          fallback={displayUserName}
         />
         <div>
-          <p className={STYLES.NICKNAME}>{userName}</p>
-          <p className={STYLES.USER_DESC}>{userDesc}</p>
+          <p className={STYLES.NICKNAME}>{displayUserName}</p>
+          {userDesc && <p className={STYLES.USER_DESC}>{userDesc}</p>}
         </div>
       </div>
 
@@ -70,34 +70,34 @@ export default function PromptCard({
             size={"sm"}
             shape={"round"}
             className={STYLES.BUTTON}
-            onClick={onCopy}
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation();
+              onCopy?.();
+            }}
           >
             복사
           </BaseButton>
-          {/* TODO: 미리보기 기능 구현 후 활성 */}
-          {/*<BaseButton
-            size={"sm"}
-            shape={"round"}
-            className={STYLES.BUTTON}
-            onClick={onPreview}
-          >
-            미리보기
-          </BaseButton>*/}
         </div>
         <div className={STYLES.ICON_GROUP}>
           <button
             type="button"
-            className={`${STYLES.ICON_BUTTON} ${isLiked ? "text-frog-600" : "text-gray-800"}`}
+            className={`${STYLES.ICON_BUTTON} ${isLiked ? "text-frog-600" : "text-gray-1000"}`}
             aria-label="좋아요"
-            onClick={() => onLike?.(id, !!isLiked)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onLike?.(promptId, !!isLiked);
+            }}
           >
-            <ThumbsUpIcon size={20} fill={"currentColor"} strokeWidth={0} />
+            <ThumbsUpIcon size={20} fill="currentColor" strokeWidth={0} />
           </button>
           <button
             type="button"
             className={STYLES.ICON_BUTTON}
             aria-label="신고"
-            onClick={onReport}
+            onClick={(e) => {
+              e.stopPropagation();
+              onReport?.();
+            }}
           >
             <Siren size={20} fill="currentColor" strokeWidth={0} />
           </button>

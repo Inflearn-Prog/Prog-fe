@@ -43,16 +43,23 @@ export const fetcher = ky.create({
           try {
             const { cookies } = await import("next/headers");
             const cookieStore = await cookies();
-            token = cookieStore.get("accessToken")?.value;
+            token = cookieStore.get("fetcherToken")?.value;
           } catch (error) {
             console.error("Failed to get cookies on server:", error);
           }
           // [CSR / Client Component]
         } else {
-          token = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("accessToken="))
-            ?.split("=")[1];
+          const name = "fetcherToken=";
+          const decodedCookie = decodeURIComponent(document.cookie);
+
+          for (const cookieItem of decodedCookie.split(";")) {
+            const c = cookieItem.trim();
+
+            if (c.startsWith(name)) {
+              token = c.substring(name.length);
+              break;
+            }
+          }
         }
 
         if (token) {

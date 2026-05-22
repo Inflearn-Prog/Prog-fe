@@ -1,21 +1,19 @@
 "use client";
 
 import { SearchIcon, XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 
 import useQueryParams from "@/app/hooks/use-query-params";
+import { ROUTES } from "@/lib/routes";
 
 import { IconInput } from "../shared/inputs";
 
-function trimAndSanitizedValue(value: string) {
-  // eslint-disable-next-line no-useless-escape
-  return value.trim().replace(/[<>\"\'&]/g, "");
-}
-
 export function HeaderSearch({ onClose }: { onClose?: () => void }) {
+  const router = useRouter();
   const inputId = useId();
 
-  const { getParam, setParam, deleteParam } = useQueryParams();
+  const { getParam, deleteParam } = useQueryParams();
 
   const q = getParam("q") || ""; // 검색어 파라미터에서 초기값 가져오기
   const [searchValue, setSearchValue] = useState(q);
@@ -28,7 +26,7 @@ export function HeaderSearch({ onClose }: { onClose?: () => void }) {
       if (onClose) onClose();
       return;
     }
-    setParam("q", normalized);
+    router.push(`${ROUTES.search.ROOT}?q=${encodeURIComponent(normalized)}`);
     if (onClose) onClose();
   };
 

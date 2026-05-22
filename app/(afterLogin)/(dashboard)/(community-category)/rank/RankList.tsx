@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -20,6 +21,7 @@ import {
   useReportMutation,
   useToggleLikeMutation,
 } from "@/hooks/use-prompt-list";
+import { ROUTES } from "@/lib/routes";
 
 export interface PromptInfo extends PromptBase {
   rank?: number;
@@ -37,6 +39,7 @@ const handleCopy = async (content: string) => {
 };
 
 export default function RankingList({ category }: { category: string }) {
+  const router = useRouter();
   const { mutate } = useToggleLikeMutation();
   const { mutate: reportMutate } = useReportMutation();
   const { ref, inView } = useInView();
@@ -56,7 +59,7 @@ export default function RankingList({ category }: { category: string }) {
 
   const closeReportModal = () => setReport(INITIAL_REPORT_STATE);
 
-  const handleLike = (promptId: string, isLiked: boolean) => {
+  const handleLike = (promptId: number, isLiked: boolean) => {
     mutate({ promptId, isLiked });
   };
 
@@ -76,7 +79,7 @@ export default function RankingList({ category }: { category: string }) {
     );
   };
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetPrompts(category);
+    useGetPrompts(category, undefined, "likes");
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -84,21 +87,37 @@ export default function RankingList({ category }: { category: string }) {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const allPrompts = data?.pages.flatMap((page) => page.data.items) ?? [];
+  const allPrompts =
+    data?.pages.flatMap((page) => page.data?.prompts ?? []) ?? [];
 
   return (
     <div className="flex flex-col gap-4">
       {allPrompts?.map((prompt: PromptInfo) => (
-        <PromptCard
-          key={prompt.id}
-          {...prompt}
-          isLiked={!!prompt.isLiked}
-          onLike={handleLike}
-          onCopy={() => handleCopy(prompt.content)}
-          onReport={() =>
-            setReport((prev) => ({ ...prev, targetId: prompt.id }))
-          }
-        />
+        <div
+          key={prompt.promptId}
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            // 버튼이나 버튼 내부 요소를 클릭한 경우 네비게이션 방지
+            if (target.closest("button")) {
+              return;
+            }
+            router.push(ROUTES.prompt.DETAIL(prompt.promptId.toString()));
+          }}
+          className="cursor-pointer"
+        >
+          <PromptCard
+            {...prompt}
+            isLiked={!!prompt.isLiked}
+            onLike={handleLike}
+            onCopy={() => handleCopy(prompt.contentSummary || "")}
+            onReport={() =>
+              setReport((prev) => ({
+                ...prev,
+                targetId: prompt.promptId.toString(),
+              }))
+            }
+          />
+        </div>
       ))}
       <div ref={ref} className="flex flex-col gap-4">
         {isFetchingNextPage && (
