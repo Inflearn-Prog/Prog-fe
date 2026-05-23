@@ -46,11 +46,12 @@ export const fetcher = ky.create({
 
         if (typeof window === "undefined") {
           try {
-            const { cookies } = await import("next/headers");
-            const cookieStore = await cookies();
-            token = cookieStore.get("fetcherToken")?.value;
-          } catch (error) {
-            console.error("Failed to get cookies on server:", error);
+            const { auth } = await import("@/lib/auth");
+            const session = await auth();
+            token = (session as unknown as Record<string, unknown>)
+              ?.accessToken as string;
+          } catch {
+            // auth() 사용 불가 컨텍스트 — 토큰 없이 진행
           }
         } else {
           token = clientInMemoryToken || undefined;

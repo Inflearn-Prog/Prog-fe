@@ -27,9 +27,7 @@ export const ROUTES = {
   },
   community: {
     ROOT: "/community",
-    WRITE: "/community/write",
     DETAIL: (id: string) => `/community/${id}`,
-    EDIT: (id: string) => `/community/${id}/edit`,
     DEVELOPMENT: "/community?category=development",
     MARKETING_CONTENT: "/community?category=marketing_content",
     SERVICE_PLANNING: "/community?category=service_planning",
@@ -38,6 +36,8 @@ export const ROUTES = {
   },
   prompt: {
     DETAIL: (id: string) => `/prompt/${id}`,
+    WRITE: "/prompt/write",
+    EDIT: (id: string) => `/prompt/${id}/edit`,
   },
   mypage: {
     ROOT: "/mypage",

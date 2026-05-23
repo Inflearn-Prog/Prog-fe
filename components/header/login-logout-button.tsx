@@ -11,8 +11,10 @@ export function LoginAndLogoutButton({
   user,
 }: {
   user?: {
-    accessToken?: string;
-  };
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  } | null;
 }) {
   const router = useRouter();
   const { mutate: logout } = useLogout();
@@ -20,7 +22,7 @@ export function LoginAndLogoutButton({
   const handleGoingLogin = () => {
     router.push(ROUTES.auth.SIGNIN);
   };
-  if (user?.accessToken) {
+  if (user) {
     return (
       <BaseButton
         onClick={() => logout()}

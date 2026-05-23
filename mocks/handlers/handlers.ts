@@ -12,6 +12,6 @@ export const handlers = [
   ...onboardingHandlers,
   ...authHandlers,
   ...nicknameHandlers,
-  ...promptListHandlers,
   ...mypageHandlers,
+  ...promptListHandlers,
 ];

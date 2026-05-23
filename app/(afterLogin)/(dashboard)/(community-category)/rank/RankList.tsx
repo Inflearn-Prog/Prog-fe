@@ -29,6 +29,40 @@ export interface PromptInfo extends PromptBase {
   bookmarks?: number;
 }
 
+interface ApiPromptItem {
+  promptId?: number;
+  id?: string;
+  userId?: number;
+  nickname?: string;
+  userName?: string;
+  userIcon?: string;
+  userDesc?: string;
+  category?: { categoryId: number; name: string; description: string } | string;
+  title?: string;
+  content?: string;
+  isLiked?: boolean;
+  likes?: number;
+  createdAt?: string;
+}
+
+function toPromptInfo(raw: ApiPromptItem): PromptInfo {
+  return {
+    id: raw.id ?? String(raw.promptId ?? ""),
+    category:
+      typeof raw.category === "object"
+        ? (raw.category?.name ?? "")
+        : (raw.category ?? ""),
+    title: raw.title ?? "",
+    content: raw.content ?? "",
+    userName: raw.userName ?? raw.nickname ?? "",
+    userIcon: raw.userIcon ?? "",
+    userDesc: raw.userDesc ?? "",
+    isLiked: raw.isLiked ?? false,
+    likes: raw.likes ?? 0,
+    createdAt: raw.createdAt,
+  };
+}
+
 const handleCopy = async (content: string) => {
   try {
     await navigator.clipboard.writeText(content);
