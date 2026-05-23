@@ -18,7 +18,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  useGetPrompts,
+  useCategoryIdFromSlug,
+  useGetPromptsLatest,
   useReportMutation,
   useToggleLikeMutation,
 } from "@/hooks/use-prompt-list";
@@ -79,8 +80,9 @@ export default function RankingList({ category }: { category: string }) {
       }
     );
   };
+  const categoryId = useCategoryIdFromSlug(category);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetPrompts(category, undefined, "likes");
+    useGetPromptsLatest(categoryId);
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {

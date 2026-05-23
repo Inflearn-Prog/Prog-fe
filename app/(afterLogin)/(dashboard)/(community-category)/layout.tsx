@@ -17,7 +17,7 @@ export default async function layout({
       <section className="lg:hidden mb-12">
         {session && (
           <BaseButton asChild full size="lg">
-            <Link href={ROUTES.community.WRITE}>글쓰기</Link>
+            <Link href={ROUTES.prompt.WRITE}>글쓰기</Link>
           </BaseButton>
         )}
       </section>
@@ -27,7 +27,7 @@ export default async function layout({
         <aside className="hidden lg:flex lg:col-span-3 flex-col gap-6 pt-29.5">
           {session && (
             <BaseButton asChild full size="lg">
-              <Link href={ROUTES.community.WRITE}>글쓰기</Link>
+              <Link href={ROUTES.prompt.WRITE}>글쓰기</Link>
             </BaseButton>
           )}
           <Suspense>

@@ -4,6 +4,24 @@ import { toast } from "sonner";
 
 import { STATIC_IMAGES } from "@/lib/static-image";
 
+type ToastPosition =
+  | "top-left"
+  | "top-center"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-center"
+  | "bottom-right";
+
+type ToastOptions = {
+  position?: ToastPosition;
+  duration?: number;
+};
+
+const defaultToastOptions: ToastOptions = {
+  position: "bottom-center",
+  duration: 5 * 1000,
+};
+
 export const toasts = {
   success: (message: string) =>
     toast(() => <ToastSuccess>{message}</ToastSuccess>, {
@@ -11,10 +29,10 @@ export const toasts = {
       duration: 5 * 1000,
       className: "bg-gray-950! w-full py-4 px-5 inline-flex justify-center",
     }),
-  error: (message: string) =>
+  error: (message: string, options?: ToastOptions) =>
     toast(() => <ToastError>{message}</ToastError>, {
-      position: "bottom-center",
-      duration: 5 * 1000,
+      position: options?.position ?? defaultToastOptions.position,
+      duration: options?.duration ?? defaultToastOptions.duration,
       className: "bg-gray-950! w-full py-4 px-5 inline-flex justify-center",
     }),
 };

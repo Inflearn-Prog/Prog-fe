@@ -107,6 +107,6 @@ export const COMPARISON_NEW = [
 
 export const CTA_LINKS = {
   explore: ROUTES.rank.ROOT,
-  share: ROUTES.community.WRITE,
+  share: ROUTES.prompt.WRITE,
   login: ROUTES.auth.SIGNIN,
 } as const;
