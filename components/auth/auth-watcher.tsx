@@ -15,8 +15,10 @@ export function AuthWatcher() {
       ?.accessToken as string | undefined;
 
     if (token) {
+      setFetcherToken(token);
       document.cookie = `accessToken=${token}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
-    } else if (!session) {
+    } else if (session === null) {
+      setFetcherToken(null);
       document.cookie = "accessToken=; path=/; max-age=0; SameSite=Lax";
     }
   }, [session]);

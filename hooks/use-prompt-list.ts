@@ -32,7 +32,7 @@ export const getNextPromptPageParam = (
   );
 
   if (currentTotal < totalCount) {
-    return allPages.length;
+    return allPages.length; // Next page index (0-based)
   }
 
   return undefined;
