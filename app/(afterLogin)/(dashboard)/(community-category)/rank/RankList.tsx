@@ -16,7 +16,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  useGetPrompts,
+  useCategoryIdFromSlug,
+  useGetPromptsLatest,
   useReportMutation,
   useToggleLikeMutation,
 } from "@/hooks/use-prompt-list";
@@ -24,6 +25,40 @@ import {
 export interface PromptInfo extends PromptBase {
   rank?: number;
   bookmarks?: number;
+}
+
+interface ApiPromptItem {
+  promptId?: number;
+  id?: string;
+  userId?: number;
+  nickname?: string;
+  userName?: string;
+  userIcon?: string;
+  userDesc?: string;
+  category?: { categoryId: number; name: string; description: string } | string;
+  title?: string;
+  content?: string;
+  isLiked?: boolean;
+  likes?: number;
+  createdAt?: string;
+}
+
+function toPromptInfo(raw: ApiPromptItem): PromptInfo {
+  return {
+    id: raw.id ?? String(raw.promptId ?? ""),
+    category:
+      typeof raw.category === "object"
+        ? (raw.category?.name ?? "")
+        : (raw.category ?? ""),
+    title: raw.title ?? "",
+    content: raw.content ?? "",
+    userName: raw.userName ?? raw.nickname ?? "",
+    userIcon: raw.userIcon ?? "",
+    userDesc: raw.userDesc ?? "",
+    isLiked: raw.isLiked ?? false,
+    likes: raw.likes ?? 0,
+    createdAt: raw.createdAt,
+  };
 }
 
 const handleCopy = async (content: string) => {
@@ -75,8 +110,9 @@ export default function RankingList({ category }: { category: string }) {
       }
     );
   };
+  const categoryId = useCategoryIdFromSlug(category);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetPrompts(category);
+    useGetPromptsLatest(categoryId);
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -84,7 +120,13 @@ export default function RankingList({ category }: { category: string }) {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const allPrompts = data?.pages.flatMap((page) => page.data.items) ?? [];
+  const allPrompts =
+    data?.pages?.flatMap(
+      (page) =>
+        (page?.data?.prompts ?? []).map((item) =>
+          toPromptInfo(item as ApiPromptItem)
+        ) ?? []
+    ) ?? [];
 
   return (
     <div className="flex flex-col gap-4">
