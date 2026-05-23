@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -16,11 +18,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  useCategoryIdFromSlug,
-  useGetPromptsLatest,
+  useGetPrompts,
   useReportMutation,
   useToggleLikeMutation,
 } from "@/hooks/use-prompt-list";
+import { ROUTES } from "@/lib/routes";
 
 export interface PromptInfo extends PromptBase {
   rank?: number;
@@ -72,6 +74,7 @@ const handleCopy = async (content: string) => {
 };
 
 export default function RankingList({ category }: { category: string }) {
+  const router = useRouter();
   const { mutate } = useToggleLikeMutation();
   const { mutate: reportMutate } = useReportMutation();
   const { ref, inView } = useInView();
@@ -91,7 +94,7 @@ export default function RankingList({ category }: { category: string }) {
 
   const closeReportModal = () => setReport(INITIAL_REPORT_STATE);
 
-  const handleLike = (promptId: string, isLiked: boolean) => {
+  const handleLike = (promptId: number, isLiked: boolean) => {
     mutate({ promptId, isLiked });
   };
 
@@ -110,9 +113,8 @@ export default function RankingList({ category }: { category: string }) {
       }
     );
   };
-  const categoryId = useCategoryIdFromSlug(category);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetPromptsLatest(categoryId);
+    useGetPrompts(category, undefined, "likes");
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -121,26 +123,34 @@ export default function RankingList({ category }: { category: string }) {
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const allPrompts =
-    data?.pages?.flatMap(
-      (page) =>
-        (page?.data?.prompts ?? []).map((item) =>
-          toPromptInfo(item as ApiPromptItem)
-        ) ?? []
-    ) ?? [];
+    data?.pages.flatMap((page) => page.data?.prompts ?? []) ?? [];
 
   return (
     <div className="flex flex-col gap-4">
       {allPrompts?.map((prompt: PromptInfo) => (
-        <PromptCard
-          key={prompt.id}
-          {...prompt}
-          isLiked={!!prompt.isLiked}
-          onLike={handleLike}
-          onCopy={() => handleCopy(prompt.content)}
-          onReport={() =>
-            setReport((prev) => ({ ...prev, targetId: prompt.id }))
-          }
-        />
+        <Link
+          href={ROUTES.prompt.DETAIL(prompt.promptId.toString())}
+          className="block cursor-pointer"
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest("button")) {
+              e.preventDefault();
+            }
+          }}
+        >
+          <PromptCard
+            {...prompt}
+            isLiked={!!prompt.isLiked}
+            onLike={handleLike}
+            onCopy={() => handleCopy(prompt.contentSummary || "")}
+            onReport={() =>
+              setReport((prev) => ({
+                ...prev,
+                targetId: prompt.promptId.toString(),
+              }))
+            }
+          />
+        </Link>
       ))}
       <div ref={ref} className="flex flex-col gap-4">
         {isFetchingNextPage && (

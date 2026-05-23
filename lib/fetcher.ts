@@ -31,6 +31,12 @@ export class ApiError extends Error {
   }
 }
 
+let clientInMemoryToken: string | null = null;
+
+export const setFetcherToken = (token: string | null) => {
+  clientInMemoryToken = token;
+};
+
 export const fetcher = ky.create({
   prefixUrl: process.env.NEXT_PUBLIC_BACKEND_API_URL,
   hooks: {
@@ -38,7 +44,6 @@ export const fetcher = ky.create({
       async (request) => {
         let token: string | undefined;
 
-        // [SSR / Server Action / Route Handler]
         if (typeof window === "undefined") {
           try {
             const { auth } = await import("@/lib/auth");
@@ -48,12 +53,8 @@ export const fetcher = ky.create({
           } catch {
             // auth() 사용 불가 컨텍스트 — 토큰 없이 진행
           }
-          // [CSR / Client Component]
         } else {
-          token = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("accessToken="))
-            ?.split("=")[1];
+          token = clientInMemoryToken || undefined;
         }
 
         if (token) {
@@ -70,20 +71,47 @@ export const fetcher = ky.create({
             error: ApiErrorData;
             timestamp: string;
           } | null;
+
           if (errorData && errorData.success === false) {
             if (
               ["TOKEN_EXPIRED", "INVALID_TOKEN"].includes(
                 errorData.error.errorClassName
               )
             ) {
-              // 예: 로그아웃 처리 또는 토큰 재발급 로직 호출
+              if (typeof window !== "undefined") {
+                try {
+                  const { getSession, signOut } =
+                    await import("next-auth/react");
+
+                  const event = new MessageEvent("message", {
+                    data: { trigger: "getSession", event: "session" },
+                  });
+                  window.dispatchEvent(event);
+
+                  const newSession = await getSession();
+
+                  if (newSession?.error === "AccessTokenExpired") {
+                    await signOut({ callbackUrl: "/signin" });
+                  } else if (newSession?.accessToken) {
+                    setFetcherToken(newSession.accessToken);
+                    request.headers.set(
+                      "Authorization",
+                      `Bearer ${newSession.accessToken}`
+                    );
+                    return ky(request);
+                  }
+                } catch (nextAuthError) {
+                  console.error(
+                    "NextAuth 세션 갱신 중 에러 발생:",
+                    nextAuthError
+                  );
+                }
+              }
             }
 
-            // 커스텀 ApiError 던지기
             throw new ApiError(response.status, errorData.error);
           }
 
-          // 3. 만약 백엔드에서 정의한 에러 포맷이 아닐 경우의 폴백(Fallback)
           throw new Error(
             `서버 에러가 발생했습니다. (Status: ${response.status})`
           );

@@ -9,41 +9,56 @@ import {
 import { PromptBase, PromptPage } from "@/app/types/type";
 import { toasts } from "@/components/shared/toast";
 import { CATEGORY_SLUG_TO_NAME_CANDIDATES } from "@/components/sidebar/constant";
-import { ApiResponse } from "@/lib/fetcher";
+import { ApiResponse, fetcher } from "@/lib/fetcher";
 import {
+  fetchLikePrompts,
   fetchPrompts,
+  fetchSearchPrompts,
   promptApi,
   PromptListResponse,
 } from "@/queries/api/prompts";
 import { promptQueries } from "@/queries/options/prompt-query";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-
-export const getNextPromptPageParam = (lastPage: ApiResponse<PromptPage>) => {
+export const getNextPromptPageParam = (
+  lastPage: ApiResponse<PromptPage>,
+  allPages: ApiResponse<PromptPage>[]
+) => {
   if (!lastPage || !lastPage.data) return undefined;
 
-  const { isLast, nextPage } = lastPage.data;
+  const { prompts, totalCount } = lastPage.data;
+  const currentTotal = allPages.reduce(
+    (acc, page) => acc + (page.data?.prompts.length ?? 0),
+    0
+  );
 
-  // isLast가 true이면 다음 페이지 없음
-  if (isLast) return undefined;
+  if (currentTotal < totalCount) {
+    return allPages.length; // Next page index (0-based)
+  }
 
-  // nextPage가 null이거나 undefined이면 다음 페이지 없음
-  return nextPage ?? undefined;
+  return undefined;
 };
 
-export const useGetPrompts = (category: string, q?: string) => {
+export const useGetPrompts = (
+  category: string = "all",
+  q?: string,
+  sort: "latest" | "likes" | "hot" = "latest"
+) => {
   const normalizedQ = q?.trim() || undefined;
-  return useInfiniteQuery<
-    ApiResponse<PromptPage>,
-    Error,
-    InfiniteData<ApiResponse<PromptPage>>,
-    readonly [string, string, string | undefined],
-    number
-  >({
-    queryKey: ["prompts", category, normalizedQ] as const,
-    queryFn: ({ pageParam }) => fetchPrompts(category, pageParam, normalizedQ),
+
+  return useInfiniteQuery({
+    queryKey: ["prompts", category, normalizedQ, sort] as const,
+    queryFn: ({ pageParam }) => {
+      if (normalizedQ) {
+        return fetchSearchPrompts(normalizedQ, pageParam);
+      }
+      if (sort === "likes") {
+        return fetchLikePrompts(pageParam);
+      }
+      return fetchPrompts(category, pageParam);
+    },
     initialPageParam: 0,
     getNextPageParam: getNextPromptPageParam,
+    enabled: sort !== "hot",
   });
 };
 
@@ -131,17 +146,11 @@ export const useToggleLikeMutation = () => {
   return useMutation({
     mutationFn: async ({
       promptId,
-      isLiked,
     }: {
-      promptId: string;
+      promptId: number;
       isLiked: boolean;
     }) => {
-      const method = isLiked ? "DELETE" : "POST";
-      const response = await fetch(`${BASE_URL}/prompts/like/${promptId}`, {
-        method,
-      });
-      if (!response.ok) throw new Error("좋아요 처리 중 에러가 발생했습니다.");
-      if (response.status === 204) return null;
+      const response = await fetcher.post(`prompts/${promptId}/like`);
       return response.json();
     },
 
@@ -149,31 +158,36 @@ export const useToggleLikeMutation = () => {
       await queryClient.cancelQueries({ queryKey: ["prompts"] });
 
       const previousPrompts = queryClient.getQueriesData<
-        InfiniteData<PromptPage>
+        InfiniteData<ApiResponse<PromptPage>>
       >({
         queryKey: ["prompts"],
       });
-
-      queryClient.setQueriesData<InfiniteData<PromptPage>>(
+      queryClient.setQueriesData<InfiniteData<ApiResponse<PromptPage>>>(
         { queryKey: ["prompts"] },
         (old) => {
           if (!old) return old;
           return {
             ...old,
-            pages: old.pages.map((page: PromptPage) => ({
-              ...page,
-              items: page.items.map((item: PromptBase) =>
-                item.id === promptId
-                  ? {
-                      ...item,
-                      isLiked: !isLiked,
-                      likes: isLiked
-                        ? Math.max((item.likes ?? 0) - 1, 0)
-                        : (item.likes ?? 0) + 1,
-                    }
-                  : item
-              ),
-            })),
+            pages: old.pages.map((page) => {
+              if (!page.data) return page;
+              return {
+                ...page,
+                data: {
+                  ...page.data,
+                  prompts: page.data.prompts.map((item: PromptBase) =>
+                    item.promptId === promptId
+                      ? {
+                          ...item,
+                          isLiked: !isLiked,
+                          likes: isLiked
+                            ? Math.max((item.likes ?? 0) - 1, 0)
+                            : (item.likes ?? 0) + 1,
+                        }
+                      : item
+                  ),
+                },
+              };
+            }),
           };
         }
       );
@@ -186,10 +200,14 @@ export const useToggleLikeMutation = () => {
           queryClient.setQueryData(key, data);
         });
       }
-      toasts.success("좋아요 처리에 실패했습니다.");
+      toasts.error("좋아요 처리에 실패했습니다.");
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["prompts"] });
+    onSuccess: (data, variables) => {
+      if (variables.isLiked) {
+        toasts.success("좋아요가 취소되었습니다.");
+      } else {
+        toasts.success("좋아요가 정상적으로 처리되었습니다.");
+      }
     },
   });
 };
@@ -204,23 +222,21 @@ interface ReportRequest {
 export const useReportMutation = () => {
   return useMutation({
     mutationFn: async (reportData: ReportRequest) => {
-      const response = await fetch(`${BASE_URL}/reports`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(reportData),
+      const response = await fetcher.post("reports", {
+        json: {
+          ...reportData,
+          targetId: Number(reportData.targetId),
+        },
       });
 
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error?.message || "신고 실패");
-      }
-      return result;
+      return response.json();
     },
     onSuccess: () => {
       toasts.success("신고가 정상적으로 접수되었습니다.");
     },
+    // 💡 에러 타입을 Error로 지정하여 any 에러를 완벽히 해결합니다.
     onError: (error: Error) => {
-      toasts.success(error.message);
+      toasts.error(error.message || "신고 처리에 실패했습니다.");
     },
   });
 };

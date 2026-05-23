@@ -24,9 +24,15 @@ type Story = StoryObj<typeof PromptCard>;
 
 export const Default: Story = {
   args: {
-    category: "개발",
+    promptId: 1,
+    createdAt: new Date().toISOString(),
+    category: {
+      categoryId: 1,
+      name: "개발",
+      description: "개발 설명",
+    },
     title: "자소서를 위한 GPT 프롬프트 제목",
-    content: "자소서를 위한 GPT 프롬프트 설명입니다.",
+    contentSummary: "자소서를 위한 GPT 프롬프트 설명입니다.",
     userIcon: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
     userName: "닉네임",
     userDesc: "유저 설명",
