@@ -18,10 +18,12 @@ export const fetchPrompts = async (
 };
 
 export const fetchLikePrompts = async (
+  category: string = "all",
   pageParam: number = 0,
   size: number = 10
 ): Promise<ApiResponse<PromptPage>> => {
   const params = new URLSearchParams({
+    category,
     page: String(pageParam),
     size: String(size),
   });

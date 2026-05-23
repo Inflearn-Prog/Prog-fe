@@ -21,6 +21,13 @@ export const RANKING_INFO = new Map<string, { title: string; desc: string }>([
     },
   ],
   [
+    "design",
+    {
+      title: "디자인 직군 랭킹",
+      desc: "포트폴리오 설명부터 디자인 철학까지, 디자이너를 위한 가이드입니다.",
+    },
+  ],
+  [
     "service_planning",
     {
       title: "서비스 기획 직군 랭킹",
@@ -28,17 +35,31 @@ export const RANKING_INFO = new Map<string, { title: string; desc: string }>([
     },
   ],
   [
-    "hr_general_affairs",
+    "etc",
     {
-      title: "인사/총무 직군 랭킹",
-      desc: "직무 전문성과 조직 관리 역량을 강조하는 프롬프트입니다.",
+      title: "기타 직군 랭킹",
+      desc: "다양한 직무와 일상 업무의 효율을 높여주는 다목적 프롬프트입니다.",
     },
   ],
   [
-    "design",
+    "backend",
     {
-      title: "디자인 직군 랭킹",
-      desc: "포트폴리오 설명부터 디자인 철학까지, 디자이너를 위한 가이드입니다.",
+      title: "백엔드 개발 랭킹",
+      desc: "안정적인 서버 설계, API 구축 및 DB 최적화를 위한 백엔드 프롬프트입니다.",
+    },
+  ],
+  [
+    "frontend",
+    {
+      title: "프론트엔드 개발 랭킹",
+      desc: "매끄러운 UI/UX 구현과 효율적인 컴포넌트 설계를 돕는 프론트엔드 프롬프트입니다.",
+    },
+  ],
+  [
+    "sns_marketing",
+    {
+      title: "SNS 마케팅 랭킹",
+      desc: "트렌디한 소셜 미디어 콘텐츠 기획과 인게이지먼트 향상을 위한 마케팅 프롬프트입니다.",
     },
   ],
 ]);

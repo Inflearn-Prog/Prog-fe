@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -24,6 +23,8 @@ import {
 } from "@/hooks/use-prompt-list";
 import { ROUTES } from "@/lib/routes";
 
+import { resolveCategoryParam } from "../_components/community-list-section";
+
 export interface PromptInfo extends PromptBase {
   rank?: number;
   bookmarks?: number;
@@ -32,7 +33,6 @@ export interface PromptInfo extends PromptBase {
 const handleCopy = async (content: string) => {
   try {
     await navigator.clipboard.writeText(content);
-
     toasts.success("프롬프트가 클립보드에 복사되었습니다!");
   } catch {
     alert("복사에 실패했습니다. 다시 시도해주세요.");
@@ -40,7 +40,6 @@ const handleCopy = async (content: string) => {
 };
 
 export default function RankingList({ category }: { category: string }) {
-  const router = useRouter();
   const { mutate } = useToggleLikeMutation();
   const { mutate: reportMutate } = useReportMutation();
   const { ref, inView } = useInView();
@@ -56,6 +55,7 @@ export default function RankingList({ category }: { category: string }) {
     detail: "",
   };
 
+  const categorySlug = resolveCategoryParam(category);
   const [report, setReport] = useState<ReportState>(INITIAL_REPORT_STATE);
 
   const closeReportModal = () => setReport(INITIAL_REPORT_STATE);
@@ -79,8 +79,9 @@ export default function RankingList({ category }: { category: string }) {
       }
     );
   };
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetPrompts(category, undefined, "likes");
+    useGetPrompts(categorySlug, undefined, "likes");
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -95,6 +96,7 @@ export default function RankingList({ category }: { category: string }) {
     <div className="flex flex-col gap-4">
       {allPrompts?.map((prompt: PromptInfo) => (
         <Link
+          key={prompt.promptId}
           href={ROUTES.prompt.DETAIL(prompt.promptId.toString())}
           className="block cursor-pointer"
           onClick={(e) => {
