@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -20,6 +21,9 @@ import {
   useReportMutation,
   useToggleLikeMutation,
 } from "@/hooks/use-prompt-list";
+import { ROUTES } from "@/lib/routes";
+
+import { resolveCategoryParam } from "../_components/community-list-section";
 
 export interface PromptInfo extends PromptBase {
   rank?: number;
@@ -29,7 +33,6 @@ export interface PromptInfo extends PromptBase {
 const handleCopy = async (content: string) => {
   try {
     await navigator.clipboard.writeText(content);
-
     toasts.success("프롬프트가 클립보드에 복사되었습니다!");
   } catch {
     alert("복사에 실패했습니다. 다시 시도해주세요.");
@@ -52,11 +55,12 @@ export default function RankingList({ category }: { category: string }) {
     detail: "",
   };
 
+  const categorySlug = resolveCategoryParam(category);
   const [report, setReport] = useState<ReportState>(INITIAL_REPORT_STATE);
 
   const closeReportModal = () => setReport(INITIAL_REPORT_STATE);
 
-  const handleLike = (promptId: string, isLiked: boolean) => {
+  const handleLike = (promptId: number, isLiked: boolean) => {
     mutate({ promptId, isLiked });
   };
 
@@ -75,8 +79,9 @@ export default function RankingList({ category }: { category: string }) {
       }
     );
   };
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetPrompts(category);
+    useGetPrompts(categorySlug, undefined, "likes");
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -84,21 +89,36 @@ export default function RankingList({ category }: { category: string }) {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const allPrompts = data?.pages.flatMap((page) => page.data.items) ?? [];
+  const allPrompts =
+    data?.pages.flatMap((page) => page.data?.prompts ?? []) ?? [];
 
   return (
     <div className="flex flex-col gap-4">
       {allPrompts?.map((prompt: PromptInfo) => (
-        <PromptCard
-          key={prompt.id}
-          {...prompt}
-          isLiked={!!prompt.isLiked}
-          onLike={handleLike}
-          onCopy={() => handleCopy(prompt.content)}
-          onReport={() =>
-            setReport((prev) => ({ ...prev, targetId: prompt.id }))
-          }
-        />
+        <Link
+          key={prompt.promptId}
+          href={ROUTES.prompt.DETAIL(prompt.promptId.toString())}
+          className="block cursor-pointer"
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest("button")) {
+              e.preventDefault();
+            }
+          }}
+        >
+          <PromptCard
+            {...prompt}
+            isLiked={!!prompt.isLiked}
+            onLike={handleLike}
+            onCopy={() => handleCopy(prompt.contentSummary || "")}
+            onReport={() =>
+              setReport((prev) => ({
+                ...prev,
+                targetId: prompt.promptId.toString(),
+              }))
+            }
+          />
+        </Link>
       ))}
       <div ref={ref} className="flex flex-col gap-4">
         {isFetchingNextPage && (

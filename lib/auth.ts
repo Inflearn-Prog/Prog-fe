@@ -70,7 +70,6 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 
           // 신규 유저든 기존 유저든 일단 정보를 user 객체에 보관
           user.accessToken = accessToken;
-          user.refreshToken = refreshToken;
           user.isNewUser = isNewUser;
           user.registrationStatus = registrationStatus;
           user.provider = account.provider; // 소셜 제공자 정보 저장
@@ -89,11 +88,13 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
         token.registrationStatus = user.registrationStatus;
         token.isNewUser = user.isNewUser;
         token.provider = user.provider;
+        token.name = user.name;
         token.email = user.email;
+        token.picture = user.image;
+        token.sub = user.id;
 
         if (user.accessToken) {
           try {
@@ -143,6 +144,12 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
       session.provider = token.provider as string;
       session.email = token.email as string;
       session.error = token.error as string;
+
+      if (session.user) {
+        session.user.accessToken = token.accessToken as string;
+        session.user.id = token.sub as string;
+      }
+
       return session;
     },
   },
@@ -162,7 +169,7 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(cookieString && { Cookie: cookieString }),
+          Cookie: cookieString,
         },
       }
     );
@@ -172,13 +179,18 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
     }
 
     const resData = await response.json();
+    // 2. 새 토큰 파싱
+    const newAccessToken =
+      typeof resData?.data === "string"
+        ? resData.data
+        : typeof resData?.data?.accessToken === "string"
+          ? resData.data.accessToken
+          : null;
 
-    if (!resData.success) {
-      throw new Error("Backend refresh failed");
+    if (!newAccessToken) {
+      throw new Error("Invalid refresh response: access token is missing");
     }
 
-    // API 스펙: data는 새 accessToken 문자열
-    const newAccessToken = resData.data as string;
     const decoded = jwtDecode<{ exp: number }>(newAccessToken);
 
     // 새 accessToken을 쿠키에 저장

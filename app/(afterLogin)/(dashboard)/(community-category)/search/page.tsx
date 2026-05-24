@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-query";
 
 import { getNextPromptPageParam } from "@/hooks/use-prompt-list";
-import { fetchPrompts } from "@/queries/api/prompts";
+import { fetchSearchPrompts } from "@/queries/api/prompts";
 
 import { SearchSection } from "./_components/search-section";
 
@@ -19,9 +19,9 @@ export default async function SearchPage({
 
   if (q) {
     await queryClient.prefetchInfiniteQuery({
-      queryKey: ["prompts", "ALL", q],
+      queryKey: ["prompts", "all", q, "latest"],
       queryFn: ({ pageParam = 0 }) =>
-        fetchPrompts("ALL", pageParam as number, q),
+        fetchSearchPrompts(q, pageParam as number),
       initialPageParam: 0,
       getNextPageParam: getNextPromptPageParam,
     });

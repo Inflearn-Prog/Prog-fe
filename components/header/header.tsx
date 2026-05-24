@@ -10,7 +10,6 @@ import { STATIC_IMAGES } from "@/lib/static-image";
 import { HEADER_NAV_LIST } from "./constant";
 import { HeaderRightSection } from "./header-right-section";
 
-// LATER: 추후 리펙토링 필요
 export function Header() {
   return (
     <header
@@ -36,14 +35,14 @@ export function HeaderLogo() {
 
 export function HeaderNavigation() {
   const { data: session } = useSession();
-  const isLogin = !!session?.accessToken;
+  const isLogin = !!session?.user && !!session?.accessToken;
 
   return (
     <nav aria-label="메인 네비게이션">
       <ul className="flex items-center gap-x-15" role="list">
         {HEADER_NAV_LIST.map((nav) => {
           const isMypage = nav.href === ROUTES.mypage.ROOT;
-          if (isMypage && !isLogin) {
+          if (!isLogin && isMypage) {
             return null;
           }
           return (

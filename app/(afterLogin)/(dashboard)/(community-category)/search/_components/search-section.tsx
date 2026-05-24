@@ -17,13 +17,8 @@ export function SearchSection({ q: initialQ }: { q?: string }) {
   const { getParam } = useQueryParams();
   const currentSearch = getParam("q") || initialQ || "";
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isPending, // status 대신 isPending 사용 권장
-  } = useGetPrompts("ALL", currentSearch);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
+    useGetPrompts("all", currentSearch);
 
   const { ref, inView } = useInView();
 
@@ -38,11 +33,11 @@ export function SearchSection({ q: initialQ }: { q?: string }) {
   const allPrompts: CommunityPromptItem[] =
     data?.pages?.flatMap(
       (page) =>
-        page?.data?.items?.map((item: PromptBase) => ({
-          id: Number(item.id),
+        page?.data?.prompts?.map((item: PromptBase) => ({
+          id: item.promptId,
           title: item.title,
-          preview: item.content || "",
-          jobCategory: (item.category ||
+          preview: item.contentSummary || "",
+          jobCategory: (item.category?.name ||
             "ETC") as CommunityPromptItem["jobCategory"],
           likeCount: item.likes || 0,
           copyCount: Number(item.copyCount || 0),

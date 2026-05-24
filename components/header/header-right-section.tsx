@@ -73,7 +73,7 @@ function HeaderMoreButton() {
   const router = useRouter();
   const { data: session } = useSession();
   const { mutate: logout } = useLogout();
-  const isLogin = !!session?.user;
+  const isLogin = !!session?.user && !!session?.accessToken;
 
   return (
     <Drawer direction="right">

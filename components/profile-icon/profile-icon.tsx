@@ -24,16 +24,16 @@ export function ProfIcon({
   className,
   fallback,
 }: ProfIconProps) {
-  // 1. 한국어 포함 여부 확인 (정규식)
-  const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(fallback);
+  const safeFallback = fallback || "U";
+  const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(safeFallback);
 
   // 2. 언어별 글자 수 제한 로직
   // 한글이 포함되어 있으면 1글자, 영문/기타는 2글자 (모두 대문자 처리)
   const displayFallback = isKorean
-    ? fallback.slice(0, 1)
-    : fallback.slice(0, 2).toUpperCase();
+    ? safeFallback.slice(0, 1)
+    : safeFallback.slice(0, 2).toUpperCase();
 
-  const bgColor = stringToColor(fallback);
+  const bgColor = stringToColor(safeFallback);
 
   return (
     <Avatar
