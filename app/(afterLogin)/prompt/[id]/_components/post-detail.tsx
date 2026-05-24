@@ -6,8 +6,17 @@ import { useCallback, useState } from "react";
 
 import { QuillHtmlViewer } from "@/components/board/QuillHtmlViewer";
 import { ProfIcon } from "@/components/profile-icon/profile-icon";
+import ReportModal from "@/components/prompt/report-modal";
 import { BaseButton } from "@/components/shared/button";
 import { toasts } from "@/components/shared/toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useReportMutation } from "@/hooks/use-prompt-list";
 import { cn } from "@/lib/utils";
 import { PromptResponse } from "@/queries/api/prompts";
 import { promptQueries } from "@/queries/options/prompt-query";
@@ -55,7 +64,9 @@ function AuthorProfileCard({
 export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
   const [isLiked, setIsLiked] = useState(prompt.isLiked);
   const [likesCount, setLikesCount] = useState(prompt.likes);
+  const [report, setReport] = useState({ open: false, reason: "", detail: "" });
   const queryClient = useQueryClient();
+  const { mutate: reportMutate } = useReportMutation();
 
   const categoryLabel = prompt.category.name;
 
@@ -106,8 +117,24 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
       toasts.error("로그인 후 이용할 수 있습니다.");
       return;
     }
-    // 신고 로직은 기존과 동일하게 유지
+    setReport({ open: true, reason: "", detail: "" });
   }, [user]);
+
+  const closeReportModal = useCallback(() => {
+    setReport({ open: false, reason: "", detail: "" });
+  }, []);
+
+  const handleReportSubmit = useCallback(() => {
+    reportMutate(
+      {
+        targetType: "PROMPT",
+        targetId: String(promptId),
+        reason: report.reason,
+        reasonDetail: report.reason === "OTHER" ? report.detail : "",
+      },
+      { onSuccess: closeReportModal }
+    );
+  }, [reportMutate, promptId, report.reason, report.detail, closeReportModal]);
 
   return (
     <div className="flex flex-col gap-4 w-full">
@@ -171,6 +198,34 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
           </div>
         </div>
       </div>
+
+      <Dialog
+        open={report.open}
+        onOpenChange={(open) => !open && closeReportModal()}
+      >
+        <DialogContent
+          className="max-w-[400px] lg:max-w-[640px] p-6 rounded-[10px]"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
+          <DialogHeader className="sr-only">
+            <DialogTitle>신고하기</DialogTitle>
+            <DialogDescription>
+              해당 프롬프트의 부적절한 내용을 신고하는 창입니다.
+            </DialogDescription>
+          </DialogHeader>
+          <ReportModal
+            title="어떤 문제가 있나요?"
+            reason={report.reason}
+            reasonDetail={report.detail}
+            onSelect={(val) => setReport((prev) => ({ ...prev, reason: val }))}
+            onOtherChange={(val) =>
+              setReport((prev) => ({ ...prev, detail: val }))
+            }
+            onCancel={closeReportModal}
+            onReport={handleReportSubmit}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
