@@ -1,7 +1,7 @@
 "use client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 import { AuthProvider } from "@/app/(beforeLogin)/(auth)/constant";
@@ -19,6 +19,7 @@ export default function MypageLeftSection() {
   const queryClient = useQueryClient();
 
   const { data: userData, isLoading } = useUserProfile();
+  const { data: session } = useSession();
 
   const handleLogout = async () => {
     if (confirm("로그아웃 하시겠습니까?")) {
@@ -47,7 +48,7 @@ export default function MypageLeftSection() {
 
     try {
       await deleteUserAccount(userData.basicInfo.uid);
-
+      await signOut({ redirect: false });
       await clearAuthCookies();
       queryClient.clear();
 
@@ -79,7 +80,7 @@ export default function MypageLeftSection() {
     <div className="flex flex-col gap-5">
       <UserProfile
         nickname={basicInfo.nickname}
-        email={basicInfo.email}
+        email={session?.user?.email || session?.email || ""}
         profileImage={""}
         provider={basicInfo.provider.toLowerCase() as AuthProvider}
         introduction={basicInfo.introduction ?? "반갑습니다!"}

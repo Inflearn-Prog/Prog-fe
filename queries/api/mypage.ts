@@ -12,18 +12,16 @@ interface GetUserPromptsParams {
   userId: string | number;
   page?: number;
   size?: number;
-  sort?: string;
 }
 
 export const getUserPrompts = async ({
   userId,
   page = 0,
   size = 4,
-  sort = "",
 }: GetUserPromptsParams): Promise<UserPromptsResponse> => {
   return await fetcher
     .get(`users/${userId}/prompts`, {
-      searchParams: { page, size, sort },
+      searchParams: { page, size },
     })
     .json<UserPromptsResponse>();
 };
@@ -32,35 +30,34 @@ export const getLikedPrompts = async ({
   userId,
   page = 0,
   size = 4,
-  sort = "",
 }: GetUserPromptsParams): Promise<UserPromptsResponse> => {
   return await fetcher
     .get(`users/${userId}/liked`, {
-      searchParams: { page, size, sort },
+      searchParams: { page, size },
     })
     .json<UserPromptsResponse>();
 };
 
 export interface UpdateProfileRequest {
-  basicInfo: {
-    nickname: string;
-    introduction: string;
+  basicInfo?: {
+    nickname?: string | null;
+    introduction?: string | null;
   };
-  careerInfo: {
-    currentStatuses: string[];
-    targetJobRoles: string[];
-    careerYears: number;
-    educationLevel: string;
+  careerInfo?: {
+    currentStatus?: string[] | null;
+    targetJob?: string[] | null;
+    careerYear?: number | null;
+    education?: string | null;
   };
-  selfIntro: {
-    experiences: string[];
-    keywords: string[];
+  selfIntro?: {
+    experiences?: string[] | null;
+    keywords?: string[] | null;
   };
 }
 
 export const updateUserProfile = async (data: UpdateProfileRequest) => {
   return await fetcher
-    .put("users/me/profile", { json: data })
+    .patch("users/me/profile", { json: data })
     .json<ApiResponse<{ message: string }>>();
 };
 
@@ -72,7 +69,7 @@ interface WithdrawTermsResponse {
 
 export const withdrawTerms = async (data: { termIds: number[] }) => {
   return await fetcher
-    .delete("/users/me/terms-agreements", { json: data })
+    .delete("users/me/terms-agreements", { json: data })
     .json<ApiResponse<WithdrawTermsResponse>>();
 };
 

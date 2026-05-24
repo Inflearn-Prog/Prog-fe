@@ -36,9 +36,10 @@ export const useUserPrompts = ({
   size = 4,
   enabled = true,
 }: UseUserPromptsProps) => {
+  const backendPage = page - 1;
   return useQuery({
-    queryKey: ["user", "prompts", userId, { page, size }],
-    queryFn: () => getUserPrompts({ userId, page, size }),
+    queryKey: ["user", "prompts", userId, { page: backendPage, size }],
+    queryFn: () => getUserPrompts({ userId, page: backendPage, size }),
     placeholderData: (previousData) => previousData,
     select: (response) => response.data,
     enabled: !!userId && enabled,
@@ -50,9 +51,10 @@ export const useLikedPrompts = ({
   size = 4,
   enabled = true,
 }: UseUserPromptsProps) => {
+  const backendPage = page - 1;
   return useQuery({
-    queryKey: ["user", "likes", userId, { page, size }],
-    queryFn: () => getLikedPrompts({ userId, page, size }),
+    queryKey: ["user", "likes", userId, { page: backendPage, size }],
+    queryFn: () => getLikedPrompts({ userId, page: backendPage, size }),
     placeholderData: (previousData) => previousData,
     select: (res) => res.data,
     enabled: !!userId && enabled,

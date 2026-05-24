@@ -65,17 +65,29 @@ export default function MypageRightSection() {
       initialized.current = true;
       const { careerInfo, selfIntro } = profile;
 
-      const normalized = transformCareerInfoToState(careerInfo);
+      const normalized = transformCareerInfoToState(
+        careerInfo as unknown as {
+          currentStatuses: string[];
+          targetJobRoles: string[];
+          careerYears: string;
+          educationLevel: string;
+        }
+      );
 
       setTargetJobs(normalized.targetJobs);
       updateField("currentState", normalized.currentState);
       updateField("educationLevel", normalized.educationLevel);
       updateField("career", normalized.career);
-      setMarketingAgree(data?.isMarketingAgreed || false);
       setExperiences(selfIntro.experiences || []);
       setKeywords(selfIntro.keywords || []);
     }
-  }, [profile, data, setTargetJobs, updateField]);
+  }, [profile, setTargetJobs, updateField]);
+
+  useEffect(() => {
+    if (data) {
+      setMarketingAgree(data.isMarketingAgreed || false);
+    }
+  }, [data, setMarketingAgree]);
 
   if (isLoading) {
     return (
@@ -101,16 +113,14 @@ export default function MypageRightSection() {
     if (isCurrentlyAgreedOnServer) {
       withdrawMutation(targetId, {
         onSuccess: () => {
-          toast.success("마케팅 수신 동의가 철회되었습니다.");
           setMarketingAgree(false);
         },
         onError: () => {
-          toast.error("철회 처리 중 오류가 발생했습니다.");
           setMarketingAgree(true);
         },
       });
     } else {
-      postTermsMutation([1, 2, 3], {
+      postTermsMutation([3], {
         onSuccess: () => {
           toast.success("마케팅 수신 동의가 완료되었습니다.");
           setMarketingAgree(true);
@@ -130,6 +140,7 @@ export default function MypageRightSection() {
       toast.error("기타 상태를 직접 입력해주세요.");
       return;
     }
+
     const careerPayload = transformState({
       currentState,
       otherInput,
@@ -144,7 +155,10 @@ export default function MypageRightSection() {
         introduction: profile.basicInfo.introduction || "",
       },
       careerInfo: {
-        ...careerPayload,
+        currentStatus: careerPayload.currentStatuses || [currentState],
+        targetJob: careerPayload.targetJobRoles || targetJobs,
+        careerYear: Number(career),
+        education: educationLevel,
       },
       selfIntro: {
         experiences,

@@ -46,24 +46,30 @@ export type EducationValue =
   | "NONE";
 
 export const transformCareerInfoToState = (careerInfo: {
-  currentStatus: string[];
-  targetJob: string[];
-  careerYear: string;
-  education: string;
+  currentStatuses: string[];
+  targetJobRoles: string[];
+  careerYears: string;
+  educationLevel: string;
 }) => {
-  const stateInKorean = STATE_MAP.get(careerInfo.currentStatus[0]) || "";
-  const jobsInKorean = careerInfo.targetJob.map(
+  const firstStatus = careerInfo?.currentStatuses?.[0] || "";
+  const stateInKorean = STATE_MAP.get(firstStatus) || "";
+
+  const jobsInKorean = (careerInfo?.targetJobRoles || []).map(
     (code) => JOB_MAP.get(code) || code
   );
-  const parsed = Number(careerInfo.careerYear);
+
+  const rawYear = careerInfo?.careerYears || "";
+  const cleanYear = rawYear.replace("년차", "").trim();
+  const parsed = Number(cleanYear);
+
   const careerNumber =
-    careerInfo.careerYear === "신입" || !Number.isFinite(parsed) ? 0 : parsed;
+    rawYear === "신입" || !Number.isFinite(parsed) ? 0 : parsed;
 
   return {
     currentState: stateInKorean as "" | StateType,
     targetJobs: jobsInKorean as JobType[],
     career: careerNumber,
-    educationLevel: careerInfo.education as EducationValue,
+    educationLevel: (careerInfo?.educationLevel || "") as EducationValue,
   };
 };
 

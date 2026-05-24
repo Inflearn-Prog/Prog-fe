@@ -1,4 +1,5 @@
 import ky from "ky";
+import { NextRequest } from "next/server";
 
 export interface ApiResponse<T> {
   status: number;
@@ -17,6 +18,11 @@ export interface PagedResponse<T> {
 export interface ApiErrorData {
   errorClassName: string;
   message: string;
+}
+
+interface MockGetTokenRequest {
+  headers: Record<string, string>;
+  cookies: Record<string, string>;
 }
 
 export class ApiError extends Error {
@@ -45,19 +51,58 @@ export const fetcher = ky.create({
         let token: string | undefined;
 
         if (typeof window === "undefined") {
+          // 1. 서버 사이드 처리
           try {
+            const { getToken } = await import("next-auth/jwt");
             const { cookies } = await import("next/headers");
             const cookieStore = await cookies();
-            token = cookieStore.get("fetcherToken")?.value;
+
+            const mockReq: MockGetTokenRequest = {
+              headers: Object.fromEntries(request.headers.entries()),
+              cookies: Object.fromEntries(
+                cookieStore.getAll().map((c) => [c.name, c.value])
+              ),
+            };
+
+            const tokenData = await getToken({
+              req: {
+                headers: Object.fromEntries(request.headers.entries()),
+                cookies: Object.fromEntries(
+                  cookieStore.getAll().map((c) => [c.name, c.value])
+                ),
+              } as unknown as NextRequest, // 🌟 any 대신 unknown -> NextRequest 구조로 속여넘깁니다.
+              secret: process.env.NEXTAUTH_SECRET,
+            });
+
+            token = tokenData?.accessToken as string | undefined;
           } catch (error) {
-            console.error("Failed to get cookies on server:", error);
+            console.error("Failed to get token on server:", error);
           }
         } else {
-          token = clientInMemoryToken || undefined;
+          // 2. 클라이언트 사이드 처리
+          if (clientInMemoryToken) {
+            token = clientInMemoryToken;
+          } else {
+            try {
+              const { getSession } = await import("next-auth/react");
+              const session = await getSession();
+              token = session?.accessToken || undefined;
+
+              // 찾았다면 다음 요청을 위해 인메모리에 보관
+              if (token) setFetcherToken(token);
+            } catch (error) {
+              console.error("Failed to get session on client:", error);
+            }
+          }
         }
 
+        // 토큰이 존재할 때만 헤더에 주입
         if (token) {
           request.headers.set("Authorization", `Bearer ${token}`);
+        } else {
+          console.warn(
+            `[Fetcher Warning] No token found for URL: ${request.url}`
+          );
         }
       },
     ],

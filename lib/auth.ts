@@ -86,6 +86,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
     },
 
     async jwt({ token, user, trigger, session }) {
+      // 1️⃣ 최초 로그인 시점에 user 객체가 들어옵니다.
       if (user) {
         token.accessToken = user.accessToken;
         token.registrationStatus = user.registrationStatus;
@@ -94,20 +95,25 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
         token.name = user.name;
         token.email = user.email;
         token.picture = user.image;
-        token.sub = user.id;
 
         if (user.accessToken) {
           try {
-            const decoded = jwtDecode<{ exp: number }>(user.accessToken);
+            const decoded = jwtDecode<{ exp: number; sub?: string }>(
+              user.accessToken
+            );
             token.accessTokenExpires = decoded.exp * 1000;
+
+            if (decoded.sub) {
+              token.sub = decoded.sub;
+              token.backendUserId = decoded.sub;
+            }
           } catch {
             token.error = "TokenDecodeError";
           }
         }
       }
 
-      //회원가입 완료 후 클라이언트에서 update()를 호출했을 때 실행됨
-
+      // 2️⃣ 회원가입 완료 후 클라이언트에서 update()를 호출했을 때
       if (trigger === "update" && session) {
         if (session.registrationStatus) {
           token.registrationStatus = session.registrationStatus;
@@ -118,16 +124,21 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
         if (session.user?.accessToken) {
           token.accessToken = session.user.accessToken;
           try {
-            const decoded = jwtDecode<{ exp: number }>(
+            const decoded = jwtDecode<{ exp: number; sub?: string }>(
               session.user.accessToken
             );
             token.accessTokenExpires = decoded.exp * 1000;
+            if (decoded.sub) {
+              token.sub = decoded.sub; // 업데이트 시에도 강제 고정
+              token.backendUserId = decoded.sub;
+            }
           } catch {
             token.error = "TokenUpdateDecodeError";
           }
         }
       }
-      // 기존 유저이고 토큰 만료 시간이 있다면 체크 (신규 유저는 이 단계를 건너뜀)
+
+      // 3️⃣ 백엔드 토큰 만료 여부 체크 및 리프레시
       if (token.accessToken && token.accessTokenExpires) {
         const isTokenValid = Date.now() < (token.accessTokenExpires as number);
         if (!isTokenValid) {
@@ -136,7 +147,6 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
       }
       return token;
     },
-
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
       session.registrationStatus = token.registrationStatus as string;
@@ -147,7 +157,9 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 
       if (session.user) {
         session.user.accessToken = token.accessToken as string;
-        session.user.id = token.sub as string;
+        session.user.id =
+          (token.backendUserId as string) || (token.sub as string);
+        session.user.email = token.email as string;
       }
 
       return session;
@@ -207,7 +219,10 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
     if (setCookieHeader) {
       for (const cookie of setCookieHeader) {
         if (cookie.startsWith("refresh_token=")) {
-          const refreshTokenValue = cookie.split(";")[0].split("=")[1];
+          const firstSegment = cookie.split(";")[0];
+          const eqIdx = firstSegment.indexOf("=");
+          const refreshTokenValue =
+            eqIdx >= 0 ? firstSegment.slice(eqIdx + 1) : "";
           if (refreshTokenValue) {
             cookieStore.set("refresh_token", refreshTokenValue, {
               httpOnly: true,

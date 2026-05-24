@@ -38,11 +38,13 @@ export default async function MyPage({ searchParams }: Props) {
 
         {/* 오른쪽: 탭 내용 */}
         <main className="col-span-4 lg:col-span-9 flex flex-col gap-4">
-          {activeTab === "profile" ? (
+          <div className={activeTab !== "profile" ? "hidden" : ""}>
             <MypageRightSection />
-          ) : (
+          </div>
+
+          <div className={activeTab !== "activity" ? "hidden" : ""}>
             <MypageActivitySection />
-          )}
+          </div>
         </main>
       </div>
     </div>
