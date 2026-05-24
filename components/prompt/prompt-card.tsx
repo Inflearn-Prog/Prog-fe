@@ -7,6 +7,15 @@ import { PromptCardProps } from "@/app/types/type";
 import { ProfIcon } from "../profile-icon/profile-icon";
 import { BaseButton } from "../shared/button";
 
+function stripHtml(html: string): string {
+  if (typeof window === "undefined") {
+    return html.replace(/<[^>]*>/g, "");
+  }
+  const el = document.createElement("div");
+  el.innerHTML = html;
+  return el.textContent ?? "";
+}
+
 const STYLES = {
   CARD_CONTAINER:
     "w-full mx-auto p-6 bg-gray-0 border border-gray-100 rounded-10 shadow-sm",
@@ -32,6 +41,7 @@ export default function PromptCard({
   userName,
   userDesc,
   isLiked,
+  likes,
   onCopy,
   onLike,
   onReport,
@@ -46,7 +56,9 @@ export default function PromptCard({
 
       {/* 텍스트 콘텐츠 */}
       <h2 className={STYLES.TITLE}>{title}</h2>
-      {contentSummary && <p className={STYLES.DESCRIPTION}>{contentSummary}</p>}
+      {contentSummary && (
+        <p className={STYLES.DESCRIPTION}>{stripHtml(contentSummary)}</p>
+      )}
 
       {/* 유저 정보 */}
       <div className={STYLES.USER_SECTION}>
@@ -71,6 +83,7 @@ export default function PromptCard({
             shape={"round"}
             className={STYLES.BUTTON}
             onClick={(e: React.MouseEvent) => {
+              e.preventDefault();
               e.stopPropagation();
               onCopy?.();
             }}
@@ -81,20 +94,23 @@ export default function PromptCard({
         <div className={STYLES.ICON_GROUP}>
           <button
             type="button"
-            className={`${STYLES.ICON_BUTTON} ${isLiked ? "text-frog-600" : "text-gray-1000"}`}
+            className={`${STYLES.ICON_BUTTON} flex items-center gap-1 ${isLiked ? "text-frog-600" : "text-gray-1000"}`}
             aria-label="좋아요"
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               onLike?.(promptId, !!isLiked);
             }}
           >
             <ThumbsUpIcon size={20} fill="currentColor" strokeWidth={0} />
+            {likes != null && <span className="label-small">{likes}</span>}
           </button>
           <button
             type="button"
             className={STYLES.ICON_BUTTON}
             aria-label="신고"
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               onReport?.();
             }}

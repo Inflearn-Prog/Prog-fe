@@ -45,7 +45,7 @@ function ShadowViewer({
         :host { all: initial; display: block; }
         *, *::before, *::after { box-sizing: border-box; }
         body, div { margin: 0; padding: 0; }
-        p, ol, ul, li { margin: 0; line-height: 1.5; font-size: var(--text-17);}
+        p, ol, ul, li { margin: 0; line-height: 1.5; font-size: var(--text-17); white-space: pre-wrap; word-break: break-word; }
         ${extraCss}
       `;
 
