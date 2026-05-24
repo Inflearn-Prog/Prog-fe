@@ -32,7 +32,10 @@ export interface PromptInfo extends PromptBase {
 
 const handleCopy = async (content: string) => {
   try {
-    await navigator.clipboard.writeText(content);
+    const el = document.createElement("div");
+    el.innerHTML = content;
+    const plainText = el.textContent ?? "";
+    await navigator.clipboard.writeText(plainText);
     toasts.success("프롬프트가 클립보드에 복사되었습니다!");
   } catch {
     alert("복사에 실패했습니다. 다시 시도해주세요.");

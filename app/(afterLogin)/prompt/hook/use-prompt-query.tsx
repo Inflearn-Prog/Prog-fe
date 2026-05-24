@@ -16,12 +16,12 @@ export default function usePromptQuery() {
 
   const createMutation = useMutation({
     mutationFn: (data: PromptCreateRequest) => promptQueries.create(data),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: promptQueries.lists(),
       });
       toasts.success("프롬프트가 성공적으로 생성되었습니다!");
-      router.push("/prompt");
+      router.push(`/prompt/${data.promptId}`);
     },
     onError: () => {
       toasts.error("프롬프트 생성에 실패했습니다.");
