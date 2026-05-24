@@ -38,6 +38,7 @@ export default function PromptCard({
   userName,
   userDesc,
   isLiked,
+  likes,
   onCopy,
   onLike,
   onReport,
@@ -90,7 +91,7 @@ export default function PromptCard({
         <div className={STYLES.ICON_GROUP}>
           <button
             type="button"
-            className={`${STYLES.ICON_BUTTON} ${isLiked ? "text-frog-600" : "text-gray-1000"}`}
+            className={`${STYLES.ICON_BUTTON} flex items-center gap-1 ${isLiked ? "text-frog-600" : "text-gray-1000"}`}
             aria-label="좋아요"
             onClick={(e) => {
               e.preventDefault();
@@ -99,6 +100,7 @@ export default function PromptCard({
             }}
           >
             <ThumbsUpIcon size={20} fill="currentColor" strokeWidth={0} />
+            {likes != null && <span className="label-small">{likes}</span>}
           </button>
           <button
             type="button"
