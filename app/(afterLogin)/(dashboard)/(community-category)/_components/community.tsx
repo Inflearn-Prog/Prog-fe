@@ -9,7 +9,6 @@ import { ROUTES } from "@/lib/routes";
 
 import { CommunityPromptItem } from "../../_types/community-type";
 
-// 1. Props 인터페이스 정의
 interface CommunitySectionProps {
   prompts: CommunityPromptItem[];
   isLoading: boolean;
@@ -21,7 +20,6 @@ export function CommunitySection({
 }: CommunitySectionProps) {
   return (
     <div>
-      {/* 데이터가 없고 로딩 중이 아닐 때 */}
       {!isLoading && prompts.length === 0 ? (
         <div className="py-5.5">
           <SearchEmpty />
@@ -37,7 +35,7 @@ export function CommunitySection({
 
 export function CommunityList({ prompts }: { prompts: CommunityPromptItem[] }) {
   return (
-    <ul>
+    <ul className="divide-y divide-gray-100">
       {prompts.map((item) => (
         <li key={item.id}>
           <CommunityItem {...item} />
@@ -47,12 +45,11 @@ export function CommunityList({ prompts }: { prompts: CommunityPromptItem[] }) {
   );
 }
 
-// 2. 개별 아이템 컴포넌트
 export function CommunityItem(props: CommunityPromptItem) {
   return (
     <Link
       href={ROUTES.prompt.DETAIL(props.id.toString())}
-      className="py-4 px-3 flex items-center justify-between text-black border-b last:border-0 gap-x-5 hover:bg-gray-50 transition-colors"
+      className="py-4 px-3 flex items-center justify-between text-black gap-x-5 hover:bg-gray-50 transition-colors"
     >
       <h3 className="label-large font-bold">
         {props.title} [{props.likeCount}]

@@ -36,14 +36,14 @@ export function HeaderLogo() {
 
 export function HeaderNavigation() {
   const { data: session } = useSession();
-  const isLogin = !!session?.user;
+  const isLogin = !!session?.user && !!session?.accessToken;
 
   return (
     <nav aria-label="메인 네비게이션">
       <ul className="flex items-center gap-x-15" role="list">
         {HEADER_NAV_LIST.map((nav) => {
           const isMypage = nav.href === ROUTES.mypage.ROOT;
-          if (isMypage && !isLogin) {
+          if (!isLogin && isMypage) {
             return null;
           }
           return (

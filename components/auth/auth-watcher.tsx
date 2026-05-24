@@ -25,7 +25,11 @@ export function AuthWatcher() {
 
   // 만료된 토큰 감지 → 갱신 시도 → 실패 시 로그아웃
   useEffect(() => {
-    if (isSigningOut.current) return;
+    if (session?.accessToken) {
+      setFetcherToken(session.accessToken as string);
+    } else if (session === null) {
+      setFetcherToken(null);
+    }
 
     const checkSession = async () => {
       if (session?.error === "AccessTokenExpired" && !isSigningOut.current) {

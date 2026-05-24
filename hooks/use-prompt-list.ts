@@ -32,7 +32,7 @@ export const getNextPromptPageParam = (
   );
 
   if (currentTotal < totalCount) {
-    return allPages.length; // Next page index (0-based)
+    return allPages.length;
   }
 
   return undefined;
@@ -52,7 +52,7 @@ export const useGetPrompts = (
         return fetchSearchPrompts(normalizedQ, pageParam);
       }
       if (sort === "likes") {
-        return fetchLikePrompts(pageParam);
+        return fetchLikePrompts(category, pageParam);
       }
       return fetchPrompts(category, pageParam);
     },
@@ -64,12 +64,6 @@ export const useGetPrompts = (
 
 const RANK_PAGE_SIZE = 10;
 
-/**
- * 랭킹 페이지용 — 백엔드 /prompts/createDesc 호출 (최신순 + 카테고리 필터).
- * - categoryId === null → "all"로 전체 조회
- * - categoryId === undefined → 아직 매핑 결정 전(또는 매칭 실패). enabled:false로 호출 보류
- * 페이지네이션 메타가 없는 응답이라 totalCount로 다음 페이지 유무 판단.
- */
 export const useGetPromptsLatest = (categoryId: number | null | undefined) => {
   const enabled = categoryId !== undefined;
   return useInfiniteQuery<
@@ -101,28 +95,36 @@ export const useGetPromptsLatest = (categoryId: number | null | undefined) => {
 
 /**
  * 슬러그를 백엔드 categoryId로 동적 변환.
- * /categories 응답의 name과 후보 매핑을 대조해 ID를 도출한다.
+ *
+ * slug가 없거나 "all"이면 /categories 호출 자체를 스킵.
  *
  * 반환값:
- * - null: "all" 또는 알 수 없는 슬러그 → 전체 조회로 처리
+ * - null     : "all" 또는 알 수 없는 슬러그 → 전체 조회로 처리
  * - undefined: 카테고리 응답 로딩 중 (호출 보류 신호)
- * - number: 매칭된 categoryId
+ * - number   : 매칭된 categoryId
  */
 export const useCategoryIdFromSlug = (
   slug: string | undefined
 ): number | null | undefined => {
-  const { data: categories, isPending } = useQuery(promptQueries.categories());
+  // slug가 없거나 "all"이면 카테고리 목록 조회 불필요
+  const needsLookup = !!slug && slug !== "all";
 
-  if (!slug || slug === "all") return null;
+  const { data: categories, isPending } = useQuery({
+    ...promptQueries.categories(),
+    enabled: needsLookup, // ← "all" 또는 slug 없을 때 /categories 호출 스킵
+  });
+
+  if (!needsLookup) return null;
 
   const candidates = Object.prototype.hasOwnProperty.call(
     CATEGORY_SLUG_TO_NAME_CANDIDATES,
-    slug
+    slug!
   )
     ? CATEGORY_SLUG_TO_NAME_CANDIDATES[
-        slug as keyof typeof CATEGORY_SLUG_TO_NAME_CANDIDATES
+        slug! as keyof typeof CATEGORY_SLUG_TO_NAME_CANDIDATES
       ]
     : undefined;
+
   if (!candidates) return null;
 
   if (isPending || !categories) return undefined;
@@ -132,8 +134,6 @@ export const useCategoryIdFromSlug = (
     if (matched) return matched.categoryId;
   }
 
-  // 매칭 실패 — 백엔드 카테고리명 변경/미등록 가능성. 전체 조회로 폴백.
-  // eslint-disable-next-line no-console
   console.warn(
     `[useCategoryIdFromSlug] '${slug}' 매칭 실패. 후보: ${candidates.join(", ")} / 응답: ${categories.map((c) => c.name).join(", ")}`
   );
@@ -234,7 +234,6 @@ export const useReportMutation = () => {
     onSuccess: () => {
       toasts.success("신고가 정상적으로 접수되었습니다.");
     },
-    // 💡 에러 타입을 Error로 지정하여 any 에러를 완벽히 해결합니다.
     onError: (error: Error) => {
       toasts.error(error.message || "신고 처리에 실패했습니다.");
     },

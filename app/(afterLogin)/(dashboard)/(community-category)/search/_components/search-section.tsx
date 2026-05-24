@@ -36,7 +36,7 @@ export function SearchSection({ q: initialQ }: { q?: string }) {
         page?.data?.prompts?.map((item: PromptBase) => ({
           id: item.promptId,
           title: item.title,
-          preview: item.description || "",
+          preview: item.contentSummary || "",
           jobCategory: (item.category?.name ||
             "ETC") as CommunityPromptItem["jobCategory"],
           likeCount: item.likes || 0,
