@@ -34,7 +34,7 @@ const handleCopy = async (content: string) => {
   try {
     const el = document.createElement("div");
     el.innerHTML = content;
-    const plainText = el.textContent || "";
+    const plainText = el.textContent ?? "";
     await navigator.clipboard.writeText(plainText);
     toasts.success("프롬프트가 클립보드에 복사되었습니다!");
   } catch {

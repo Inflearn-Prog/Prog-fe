@@ -96,7 +96,7 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
     try {
       const el = document.createElement("div");
       el.innerHTML = prompt.content;
-      const plainText = el.textContent || "";
+      const plainText = el.textContent ?? "";
       await navigator.clipboard.writeText(plainText);
       toasts.success("프롬프트가 복사되었습니다.");
     } catch {

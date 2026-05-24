@@ -8,9 +8,12 @@ import { ProfIcon } from "../profile-icon/profile-icon";
 import { BaseButton } from "../shared/button";
 
 function stripHtml(html: string): string {
+  if (typeof window === "undefined") {
+    return html.replace(/<[^>]*>/g, "");
+  }
   const el = document.createElement("div");
   el.innerHTML = html;
-  return el.textContent || "";
+  return el.textContent ?? "";
 }
 
 const STYLES = {
