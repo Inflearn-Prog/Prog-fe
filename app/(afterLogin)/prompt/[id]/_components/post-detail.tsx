@@ -83,7 +83,10 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
 
   const handleCopy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(prompt.content);
+      const el = document.createElement("div");
+      el.innerHTML = prompt.content;
+      const plainText = el.textContent || "";
+      await navigator.clipboard.writeText(plainText);
       toasts.success("프롬프트가 복사되었습니다.");
     } catch {
       toasts.error("클립보드 복사에 실패했습니다.");
