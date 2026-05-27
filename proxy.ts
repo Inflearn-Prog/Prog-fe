@@ -30,6 +30,7 @@ export default auth((req) => {
     signInUrl.searchParams.set("callbackUrl", pathname + nextUrl.search);
     return NextResponse.redirect(signInUrl);
   }
+
   const statusToStepMap: Record<string, string> = {
     SOCIAL_LOGIN_ONLY: "select",
     TERMS_AGREED: "pick-option",
@@ -41,26 +42,21 @@ export default auth((req) => {
 
   if (isSignIn) {
     if (isNewUser) {
-      if (currentStep === "complete") {
-        return NextResponse.next();
-      }
-      if (regStatus === "NICKNAME_REGISTERED") {
-        const allowedFinalSteps = ["detail", "preview", "complete"];
-        if (!allowedFinalSteps.includes(currentStep as string)) {
+      if (currentStep !== "complete") {
+        if (regStatus === "NICKNAME_REGISTERED") {
+          const allowedFinalSteps = ["detail", "preview", "complete"];
+          if (!allowedFinalSteps.includes(currentStep as string)) {
+            const url = new URL("/signup", nextUrl.origin);
+            url.searchParams.set("step", "detail");
+            return NextResponse.redirect(url);
+          }
+        } else if (targetStep && currentStep !== targetStep) {
           const url = new URL("/signup", nextUrl.origin);
-          url.searchParams.set("step", "detail");
+          url.searchParams.set("step", targetStep);
           return NextResponse.redirect(url);
         }
       }
-      // 2. 그 외 이전 단계들 (SOCIAL_LOGIN_ONLY 등)
-      else if (targetStep && currentStep !== targetStep) {
-        const url = new URL("/signup", nextUrl.origin);
-        url.searchParams.set("step", targetStep);
-        return NextResponse.redirect(url);
-      }
     }
-
-    // 3. 가입 완료 유저 처리
     const isCompleted = regStatus === "ONBOARDING_COMPLETED";
     if (isCompleted) {
       if (isAuthRoute || pathname === "/") {
@@ -69,7 +65,39 @@ export default auth((req) => {
     }
   }
 
-  return NextResponse.next();
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+
+  const isProd = process.env.NODE_ENV === "production";
+  const scriptSrc = isProd
+    ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`
+    : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval'`;
+
+  const cspHeader = [
+    "default-src 'self'",
+    scriptSrc,
+    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`, // 필요시 스타일에도 'nonce-${nonce}' 교체 가능
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: blob: https:",
+    `connect-src 'self' ${process.env.NEXT_PUBLIC_BACKEND_API_URL || ""}`,
+    "frame-ancestors 'none'",
+  ].join("; ");
+
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("Content-Security-Policy", cspHeader);
+
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+
+  response.headers.set("Content-Security-Policy", cspHeader);
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+
+  return response;
 });
 
 // matcher 설정

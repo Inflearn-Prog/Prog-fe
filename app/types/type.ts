@@ -24,7 +24,7 @@ export interface PromptBase {
   userDesc?: string;
   copyCount?: number;
   isLiked?: boolean;
-  likes?: number;
+  likeCount?: number;
   createdAt: string;
   updatedAt?: string | null;
 }

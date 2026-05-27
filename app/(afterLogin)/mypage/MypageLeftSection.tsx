@@ -1,13 +1,13 @@
 "use client";
 import { useQueryClient } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 import { AuthProvider } from "@/app/(beforeLogin)/(auth)/constant";
+import { clearAuthCookies } from "@/app/actions/auth-actions";
 import UserProfile from "@/components/mypage/user-profile";
 import { BaseButton } from "@/components/shared/button";
-import { toasts } from "@/components/shared/toast";
 import { useUserProfile } from "@/hooks/use-mypage";
 import { ROUTES } from "@/lib/routes";
 import { deleteUserAccount, postLogout } from "@/queries/api/auth";
@@ -19,17 +19,16 @@ export default function MypageLeftSection() {
   const queryClient = useQueryClient();
 
   const { data: userData, isLoading } = useUserProfile();
+  const { data: session } = useSession();
 
   const handleLogout = async () => {
     if (confirm("로그아웃 하시겠습니까?")) {
       try {
         await postLogout();
         queryClient.clear();
-        toasts.success("로그아웃 되었습니다.");
-      } catch (error) {
-        //TODO: error 컴포넌트가 생기면 사용자 피드백 주기
-        alert("로그아웃 처리 중 오류가 발생했습니다.");
-        //toasts.error("로그아웃 처리 중 오류가 발생했습니다.");
+        toast.success("로그아웃 되었습니다.");
+      } catch {
+        toast.error("로그아웃 처리 중 오류가 발생했습니다.");
       } finally {
         await signOut({
           callbackUrl: ROUTES.rank.ROOT,
@@ -49,17 +48,15 @@ export default function MypageLeftSection() {
 
     try {
       await deleteUserAccount(userData.basicInfo.uid);
-
-      Cookies.remove("refreshToken");
-      Cookies.remove("accessToken");
+      await signOut({ redirect: false });
+      await clearAuthCookies();
       queryClient.clear();
 
-      toasts.success("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
+      toast.success("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
       router.push(ROUTES.rank.ROOT);
       router.refresh();
-    } catch (error) {
-      alert("탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
-      //toasts.error("탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
+    } catch {
+      toast.error("탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
     }
   };
 
@@ -83,7 +80,7 @@ export default function MypageLeftSection() {
     <div className="flex flex-col gap-5">
       <UserProfile
         nickname={basicInfo.nickname}
-        email={basicInfo.email}
+        email={session?.user?.email || session?.email || ""}
         profileImage={""}
         provider={basicInfo.provider.toLowerCase() as AuthProvider}
         introduction={basicInfo.introduction ?? "반갑습니다!"}

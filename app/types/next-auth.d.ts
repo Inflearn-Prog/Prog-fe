@@ -22,6 +22,7 @@ declare module "next-auth" {
     isNewUser?: boolean;
     registrationStatus?: string;
     provider?: string; // 카카오/네이버 구분용
+    email?: string;
   }
 
   interface Session {
@@ -30,6 +31,7 @@ declare module "next-auth" {
     isNewUser?: boolean; // 가입 페이지 리다이렉트 판단용
     registrationStatus?: string;
     provider?: string; // 가입 시 백엔드 전달용
+    email?: string;
     error?: string;
     user: {
       id?: string;
@@ -46,6 +48,7 @@ declare module "next-auth/jwt" {
     accessTokenExpires?: number;
     isNewUser?: boolean;
     provider?: string;
+    email?: string;
     error?: string;
   }
 }

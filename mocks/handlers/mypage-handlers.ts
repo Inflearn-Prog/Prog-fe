@@ -47,11 +47,11 @@ export const mypageHandlers = [
       success: true,
       status: 200,
       data: {
-        content: [
+        prompts: [
           {
             promptId: 1024 + page,
             title: `${userId}번 유저의 ${page + 1}페이지 프롬프트`,
-            description: "자소서를 위한 GPT 프롬프트 설명입니다.",
+            contentSummary: "자소서를 위한 GPT 프롬프트 설명입니다.",
             hasPreview: true,
             canCopy: true,
             createdAt: "2025-12-23T14:00:00",
@@ -78,11 +78,11 @@ export const mypageHandlers = [
       success: true,
       status: 200,
       data: {
-        content: [
+        prompts: [
           {
             promptId: 1024 + page,
             title: `${userId}번 유저의 ${page + 1}페이지 프롬프트`,
-            description: "자소서를 위한 GPT 프롬프트 설명입니다.",
+            contentSummary: "자소서를 위한 GPT 프롬프트 설명입니다.",
             hasPreview: true,
             canCopy: true,
             createdAt: "2025-12-23T14:00:00",

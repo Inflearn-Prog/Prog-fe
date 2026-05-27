@@ -180,8 +180,8 @@ export const useToggleLikeMutation = () => {
                           ...item,
                           isLiked: !isLiked,
                           likes: isLiked
-                            ? Math.max((item.likes ?? 0) - 1, 0)
-                            : (item.likes ?? 0) + 1,
+                            ? Math.max((item.likeCount ?? 0) - 1, 0)
+                            : (item.likeCount ?? 0) + 1,
                         }
                       : item
                   ),

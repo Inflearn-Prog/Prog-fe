@@ -10,7 +10,6 @@ import { STATIC_IMAGES } from "@/lib/static-image";
 import { HEADER_NAV_LIST } from "./constant";
 import { HeaderRightSection } from "./header-right-section";
 
-// LATER: 추후 리펙토링 필요
 export function Header() {
   return (
     <header

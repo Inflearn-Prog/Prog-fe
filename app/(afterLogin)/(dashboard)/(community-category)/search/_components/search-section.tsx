@@ -39,7 +39,7 @@ export function SearchSection({ q: initialQ }: { q?: string }) {
           preview: item.contentSummary || "",
           jobCategory: (item.category?.name ||
             "ETC") as CommunityPromptItem["jobCategory"],
-          likeCount: item.likes || 0,
+          likeCount: item.likeCount || 0,
           copyCount: Number(item.copyCount || 0),
           authorNickname: item.userName || "익명",
           createdAt: item.createdAt || new Date().toISOString(),

@@ -1,4 +1,5 @@
 import { jwtDecode } from "jwt-decode";
+import { cookies } from "next/headers";
 import NextAuth from "next-auth";
 import { JWT } from "next-auth/jwt";
 import KakaoProvider from "next-auth/providers/kakao";
@@ -45,25 +46,47 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 
         const resData = await response.json();
         if (resData.success) {
-          const { isNewUser, accessToken, registrationStatus } = resData.data;
+          const { isNewUser, accessToken, refreshToken, registrationStatus } =
+            resData.data;
+
+          const cookieStore = await cookies();
+          cookieStore.set("accessToken", accessToken, {
+            path: "/",
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 30 * 24 * 60 * 60, // 30일
+          });
+
+          if (refreshToken) {
+            cookieStore.set("refresh_token", refreshToken, {
+              path: "/",
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "lax",
+              maxAge: 30 * 24 * 60 * 60,
+            });
+          }
 
           // 신규 유저든 기존 유저든 일단 정보를 user 객체에 보관
           user.accessToken = accessToken;
           user.isNewUser = isNewUser;
           user.registrationStatus = registrationStatus;
           user.provider = account.provider; // 소셜 제공자 정보 저장
+          user.email = user.email ?? undefined;
 
           // 여기서 리다이렉트 하지 않고 무조건 true 반환 (로그인 처리)
           // 추후 회원가입 페이지에서 세션 정보에서 -> Zustand로 store.
           return true;
         }
         return false;
-      } catch (error) {
+      } catch {
         return false;
       }
     },
 
     async jwt({ token, user, trigger, session }) {
+      // 1️⃣ 최초 로그인 시점에 user 객체가 들어옵니다.
       if (user) {
         token.accessToken = user.accessToken;
         token.registrationStatus = user.registrationStatus;
@@ -72,20 +95,25 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
         token.name = user.name;
         token.email = user.email;
         token.picture = user.image;
-        token.sub = user.id;
 
         if (user.accessToken) {
           try {
-            const decoded = jwtDecode<{ exp: number }>(user.accessToken);
+            const decoded = jwtDecode<{ exp: number; sub?: string }>(
+              user.accessToken
+            );
             token.accessTokenExpires = decoded.exp * 1000;
+
+            if (decoded.sub) {
+              token.sub = decoded.sub;
+              token.backendUserId = decoded.sub;
+            }
           } catch {
             token.error = "TokenDecodeError";
           }
         }
       }
 
-      //회원가입 완료 후 클라이언트에서 update()를 호출했을 때 실행됨
-
+      // 2️⃣ 회원가입 완료 후 클라이언트에서 update()를 호출했을 때
       if (trigger === "update" && session) {
         if (session.registrationStatus) {
           token.registrationStatus = session.registrationStatus;
@@ -96,16 +124,21 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
         if (session.user?.accessToken) {
           token.accessToken = session.user.accessToken;
           try {
-            const decoded = jwtDecode<{ exp: number }>(
+            const decoded = jwtDecode<{ exp: number; sub?: string }>(
               session.user.accessToken
             );
             token.accessTokenExpires = decoded.exp * 1000;
+            if (decoded.sub) {
+              token.sub = decoded.sub; // 업데이트 시에도 강제 고정
+              token.backendUserId = decoded.sub;
+            }
           } catch {
             token.error = "TokenUpdateDecodeError";
           }
         }
       }
-      // 기존 유저이고 토큰 만료 시간이 있다면 체크 (신규 유저는 이 단계를 건너뜀)
+
+      // 3️⃣ 백엔드 토큰 만료 여부 체크 및 리프레시
       if (token.accessToken && token.accessTokenExpires) {
         const isTokenValid = Date.now() < (token.accessTokenExpires as number);
         if (!isTokenValid) {
@@ -114,17 +147,19 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
       }
       return token;
     },
-
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
       session.registrationStatus = token.registrationStatus as string;
       session.isNewUser = token.isNewUser as boolean;
       session.provider = token.provider as string;
+      session.email = token.email as string;
       session.error = token.error as string;
 
       if (session.user) {
         session.user.accessToken = token.accessToken as string;
-        session.user.id = token.sub as string;
+        session.user.id =
+          (token.backendUserId as string) || (token.sub as string);
+        session.user.email = token.email as string;
       }
 
       return session;
@@ -137,7 +172,6 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 
 async function refreshBackendToken(token: JWT): Promise<JWT> {
   try {
-    const { cookies } = await import("next/headers");
     const cookieStore = await cookies();
     const cookieString = cookieStore.toString();
 
@@ -153,8 +187,7 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Refresh failed: ${response.status} - ${errorText}`);
+      throw new Error(`Refresh failed: ${response.status}`);
     }
 
     const resData = await response.json();
@@ -172,6 +205,37 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
 
     const decoded = jwtDecode<{ exp: number }>(newAccessToken);
 
+    // 새 accessToken을 쿠키에 저장
+    cookieStore.set("accessToken", newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 30 * 24 * 60 * 60, // 30일
+    });
+
+    // 백엔드가 Set-Cookie로 보낸 refresh_token을 Next.js 서버에서 수동 전달
+    const setCookieHeader = response.headers.getSetCookie?.();
+    if (setCookieHeader) {
+      for (const cookie of setCookieHeader) {
+        if (cookie.startsWith("refresh_token=")) {
+          const firstSegment = cookie.split(";")[0];
+          const eqIdx = firstSegment.indexOf("=");
+          const refreshTokenValue =
+            eqIdx >= 0 ? firstSegment.slice(eqIdx + 1) : "";
+          if (refreshTokenValue) {
+            cookieStore.set("refresh_token", refreshTokenValue, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "lax",
+              path: "/",
+              maxAge: 30 * 24 * 60 * 60, // 30일
+            });
+          }
+        }
+      }
+    }
+
     return {
       ...token,
       accessToken: newAccessToken,
@@ -179,7 +243,8 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
       error: undefined,
     };
   } catch (error) {
-    // 갱신 실패 시 세션을 만료시키기 위해 에러 표기
+    console.error("Token refresh error:", error);
+    // 갱신 실패 시 세션을 만료시키거나 클라이언트에서 로그아웃 처리를 유도하기 위해 에러 표기
     return {
       ...token,
       error: "AccessTokenExpired",
