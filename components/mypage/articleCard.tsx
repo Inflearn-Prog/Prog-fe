@@ -1,6 +1,6 @@
 "use client";
 
-import { formatRelativeDate } from "@/lib/utils";
+import { formatRelativeDate, stripHtml } from "@/lib/utils";
 
 import { BaseButton } from "../shared/button";
 
@@ -15,20 +15,20 @@ const STYLES = {
 
 interface LikedArticleCardProps {
   title: string;
-  content: string;
+  contentSummary: string;
   onClick?: () => void;
   onCopy: (e: React.MouseEvent) => void;
 }
 interface MyArticleCardProps {
   title: string;
-  content: string;
+  contentSummary: string;
   createdAt: string;
   onClick?: () => void;
 }
 
 export function LikedArticleCard({
   title,
-  content,
+  contentSummary,
   onCopy,
   onClick,
 }: LikedArticleCardProps) {
@@ -45,7 +45,7 @@ export function LikedArticleCard({
     >
       {/* 텍스트 콘텐츠 */}
       <h2 className={STYLES.TITLE}>{title}</h2>
-      <p className={STYLES.DESCRIPTION}>{content}</p>
+      <div className={STYLES.DESCRIPTION}>{stripHtml(contentSummary)}</div>
 
       {/* 하단 버튼 및 아이콘 */}
       <div className={STYLES.ACTION_BAR}>
@@ -69,7 +69,7 @@ export function LikedArticleCard({
 
 export function MyArticleCard({
   title,
-  content,
+  contentSummary,
   createdAt,
   onClick,
 }: MyArticleCardProps) {
@@ -77,7 +77,7 @@ export function MyArticleCard({
     <article className={STYLES.CARD_CONTAINER} onClick={onClick}>
       {/* 텍스트 콘텐츠 */}
       <h2 className={STYLES.TITLE}>{title}</h2>
-      <p className={STYLES.DESCRIPTION}>{content}</p>
+      <div className={STYLES.DESCRIPTION}>{stripHtml(contentSummary)}</div>
 
       {/* 하단 버튼 및 아이콘 */}
       <div className={STYLES.ACTION_BAR}>

@@ -33,7 +33,12 @@ export default async function RootLayout({
   const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   return (
-    <html lang="ko" className={`${pretendard.variable}`} nonce={nonce}>
+    <html
+      lang="ko"
+      className={`${pretendard.variable}`}
+      nonce={nonce}
+      suppressHydrationWarning
+    >
       <body className={`${pretendard.className} antialiased`}>
         <AuthProvider>
           <AuthWatcher />

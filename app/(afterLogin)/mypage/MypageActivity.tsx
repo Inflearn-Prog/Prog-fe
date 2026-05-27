@@ -53,6 +53,10 @@ export default function MypageActivitySection() {
   const currentData = activeSub === "liked" ? likedData : postedData;
   const isLoading = activeSub === "liked" ? isLikedLoading : isPostedLoading;
 
+  const hasContent =
+    currentData && currentData.prompts && currentData.prompts.length > 0;
+  const totalPages = currentData?.pageInfo?.totalPages ?? 0;
+
   return (
     <div className="flex flex-col gap-6 w-full">
       {/* 서브 탭 메뉴 */}
@@ -87,27 +91,27 @@ export default function MypageActivitySection() {
           <div className="py-20 text-center text-gray-400 font-medium">
             로딩 중...
           </div>
-        ) : !currentData?.content?.length ? (
+        ) : !hasContent ? (
           <div className="py-20 text-center text-gray-400 border border-dashed rounded-2xl">
             {activeSub === "liked"
               ? "좋아요한 프롬프트가 없습니다."
               : "게시한 프롬프트가 없습니다."}
           </div>
         ) : (
-          currentData?.content.map((prompt) =>
+          currentData.prompts.map((prompt) =>
             activeSub === "liked" ? (
               <LikedArticleCard
                 key={prompt.promptId}
                 title={prompt.title}
-                content={prompt.description}
-                onCopy={(e) => handleCopy(e, prompt.description)}
+                contentSummary={prompt.contentSummary}
+                onCopy={(e) => handleCopy(e, prompt.contentSummary)}
                 onClick={() => handleCardClick(prompt.promptId)}
               />
             ) : (
               <MyArticleCard
                 key={prompt.promptId}
                 title={prompt.title}
-                content={prompt.description}
+                contentSummary={prompt.contentSummary}
                 createdAt={prompt.createdAt}
                 onClick={() => handleCardClick(prompt.promptId)}
               />
@@ -117,11 +121,11 @@ export default function MypageActivitySection() {
       </div>
 
       {/* 페이지네이션 */}
-      {!isLoading && (currentData?.pageInfo.totalPages ?? 0) > 1 && (
+      {!isLoading && totalPages > 1 && (
         <div className="flex justify-center mt-4">
           <PaginationButton
             currentPage={currentPage}
-            totalPages={currentData?.pageInfo.totalPages ?? 1}
+            totalPages={totalPages}
             onPageChange={handlePageChange}
           />
         </div>

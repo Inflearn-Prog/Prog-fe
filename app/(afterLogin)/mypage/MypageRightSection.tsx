@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -58,11 +58,8 @@ export default function MypageRightSection() {
     return () => reset();
   }, [reset]);
 
-  const initialized = useRef(false);
   useEffect(() => {
     if (profile) {
-      if (initialized.current) return;
-      initialized.current = true;
       const { careerInfo, selfIntro } = profile;
 
       const normalized = transformCareerInfoToState(
@@ -74,10 +71,11 @@ export default function MypageRightSection() {
         }
       );
 
-      setTargetJobs(normalized.targetJobs);
-      updateField("currentState", normalized.currentState);
-      updateField("educationLevel", normalized.educationLevel);
-      updateField("career", normalized.career);
+      setTargetJobs(normalized.targetJobs || []);
+      updateField("currentState", normalized.currentState || "");
+      updateField("educationLevel", normalized.educationLevel || "");
+      updateField("career", normalized.career ?? 0);
+
       setExperiences(selfIntro.experiences || []);
       setKeywords(selfIntro.keywords || []);
     }

@@ -41,7 +41,7 @@ export type UserProfileResponse = ApiResponse<UserProfileData>;
 export interface PromptItem {
   promptId: number;
   title: string;
-  description: string;
+  contentSummary: string;
   hasPreview: boolean;
   canCopy: boolean;
   createdAt: string;
@@ -57,7 +57,7 @@ export interface PageInfo {
 }
 
 export interface UserPromptsData {
-  content: PromptItem[];
+  prompts: PromptItem[];
   pageInfo: PageInfo;
 }
 

@@ -41,7 +41,7 @@ export default function PromptCard({
   userName,
   userDesc,
   isLiked,
-  likes,
+  likeCount,
   onCopy,
   onLike,
   onReport,
@@ -103,7 +103,9 @@ export default function PromptCard({
             }}
           >
             <ThumbsUpIcon size={20} fill="currentColor" strokeWidth={0} />
-            {likes != null && <span className="label-small">{likes}</span>}
+            {likeCount != null && (
+              <span className="label-small">{likeCount}</span>
+            )}
           </button>
           <button
             type="button"
