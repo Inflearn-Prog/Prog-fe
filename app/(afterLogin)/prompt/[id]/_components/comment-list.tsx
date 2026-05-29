@@ -13,12 +13,14 @@ type SortType = "시간순" | "답글순";
 
 interface CommentListProps {
   promptId: string | number;
+  isLoggedIn?: boolean;
   currentUserIcon?: string | null;
   currentUserName?: string;
 }
 
 export function CommentList({
   promptId,
+  isLoggedIn = false,
   currentUserIcon,
   currentUserName,
 }: CommentListProps) {
@@ -54,14 +56,18 @@ export function CommentList({
     if (sortType === "시간순") {
       return copied.sort(
         (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
     }
-    return copied.sort(
-      (a, b) =>
+    return copied.sort((a, b) => {
+      const replyDiff =
         (repliesByParent.get(b.commentId)?.length ?? 0) -
-        (repliesByParent.get(a.commentId)?.length ?? 0)
-    );
+        (repliesByParent.get(a.commentId)?.length ?? 0);
+      if (replyDiff !== 0) return replyDiff;
+      return (
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    });
   }, [sortType, topLevelComments, repliesByParent]);
 
   if (isError) {
@@ -123,6 +129,7 @@ export function CommentList({
                 <CommentItem
                   comment={comment}
                   promptId={promptId}
+                  isLoggedIn={isLoggedIn}
                   currentUserIcon={currentUserIcon ?? ""}
                   currentUserName={currentUserName ?? ""}
                 />
