@@ -12,7 +12,7 @@ export const authHandlers = [
     if (!["KAKAO", "NAVER"].includes(provider.toUpperCase())) {
       return HttpResponse.json(
         {
-          status: 400,
+          code: "400",
           success: false,
           data: {
             errorClassName: "INVALID_PROVIDER",
@@ -25,7 +25,7 @@ export const authHandlers = [
     if (authCode === "expired_token") {
       return HttpResponse.json(
         {
-          status: 401,
+          code: "401",
           success: false,
           data: {
             errorClassName: "ACCESS_TOKEN_EXPIRED",
@@ -39,7 +39,7 @@ export const authHandlers = [
     const isNewUser = true;
 
     return HttpResponse.json({
-      status: 200,
+      code: "200",
       timestamp: new Date().toISOString(),
       success: true,
       data: {

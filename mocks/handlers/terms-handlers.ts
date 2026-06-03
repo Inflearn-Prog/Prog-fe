@@ -5,7 +5,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 export const termsHandlers = [
   http.get(`${BASE_URL}/terms`, () => {
     return HttpResponse.json({
-      status: 200,
+      code: "200",
       success: true,
       data: {
         terms: [
@@ -36,7 +36,7 @@ export const termsHandlers = [
   }),
   http.post(`${BASE_URL}/users/me/terms-agreements`, async () => {
     return HttpResponse.json({
-      status: 200,
+      code: "200",
       success: true,
       data: {
         userId: 1205,
