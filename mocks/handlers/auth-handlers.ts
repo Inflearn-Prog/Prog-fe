@@ -60,16 +60,13 @@ export const authHandlers = [
       { status: 200 }
     );
   }),
-  http.delete(`${BASE_URL}/users/:uid`, async ({ params }) => {
-    const { uid } = params;
-
+  http.delete(`${BASE_URL}/users/me`, async () => {
     return HttpResponse.json(
       {
         success: true,
         code: "200",
-        message: "회원 탈퇴 및 소셜 연동 해제가 정상적으로 처리되었습니다.",
         data: {
-          uid: uid,
+          uid: "kakao_1234567890",
           unlinkedProvider: "KAKAO",
           terminatedAt: new Date().toISOString(),
         },

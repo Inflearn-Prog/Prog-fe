@@ -56,10 +56,24 @@ export const RANKING_INFO = new Map<string, { title: string; desc: string }>([
     },
   ],
   [
+    "server",
+    {
+      title: "서버 개발 랭킹",
+      desc: "인프라 구축, 네트워크 및 대용량 트래픽 처리를 위한 서버 프롬프트입니다.",
+    },
+  ],
+  [
     "sns_marketing",
     {
       title: "SNS 마케팅 랭킹",
       desc: "트렌디한 소셜 미디어 콘텐츠 기획과 인게이지먼트 향상을 위한 마케팅 프롬프트입니다.",
+    },
+  ],
+  [
+    "hr",
+    {
+      title: "인사/총무 직군 랭킹",
+      desc: "인재 채용, 조직 관리 및 효율적인 사내 행정 업무를 돕는 프롬프트입니다.",
     },
   ],
 ]);

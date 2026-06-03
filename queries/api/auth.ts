@@ -36,15 +36,8 @@ export interface WithdrawRequest {
   reason?: string;
 }
 
-export const deleteUserAccount = async (
-  uid: string | number,
-  data?: WithdrawRequest
-) => {
-  return await fetcher.delete(`users/${uid}`, { json: data }).json<
-    ApiResponse<{
-      uid: string;
-      unlinkedProvider: string;
-      terminatedAt: string;
-    }>
-  >();
+export const deleteUserAccount = async (data?: WithdrawRequest) => {
+  const response = await fetcher.delete("users/me", { json: data });
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 };

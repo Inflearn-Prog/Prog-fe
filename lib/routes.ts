@@ -14,9 +14,11 @@ export const ROUTES = {
     MARKETING_CONTENT: "/rank?category=marketing_content",
     DESIGN: "/rank?category=design",
     SERVICE_PLANNING: "/rank?category=service_planning",
+    HR: "/rank?category=hr",
     ETC: "/rank?category=etc",
     BACKEND: "/rank?category=backend",
     FRONTEND: "/rank?category=frontend",
+    SERVER: "/rank?category=server",
     SNS_MARKETING: "/rank?category=sns_marketing",
   },
   /**
@@ -35,9 +37,11 @@ export const ROUTES = {
     MARKETING_CONTENT: "/community?category=marketing_content",
     DESIGN: "/community?category=design",
     SERVICE_PLANNING: "/community?category=service_planning",
+    HR: "/community?category=hr",
     ETC: "/community?category=etc",
     BACKEND: "/community?category=backend",
     FRONTEND: "/community?category=frontend",
+    SERVER: "/community?category=server",
     SNS_MARKETING: "/community?category=sns_marketing",
   },
   prompt: {

@@ -70,6 +70,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 
           // 신규 유저든 기존 유저든 일단 정보를 user 객체에 보관
           user.accessToken = accessToken;
+          user.refreshToken = refreshToken;
           user.isNewUser = isNewUser;
           user.registrationStatus = registrationStatus;
           user.provider = account.provider; // 소셜 제공자 정보 저장
@@ -89,6 +90,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
       // 1️⃣ 최초 로그인 시점에 user 객체가 들어옵니다.
       if (user) {
         token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
         token.registrationStatus = user.registrationStatus;
         token.isNewUser = user.isNewUser;
         token.provider = user.provider;
@@ -149,6 +151,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
+      session.refreshToken = token.refreshToken as string;
       session.registrationStatus = token.registrationStatus as string;
       session.isNewUser = token.isNewUser as boolean;
       session.provider = token.provider as string;
@@ -173,7 +176,12 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 async function refreshBackendToken(token: JWT): Promise<JWT> {
   try {
     const cookieStore = await cookies();
-    const cookieString = cookieStore.toString();
+    let cookieString = cookieStore.toString();
+
+    // 브라우저 쿠키에 refresh_token이 없더라도 NextAuth 토큰에서 가져와 헤더에 추가
+    if (token.refreshToken && !cookieString.includes("refresh_token=")) {
+      cookieString += `${cookieString ? "; " : ""}refresh_token=${token.refreshToken}`;
+    }
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/refresh`,
@@ -215,6 +223,7 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
     });
 
     // 백엔드가 Set-Cookie로 보낸 refresh_token을 Next.js 서버에서 수동 전달
+    let newRefreshToken = token.refreshToken;
     const setCookieHeader = response.headers.getSetCookie?.();
     if (setCookieHeader) {
       for (const cookie of setCookieHeader) {
@@ -224,6 +233,7 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
           const refreshTokenValue =
             eqIdx >= 0 ? firstSegment.slice(eqIdx + 1) : "";
           if (refreshTokenValue) {
+            newRefreshToken = refreshTokenValue;
             cookieStore.set("refresh_token", refreshTokenValue, {
               httpOnly: true,
               secure: process.env.NODE_ENV === "production",
@@ -239,6 +249,7 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
     return {
       ...token,
       accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
       accessTokenExpires: decoded.exp * 1000,
       error: undefined,
     };

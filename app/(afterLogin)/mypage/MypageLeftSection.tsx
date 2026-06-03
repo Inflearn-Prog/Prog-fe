@@ -47,15 +47,23 @@ export default function MypageLeftSection() {
     if (!isConfirmed || !userData) return;
 
     try {
-      await deleteUserAccount(userData.basicInfo.uid);
+      await deleteUserAccount({
+        reason: "서비스를 더 이상 이용하지 않습니다.",
+      });
       await signOut({ redirect: false });
-      await clearAuthCookies();
+
+      try {
+        await clearAuthCookies();
+      } catch (cookieError) {
+        console.warn("Failed to clear auth cookies:", cookieError);
+      }
       queryClient.clear();
 
       toast.success("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
       router.push(ROUTES.rank.ROOT);
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error("Withdrawal error:", error);
       toast.error("탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");
     }
   };

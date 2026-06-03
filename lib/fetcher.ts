@@ -2,9 +2,10 @@ import ky from "ky";
 import { NextRequest } from "next/server";
 
 export interface ApiResponse<T> {
-  status: number;
+  code: string;
   success: boolean;
   data: T;
+  timestamp?: string;
 }
 
 export interface PagedResponse<T> {
@@ -104,6 +105,7 @@ export const fetcher = ky.create({
             `[Fetcher Warning] No token found for URL: ${request.url}`
           );
         }
+        return request;
       },
     ],
     afterResponse: [

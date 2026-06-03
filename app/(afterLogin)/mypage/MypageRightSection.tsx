@@ -43,7 +43,9 @@ export default function MypageRightSection() {
   const [experiences, setExperiences] = useState<string[]>([]);
   const [keywords, setKeywords] = useState<string[]>([]);
   const [marketingAgree, setMarketingAgree] = useState(false);
-  const marketingLink = terms?.terms?.find((t) => t.termId === 3)?.link ?? "";
+
+  const marketingLink = terms?.find((t) => t.termId === 3)?.link ?? "";
+
   const {
     targetJobs,
     setTargetJobs,

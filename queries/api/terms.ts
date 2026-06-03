@@ -38,7 +38,7 @@ export async function fetchTerms() {
     throw new Error("약관 목록을 불러오는데 실패했습니다.");
   }
   const result = (await res.json()) as CommonResponse<{ terms: Term[] }>;
-  return result.data;
+  return result.data.terms;
 }
 
 export async function postTerms(termIds: number[], token: string) {
