@@ -1,4 +1,5 @@
 import { Term } from "@/components/terms/types";
+import { ApiResponse } from "@/lib/fetcher";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 if (!BASE_URL) {
@@ -13,12 +14,6 @@ interface ApiError extends Error {
 interface ApiErrorData {
   errorClassName: string;
   message: string;
-}
-
-interface CommonResponse<T> {
-  status: number;
-  success: boolean;
-  data: T;
 }
 
 export interface PostTermsResponse {
@@ -37,7 +32,7 @@ export async function fetchTerms() {
   if (!res.ok) {
     throw new Error("약관 목록을 불러오는데 실패했습니다.");
   }
-  const result = (await res.json()) as CommonResponse<{ terms: Term[] }>;
+  const result = (await res.json()) as ApiResponse<{ terms: Term[] }>;
   return result.data.terms;
 }
 
@@ -57,7 +52,7 @@ export async function postTerms(termIds: number[], token: string) {
     let errorData: ApiErrorData | undefined;
 
     try {
-      const result = (await res.json()) as CommonResponse<ApiErrorData>;
+      const result = (await res.json()) as ApiResponse<ApiErrorData>;
       errorData = result.data;
     } catch (error) {
       console.error("Failed to parse error response:", error);
@@ -70,6 +65,6 @@ export async function postTerms(termIds: number[], token: string) {
     throw error;
   }
 
-  const result = (await res.json()) as CommonResponse<PostTermsResponse>;
+  const result = (await res.json()) as ApiResponse<PostTermsResponse>;
   return result.data;
 }

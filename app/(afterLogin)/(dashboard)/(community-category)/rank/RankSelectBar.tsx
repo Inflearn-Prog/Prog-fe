@@ -12,7 +12,12 @@ export default function RankSelectBar({
   defaultValue: string;
 }) {
   const router = useRouter();
-  const currentItem = RANK_CATEGORY_LIST.items.find((item) => {
+  const flatItems = RANK_CATEGORY_LIST.items.flatMap((item) => [
+    item,
+    ...(item.subItems ?? []),
+  ]);
+
+  const currentItem = flatItems.find((item) => {
     if (defaultValue === "all") return item.label === "전체";
     return item.href.includes(`category=${defaultValue}`);
   });
@@ -23,7 +28,7 @@ export default function RankSelectBar({
       <SelectBox
         value={currentItem?.href as string}
         onValueChange={(href) => router.push(href)}
-        selectOptions={RANK_CATEGORY_LIST.items.map((item) => ({
+        selectOptions={flatItems.map((item) => ({
           label: item.label,
           value: item.href,
         }))}

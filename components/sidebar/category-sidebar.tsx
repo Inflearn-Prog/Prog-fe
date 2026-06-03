@@ -40,7 +40,7 @@ const SIDEBAR_STYLES = {
   TITLE: "heading-small",
   SEPARATOR: "my-3 mx-0",
   SIDEBAR: "w-full h-auto border-r-0",
-  CONTENT: "rounded-lg h-auto border-0",
+  CONTENT: "rounded-lg h-auto border-0 overflow-x-hidden",
   GROUP_CONTENT: "border-none bg-none",
   MENU: "gap-y-0",
 } as const;

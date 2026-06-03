@@ -27,13 +27,13 @@ interface MockGetTokenRequest {
 }
 
 export class ApiError extends Error {
-  status: number;
+  httpStatus: number; // HTTP 상태코드 (API 응답 code와는 다름)
   errorClassName: string;
 
-  constructor(status: number, errorData: ApiErrorData) {
+  constructor(httpStatus: number, errorData: ApiErrorData) {
     super(errorData?.message);
     this.name = "ApiError";
-    this.status = status;
+    this.httpStatus = httpStatus;
     this.errorClassName = errorData?.errorClassName;
   }
 }
