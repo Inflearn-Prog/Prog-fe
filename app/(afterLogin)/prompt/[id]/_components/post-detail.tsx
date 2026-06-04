@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Siren, ThumbsUp } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
 import { QuillHtmlViewer } from "@/components/board/QuillHtmlViewer";
@@ -17,8 +18,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useReportMutation } from "@/hooks/use-prompt-list";
+import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
-import { PromptResponse } from "@/queries/api/prompts";
+import { promptApi, PromptResponse } from "@/queries/api/prompts";
 import { promptQueries } from "@/queries/options/prompt-query";
 
 import { formatCommentDate } from "./utils";
@@ -27,6 +29,7 @@ interface PostDetailProps {
   promptId: string | number;
   prompt: PromptResponse;
   user?: {
+    id?: string;
     name?: string | null;
     email?: string | null;
     image?: string | null;
@@ -62,11 +65,16 @@ function AuthorProfileCard({
 }
 
 export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
+  const router = useRouter();
   const [isLiked, setIsLiked] = useState(prompt.isLiked);
   const [likesCount, setLikesCount] = useState(prompt.likes);
   const [report, setReport] = useState({ open: false, reason: "", detail: "" });
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
   const queryClient = useQueryClient();
   const { mutate: reportMutate } = useReportMutation();
+
+  const isOwner =
+    !!user?.id && String(user.id) === String(prompt.userId);
 
   const categoryLabel = prompt.category.name;
 
@@ -89,6 +97,17 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
       setLikesCount((prev) =>
         currentlyLiked ? prev + 1 : Math.max(prev - 1, 0)
       );
+    },
+  });
+
+  const { mutate: deletePrompt, isPending: isDeleting } = useMutation({
+    mutationFn: () => promptApi.deletePrompt(promptId),
+    onSuccess: () => {
+      toasts.success("게시글이 삭제되었습니다.");
+      router.push(ROUTES.community.ROOT);
+    },
+    onError: () => {
+      toasts.error("게시글 삭제에 실패했습니다.");
     },
   });
 
@@ -136,6 +155,19 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
     );
   }, [reportMutate, promptId, report.reason, report.detail, closeReportModal]);
 
+  const handleEditClick = useCallback(() => {
+    router.push(ROUTES.prompt.EDIT(String(promptId)));
+  }, [router, promptId]);
+
+  const handleDeleteClick = useCallback(() => {
+    setDeleteConfirm(true);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(() => {
+    setDeleteConfirm(false);
+    deletePrompt();
+  }, [deletePrompt]);
+
   return (
     <div className="flex flex-col gap-4 w-full">
       <AuthorProfileCard
@@ -173,32 +205,55 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
               복사
             </BaseButton>
 
-            <div className="flex gap-2 items-center">
-              <button
-                type="button"
-                aria-label="좋아요"
-                onClick={handleLikeClick}
-                className={cn(
-                  "flex items-center gap-1 hover:opacity-70 transition-300",
-                  isLiked ? "text-frog-600" : "text-gray-700"
-                )}
-              >
-                <ThumbsUp size={20} fill="currentColor" strokeWidth={0} />
-                <span className="label-small">{likesCount}</span>
-              </button>
-              <button
-                type="button"
-                aria-label="신고"
-                onClick={handleReportClick}
-                className="hover:opacity-70 transition-300 text-gray-700"
-              >
-                <Siren size={20} fill="currentColor" strokeWidth={0} />
-              </button>
-            </div>
+            {isOwner ? (
+              <div className="flex gap-2 items-center">
+                <BaseButton
+                  size="sm"
+                  variant="outline"
+                  onClick={handleEditClick}
+                  className="px-4 py-1 h-7"
+                >
+                  수정
+                </BaseButton>
+                <BaseButton
+                  size="sm"
+                  variant="outline"
+                  onClick={handleDeleteClick}
+                  disabled={isDeleting}
+                  className="px-4 py-1 h-7 text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  삭제
+                </BaseButton>
+              </div>
+            ) : (
+              <div className="flex gap-2 items-center">
+                <button
+                  type="button"
+                  aria-label="좋아요"
+                  onClick={handleLikeClick}
+                  className={cn(
+                    "flex items-center gap-1 hover:opacity-70 transition-300",
+                    isLiked ? "text-frog-600" : "text-gray-700"
+                  )}
+                >
+                  <ThumbsUp size={20} fill="currentColor" strokeWidth={0} />
+                  <span className="label-small">{likesCount}</span>
+                </button>
+                <button
+                  type="button"
+                  aria-label="신고"
+                  onClick={handleReportClick}
+                  className="hover:opacity-70 transition-300 text-gray-700"
+                >
+                  <Siren size={20} fill="currentColor" strokeWidth={0} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
+      {/* 신고 모달 */}
       <Dialog
         open={report.open}
         onOpenChange={(open) => !open && closeReportModal()}
@@ -224,6 +279,41 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
             onCancel={closeReportModal}
             onReport={handleReportSubmit}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* 삭제 확인 모달 */}
+      <Dialog
+        open={deleteConfirm}
+        onOpenChange={(open) => !open && setDeleteConfirm(false)}
+      >
+        <DialogContent
+          className="max-w-[400px] p-6 rounded-[10px]"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
+          <DialogHeader>
+            <DialogTitle>게시글 삭제</DialogTitle>
+            <DialogDescription>
+              삭제된 게시글은 복구할 수 없습니다. 정말 삭제하시겠습니까?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <BaseButton
+              variant="outline"
+              size="sm"
+              onClick={() => setDeleteConfirm(false)}
+            >
+              취소
+            </BaseButton>
+            <BaseButton
+              size="sm"
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              삭제
+            </BaseButton>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
