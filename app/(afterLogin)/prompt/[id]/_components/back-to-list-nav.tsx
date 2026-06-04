@@ -10,12 +10,10 @@ export function BackToListNav() {
   const router = useRouter();
 
   const handleClick = useCallback(() => {
-    const hasPrevPage =
-      typeof window !== "undefined" &&
-      window.history.length > 1 &&
-      document.referrer.includes(window.location.origin);
-
-    if (hasPrevPage) {
+    // 같은 탭에 이전 기록이 있으면 직전 화면(쿼리/스크롤 유지)으로 복귀.
+    // 직접 진입(새 탭/주소 입력)이면 history.length === 1 이므로 커뮤니티로 이동.
+    // document.referrer는 App Router의 클라이언트 네비게이션에서 갱신되지 않아 사용하지 않는다.
+    if (window.history.length > 1) {
       router.back();
     } else {
       router.push(ROUTES.community.ROOT);
