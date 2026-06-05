@@ -71,7 +71,8 @@ export function CommentList({
   }, [sortType, topLevelComments, repliesByParent]);
 
   if (isError) {
-    const isAccessDenied = error instanceof ApiError && error.status === 403;
+    const isAccessDenied =
+      error instanceof ApiError && error.httpStatus === 403;
 
     return (
       <div className="flex flex-col gap-5 w-full">

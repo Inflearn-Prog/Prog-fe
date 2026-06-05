@@ -19,7 +19,8 @@ export const useUserProfile = () => {
     queryKey: ["user", "profile"],
     queryFn: () => getUserProfile(),
     select: (response) => response.data,
-    throwOnError: (error) => error instanceof ApiError && error.status >= 500,
+    throwOnError: (error) =>
+      error instanceof ApiError && error.httpStatus >= 500,
   });
 };
 
@@ -73,7 +74,7 @@ export const useUpdateProfile = () => {
     },
     onError: (error: Error) => {
       if (error instanceof ApiError) {
-        if (error.status === 401) {
+        if (error.httpStatus === 401) {
           toast.error("세션이 만료되었습니다. 다시 로그인해주세요.");
           router.push(ROUTES.auth.SIGNIN);
           return;
@@ -103,7 +104,7 @@ export const useWithdrawTerms = () => {
     },
     onError: (error: Error) => {
       if (error instanceof ApiError) {
-        if (error.status === 401) {
+        if (error.httpStatus === 401) {
           toast.error("세션이 만료되었습니다. 다시 로그인해주세요.");
           router.push(ROUTES.auth.SIGNIN);
           return;
@@ -138,7 +139,7 @@ export const useAgreedTerms = () => {
     },
     // 로그인 기반 데이터이므로 세션 만료 등 에러 처리
     throwOnError: (error: ApiError) => {
-      if (error.status === 401) {
+      if (error.httpStatus === 401) {
         // 전역적인 로그아웃 처리나 리다이렉트 로직이 있다면 여기서 수행
         return true;
       }

@@ -12,7 +12,7 @@ export const authHandlers = [
     if (!["KAKAO", "NAVER"].includes(provider.toUpperCase())) {
       return HttpResponse.json(
         {
-          status: 400,
+          code: "400",
           success: false,
           data: {
             errorClassName: "INVALID_PROVIDER",
@@ -25,7 +25,7 @@ export const authHandlers = [
     if (authCode === "expired_token") {
       return HttpResponse.json(
         {
-          status: 401,
+          code: "401",
           success: false,
           data: {
             errorClassName: "ACCESS_TOKEN_EXPIRED",
@@ -39,7 +39,7 @@ export const authHandlers = [
     const isNewUser = true;
 
     return HttpResponse.json({
-      status: 200,
+      code: "200",
       timestamp: new Date().toISOString(),
       success: true,
       data: {
@@ -60,16 +60,13 @@ export const authHandlers = [
       { status: 200 }
     );
   }),
-  http.delete(`${BASE_URL}/users/:uid`, async ({ params }) => {
-    const { uid } = params;
-
+  http.delete(`${BASE_URL}/users/me`, async () => {
     return HttpResponse.json(
       {
         success: true,
         code: "200",
-        message: "회원 탈퇴 및 소셜 연동 해제가 정상적으로 처리되었습니다.",
         data: {
-          uid: uid,
+          uid: "kakao_1234567890",
           unlinkedProvider: "KAKAO",
           terminatedAt: new Date().toISOString(),
         },

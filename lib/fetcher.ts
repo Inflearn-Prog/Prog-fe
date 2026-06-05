@@ -2,9 +2,10 @@ import ky from "ky";
 import { NextRequest } from "next/server";
 
 export interface ApiResponse<T> {
-  status: number;
+  code: string;
   success: boolean;
   data: T;
+  timestamp?: string;
 }
 
 export interface PagedResponse<T> {
@@ -26,13 +27,13 @@ interface MockGetTokenRequest {
 }
 
 export class ApiError extends Error {
-  status: number;
+  httpStatus: number; // HTTP 상태코드 (API 응답 code와는 다름)
   errorClassName: string;
 
-  constructor(status: number, errorData: ApiErrorData) {
+  constructor(httpStatus: number, errorData: ApiErrorData) {
     super(errorData?.message);
     this.name = "ApiError";
-    this.status = status;
+    this.httpStatus = httpStatus;
     this.errorClassName = errorData?.errorClassName;
   }
 }
@@ -104,6 +105,7 @@ export const fetcher = ky.create({
             `[Fetcher Warning] No token found for URL: ${request.url}`
           );
         }
+        return request;
       },
     ],
     afterResponse: [

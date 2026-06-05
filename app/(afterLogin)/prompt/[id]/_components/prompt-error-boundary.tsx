@@ -27,7 +27,8 @@ export class PromptErrorBoundary extends Component<Props, State> {
     const { error } = this.state;
 
     if (error) {
-      const isAccessDenied = error instanceof ApiError && error.status === 403;
+      const isAccessDenied =
+        error instanceof ApiError && error.httpStatus === 403;
 
       return (
         <div className="flex flex-col items-center justify-center gap-4 py-20">

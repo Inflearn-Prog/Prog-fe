@@ -14,7 +14,7 @@ export const mypageHandlers = [
 
     return HttpResponse.json<UserProfileResponse>({
       success: true,
-      status: 200,
+      code: "200",
       data: {
         basicInfo: {
           uid: "user_12345",
@@ -45,7 +45,7 @@ export const mypageHandlers = [
 
     return HttpResponse.json<UserPromptsResponse>({
       success: true,
-      status: 200,
+      code: "200",
       data: {
         prompts: [
           {
@@ -76,7 +76,7 @@ export const mypageHandlers = [
 
     return HttpResponse.json<UserPromptsResponse>({
       success: true,
-      status: 200,
+      code: "200",
       data: {
         prompts: [
           {

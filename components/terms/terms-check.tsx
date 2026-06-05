@@ -68,6 +68,7 @@ export function ProgTerms({
             checked={!!checks.get(term.termId)}
             onChange={(checked) => onSingleCheck(term.termId, checked)}
             link={term.link}
+            showLink={term.hasDetails}
           />
         ))}
       </div>
@@ -83,7 +84,7 @@ interface CheckboxItemProps {
   required?: boolean;
   showLink?: boolean;
   className?: string;
-  link?: string;
+  link?: string | null;
 }
 
 const CheckboxItem = ({
@@ -104,7 +105,7 @@ const CheckboxItem = ({
     <div className="flex-1 min-w-0">
       <BaseCheckBox
         id={id}
-        label={`${required ? "(필수) " : ""}${label}`}
+        label={`${required === true ? "(필수) " : required === false ? "(선택) " : ""}${label}`}
         checked={checked}
         onCheckedChange={onChange}
         className="body-small md:body-medium break-keep"

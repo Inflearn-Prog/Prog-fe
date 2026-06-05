@@ -1,9 +1,15 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +20,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarSeparator,
 } from "../ui/sidebar";
 import { COMMUNITY_CATEGORY_LIST, RANK_CATEGORY_LIST } from "./constant";
@@ -31,7 +40,7 @@ const SIDEBAR_STYLES = {
   TITLE: "heading-small",
   SEPARATOR: "my-3 mx-0",
   SIDEBAR: "w-full h-auto border-r-0",
-  CONTENT: "rounded-lg h-auto border-0",
+  CONTENT: "rounded-lg h-auto border-0 overflow-x-hidden",
   GROUP_CONTENT: "border-none bg-none",
   MENU: "gap-y-0",
 } as const;
@@ -105,7 +114,6 @@ function CategorySidebar({ title, children }: CategorySidebarProps) {
  * 카테고리 목록을 순회하며 링크 아이템을 생성합니다.
  */
 function CategorySidebarItem({ categories }: CategorySidebarItemProps) {
-  // const pathname = usePathname();
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category") || "";
 
@@ -116,18 +124,75 @@ function CategorySidebarItem({ categories }: CategorySidebarItemProps) {
     return (params.get("category") ?? "") === categoryParam;
   };
 
-  // 메뉴 아이템 스타일 계산 함수
-  const getMenuItemStyle = (href: CategoryRouteValue): string => {
-    return isActive(href)
-      ? cn(MENU_ITEM_STYLES.BASE, MENU_ITEM_STYLES.ACTIVE)
-      : MENU_ITEM_STYLES.BASE;
-  };
-
   return (
     <>
       {categories.map((item) => {
-        const menuItemStyle = getMenuItemStyle(item.href);
-        const isCurrentPage = isActive(item.href);
+        const isCurrentPage = isActive(item.href as CategoryRouteValue);
+        const hasSubItems = item.subItems && item.subItems.length > 0;
+        const isSubActive =
+          hasSubItems &&
+          item.subItems!.some((sub) =>
+            isActive(sub.href as CategoryRouteValue)
+          );
+        const isOpenByDefault = isCurrentPage || isSubActive;
+
+        if (hasSubItems) {
+          return (
+            <Collapsible
+              key={item.href}
+              defaultOpen={isOpenByDefault}
+              className="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton
+                    className={cn(
+                      MENU_ITEM_STYLES.BASE,
+                      isCurrentPage || isSubActive
+                        ? "text-frog-600 bg-frog-100 font-medium hover:text-frog-600 hover:bg-frog-100"
+                        : "",
+                      "justify-between"
+                    )}
+                    asChild
+                  >
+                    <Link href={item.href} className={MENU_ITEM_STYLES.LINK}>
+                      {item.label}
+                      <ChevronDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                    </Link>
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub className="border-none mt-1 pl-4 mx-0 mr-0">
+                    {item.subItems!.map((subItem) => {
+                      const isSubCurrent = isActive(
+                        subItem.href as CategoryRouteValue
+                      );
+                      return (
+                        <SidebarMenuSubItem key={subItem.href}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={isSubCurrent}
+                            className={cn(
+                              "text-gray-500 hover:text-gray-900 hover:bg-transparent bg-transparent",
+                              isSubCurrent && "text-frog-600 font-medium"
+                            )}
+                          >
+                            <Link href={subItem.href}>{subItem.label}</Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      );
+                    })}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          );
+        }
+
+        const menuItemStyle = cn(
+          MENU_ITEM_STYLES.BASE,
+          isCurrentPage ? MENU_ITEM_STYLES.ACTIVE : ""
+        );
 
         return (
           <SidebarMenuItem key={item.href}>

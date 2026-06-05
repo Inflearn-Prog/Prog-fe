@@ -43,7 +43,9 @@ export default function MypageRightSection() {
   const [experiences, setExperiences] = useState<string[]>([]);
   const [keywords, setKeywords] = useState<string[]>([]);
   const [marketingAgree, setMarketingAgree] = useState(false);
-  const marketingLink = terms?.terms?.find((t) => t.termId === 3)?.link ?? "";
+
+  const marketingLink = terms?.find((t) => t.termId === 3)?.link ?? "";
+
   const {
     targetJobs,
     setTargetJobs,
@@ -290,13 +292,16 @@ export default function MypageRightSection() {
             checked={marketingAgree}
             onCheckedChange={(checked) => setMarketingAgree(!!checked)}
           />
-          <Link
-            href={marketingLink}
-            className="text-frog-600 label-medium hover:underline px-2"
-            target="_blank"
-          >
-            보기
-          </Link>
+          {marketingLink && (
+            <Link
+              href={marketingLink}
+              className="text-frog-600 label-medium hover:underline px-2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              보기
+            </Link>
+          )}
         </div>
         <div className="flex gap-5 justify-end mt-2">
           <BaseButton

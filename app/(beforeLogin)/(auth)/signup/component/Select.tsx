@@ -18,7 +18,7 @@ export default function Select() {
   const { mutate, isPending } = usePostTerms();
   const [checks, setChecks] = useState<Map<number, boolean>>(new Map());
   const { updateField } = useSignupStore();
-  const termsList = data?.terms || [];
+  const termsList = data || [];
 
   const isAllChecked = termsList.every((t) => checks.get(t.termId));
   const isAllRequiredChecked = termsList
