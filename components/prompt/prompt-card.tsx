@@ -3,18 +3,10 @@
 import { Siren, ThumbsUpIcon } from "lucide-react";
 
 import { PromptCardProps } from "@/app/types/type";
+import { stripHtml } from "@/lib/utils";
 
 import { ProfIcon } from "../profile-icon/profile-icon";
 import { BaseButton } from "../shared/button";
-
-function stripHtml(html: string): string {
-  if (typeof window === "undefined") {
-    return html.replace(/<[^>]*>/g, "");
-  }
-  const el = document.createElement("div");
-  el.innerHTML = html;
-  return el.textContent ?? "";
-}
 
 const STYLES = {
   CARD_CONTAINER:
