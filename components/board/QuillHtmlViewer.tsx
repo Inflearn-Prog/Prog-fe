@@ -9,7 +9,7 @@ interface QuillHtmlViewerProps {
   className?: string;
 }
 
-// 상위 컴포넌트: mode에 따라 렌더러 선택
+// 프롬프트/게시글 본문(Quill HTML)을 Shadow DOM으로 격리 렌더링하는 뷰어
 export function QuillHtmlViewer({
   html,
   extraCss = "",
@@ -18,7 +18,7 @@ export function QuillHtmlViewer({
   return <ShadowViewer html={html} extraCss={extraCss} className={className} />;
 }
 
-// 1) Shadow DOM 방식 - 가볍고 스타일 캡슐화 효과
+// Shadow DOM 방식 - 전역 CSS와 격리하여 본문 서식 스타일을 캡슐화
 function ShadowViewer({
   html,
   extraCss,
