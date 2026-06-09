@@ -50,6 +50,9 @@ function ShadowViewer({
       `;
 
       wrapper.className = className ?? "quill-viewer-content";
+      // 평문/마크다운 형태로 저장된 콘텐츠(블록 태그 없음)의 줄바꿈/공백 보존
+      wrapper.style.whiteSpace = "pre-wrap";
+      wrapper.style.wordBreak = "break-word";
       wrapper.innerHTML = sanitized;
 
       // 기존 내용 초기화 후 삽입

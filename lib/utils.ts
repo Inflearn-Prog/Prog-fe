@@ -22,6 +22,26 @@ export function formatRelativeDate(dateString: string) {
   return formatDistanceToNow(date, { addSuffix: true, locale: ko });
 }
 
+const HTML_ENTITIES: Record<string, string> = {
+  nbsp: " ",
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+};
+
 export function stripHtml(html: string) {
-  return html.replace(/<[^>]*>?/gm, "").trim();
+  if (!html) return "";
+  return html
+    .replace(/<[^>]*>?/gm, "")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, n) =>
+      String.fromCodePoint(parseInt(n, 16))
+    )
+    .replace(
+      /&([a-zA-Z]+);/g,
+      (m, name) => HTML_ENTITIES[name.toLowerCase()] ?? m
+    )
+    .trim();
 }
