@@ -62,7 +62,7 @@ export function stripHtml(html: string) {
   return html
     .replace(/<[^>]*>?/gm, "")
     .replace(/&#(\d+);/g, (_, n) => safeFromCodePoint(Number(n)))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, n) =>
+    .replace(/&#[xX]([0-9a-fA-F]+);/g, (_, n) =>
       safeFromCodePoint(parseInt(n, 16))
     )
     .replace(
