@@ -46,7 +46,7 @@ export default function MypageActivitySection() {
   };
 
   const handleCardClick = (id: number) => {
-    router.push(`/prompts/${id}`);
+    router.push(`/prompt/${id}`);
   };
 
   // 현재 활성화된 데이터와 로딩 상태 결정

@@ -71,3 +71,18 @@ export function stripHtml(html: string) {
     )
     .trim();
 }
+
+export const clearAuthCookiesClientSide = () => {
+  const cookiesToClear = [
+    "next-auth.session-token",
+    "next-auth.csrf-token",
+    "next-auth.callback-url",
+    "__Secure-next-auth.session-token",
+    "__Host-next-auth.csrf-token",
+  ];
+
+  cookiesToClear.forEach((cookieName) => {
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+  });
+};

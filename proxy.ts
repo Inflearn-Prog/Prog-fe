@@ -11,6 +11,10 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
+  if (pathname.includes("users")) {
+    return NextResponse.next();
+  }
+
   const bypassAuth = process.env.NEXT_PUBLIC_BYPASS_AUTH === "true";
   const isSignIn = bypassAuth ? true : !!session;
   const isNewUser = bypassAuth ? false : session?.isNewUser;
@@ -59,8 +63,8 @@ export default auth((req) => {
     }
     const isCompleted = regStatus === "ONBOARDING_COMPLETED";
     if (isCompleted) {
-      if (isAuthRoute || pathname === "/") {
-        return NextResponse.redirect(new URL(ROUTES.rank.ROOT, nextUrl.origin));
+      if (isAuthRoute) {
+        return NextResponse.redirect(new URL("/", nextUrl.origin));
       }
     }
   }
