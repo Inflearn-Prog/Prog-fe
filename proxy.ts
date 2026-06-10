@@ -11,9 +11,7 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  if (pathname.includes("users")) {
-    return NextResponse.next();
-  }
+  const isUsersRoute = /^\/users(\/|$)/.test(pathname);
 
   const bypassAuth = process.env.NEXT_PUBLIC_BYPASS_AUTH === "true";
   const isSignIn = bypassAuth ? true : !!session;
@@ -29,42 +27,44 @@ export default auth((req) => {
     pathname === ROUTES.auth.SIGNIN || pathname === ROUTES.auth.SIGNUP;
 
   // 로그인을 안 했는데 보호된 페이지(마이페이지)에 접근한 경우
-  if (!isSignIn && isProtectedRoute) {
-    const signInUrl = new URL(ROUTES.auth.SIGNIN, nextUrl.origin);
-    signInUrl.searchParams.set("callbackUrl", pathname + nextUrl.search);
-    return NextResponse.redirect(signInUrl);
-  }
+  if (!isUsersRoute) {
+    if (!isSignIn && isProtectedRoute) {
+      const signInUrl = new URL(ROUTES.auth.SIGNIN, nextUrl.origin);
+      signInUrl.searchParams.set("callbackUrl", pathname + nextUrl.search);
+      return NextResponse.redirect(signInUrl);
+    }
 
-  const statusToStepMap: Record<string, string> = {
-    SOCIAL_LOGIN_ONLY: "select",
-    TERMS_AGREED: "pick-option",
-    NICKNAME_REGISTERED: "detail", // DB 상태 기준 시작점
-  };
+    const statusToStepMap: Record<string, string> = {
+      SOCIAL_LOGIN_ONLY: "select",
+      TERMS_AGREED: "pick-option",
+      NICKNAME_REGISTERED: "detail", // DB 상태 기준 시작점
+    };
 
-  const targetStep = statusToStepMap[regStatus as string];
-  const currentStep = nextUrl.searchParams.get("step");
+    const targetStep = statusToStepMap[regStatus as string];
+    const currentStep = nextUrl.searchParams.get("step");
 
-  if (isSignIn) {
-    if (isNewUser) {
-      if (currentStep !== "complete") {
-        if (regStatus === "NICKNAME_REGISTERED") {
-          const allowedFinalSteps = ["detail", "preview", "complete"];
-          if (!allowedFinalSteps.includes(currentStep as string)) {
+    if (isSignIn) {
+      if (isNewUser) {
+        if (currentStep !== "complete") {
+          if (regStatus === "NICKNAME_REGISTERED") {
+            const allowedFinalSteps = ["detail", "preview", "complete"];
+            if (!allowedFinalSteps.includes(currentStep as string)) {
+              const url = new URL("/signup", nextUrl.origin);
+              url.searchParams.set("step", "detail");
+              return NextResponse.redirect(url);
+            }
+          } else if (targetStep && currentStep !== targetStep) {
             const url = new URL("/signup", nextUrl.origin);
-            url.searchParams.set("step", "detail");
+            url.searchParams.set("step", targetStep);
             return NextResponse.redirect(url);
           }
-        } else if (targetStep && currentStep !== targetStep) {
-          const url = new URL("/signup", nextUrl.origin);
-          url.searchParams.set("step", targetStep);
-          return NextResponse.redirect(url);
         }
       }
-    }
-    const isCompleted = regStatus === "ONBOARDING_COMPLETED";
-    if (isCompleted) {
-      if (isAuthRoute) {
-        return NextResponse.redirect(new URL("/", nextUrl.origin));
+      const isCompleted = regStatus === "ONBOARDING_COMPLETED";
+      if (isCompleted) {
+        if (isAuthRoute) {
+          return NextResponse.redirect(new URL("/", nextUrl.origin));
+        }
       }
     }
   }

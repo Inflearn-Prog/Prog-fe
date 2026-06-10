@@ -79,6 +79,7 @@ export const clearAuthCookiesClientSide = () => {
     "next-auth.callback-url",
     "__Secure-next-auth.session-token",
     "__Host-next-auth.csrf-token",
+    "__Secure-next-auth.callback-url",
   ];
 
   cookiesToClear.forEach((cookieName) => {
