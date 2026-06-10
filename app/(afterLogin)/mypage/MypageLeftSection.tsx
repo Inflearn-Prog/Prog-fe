@@ -5,11 +5,11 @@ import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 import { AuthProvider } from "@/app/(beforeLogin)/(auth)/constant";
-import { clearAuthCookies } from "@/app/actions/auth-actions";
 import UserProfile from "@/components/mypage/user-profile";
 import { BaseButton } from "@/components/shared/button";
 import { useUserProfile } from "@/hooks/use-mypage";
 import { ROUTES } from "@/lib/routes";
+import { clearAuthCookiesClientSide } from "@/lib/utils";
 import { deleteUserAccount, postLogout } from "@/queries/api/auth";
 
 import MypageLeftSkeleton from "./MypageLeftSkeleton";
@@ -52,16 +52,11 @@ export default function MypageLeftSection() {
       });
       await signOut({ redirect: false });
 
-      try {
-        await clearAuthCookies();
-      } catch (cookieError) {
-        console.warn("Failed to clear auth cookies:", cookieError);
-      }
-      queryClient.clear();
+      clearAuthCookiesClientSide();
 
-      toast.success("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
-      router.push(ROUTES.rank.ROOT);
-      router.refresh();
+      queryClient.clear();
+      alert("회원 탈퇴가 완료되었습니다.");
+      window.location.href = "/";
     } catch (error) {
       console.error("Withdrawal error:", error);
       toast.error("탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해주세요.");

@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { BaseButton } from "@/components/shared/button";
 import { SectionHeader } from "@/components/shared/section-header";
 import { usePostComplete } from "@/hooks/use-onboarding";
-import { ROUTES } from "@/lib/routes";
 import { STATIC_IMAGES } from "@/lib/static-image";
 
 export default function Complete() {
@@ -25,7 +24,7 @@ export default function Complete() {
             accessToken: session?.accessToken,
           },
         });
-        router.push(ROUTES.rank.ROOT);
+        router.push("/");
         toast.success("회원가입이 완료되었습니다!");
       },
       onError: () => {
