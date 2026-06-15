@@ -22,10 +22,10 @@ export const ROUTES = {
     SNS_MARKETING: "/rank?category=sns_marketing",
   },
   /**
-   * 외부 노션 링크 이동
+   * 사내 정적 FAQ 페이지 (public/terms/faq.html) — 새 탭으로 연다.
    */
   question: {
-    ROOT: "https://grass-course-656.notion.site/FAQ-3140036df24080089babe3feb0d69df8",
+    ROOT: "/terms/faq.html",
   },
   search: {
     ROOT: "/search",

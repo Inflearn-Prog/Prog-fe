@@ -1,4 +1,5 @@
 import { Term } from "@/components/terms/types";
+import { toTermLink } from "@/lib/constants/terms";
 import { ApiResponse } from "@/lib/fetcher";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
@@ -33,7 +34,12 @@ export async function fetchTerms() {
     throw new Error("약관 목록을 불러오는데 실패했습니다.");
   }
   const result = (await res.json()) as ApiResponse<{ terms: Term[] }>;
-  return result.data.terms;
+  // 약관 본문은 사내 정적 페이지(public/terms/*.html)로 서빙한다. link은 FE가 소유하며
+  // termId 기준으로 생성한다. 백엔드 응답의 link은 사용하지 않는다(제거 예정).
+  return result.data.terms.map((term) => ({
+    ...term,
+    link: toTermLink(term.termId),
+  }));
 }
 
 export async function postTerms(termIds: number[], token: string) {

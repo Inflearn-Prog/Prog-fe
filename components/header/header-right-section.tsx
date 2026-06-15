@@ -118,7 +118,11 @@ function HeaderMoreButton() {
           <div className="flex flex-col">
             <LinkItem href={ROUTES.rank.ROOT} label="랭킹" />
             <LinkItem href={ROUTES.community.ROOT} label="커뮤니티" />
-            <LinkItem href={ROUTES.question.ROOT} label="자주 묻는 질문" />
+            <LinkItem
+              href={ROUTES.question.ROOT}
+              label="자주 묻는 질문"
+              newTab
+            />
             {isLogin && (
               <LinkItem href={ROUTES.mypage.ROOT} label="마이페이지" />
             )}
@@ -129,10 +133,22 @@ function HeaderMoreButton() {
   );
 }
 
-function LinkItem({ href, label }: { href: string; label: string }) {
+function LinkItem({
+  href,
+  label,
+  newTab,
+}: {
+  href: string;
+  label: string;
+  newTab?: boolean;
+}) {
   return (
     <DrawerClose asChild>
-      <Link className="h-12 flex items-center justify-between" href={href}>
+      <Link
+        className="h-12 flex items-center justify-between"
+        href={href}
+        {...(newTab && { target: "_blank", rel: "noopener noreferrer" })}
+      >
         <span className="label-medium">{label}</span>
         <ChevronRightIcon
           className="size-5"
