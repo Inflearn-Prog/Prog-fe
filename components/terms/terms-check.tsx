@@ -68,7 +68,7 @@ export function ProgTerms({
             checked={!!checks.get(term.termId)}
             onChange={(checked) => onSingleCheck(term.termId, checked)}
             link={term.link}
-            showLink={term.hasDetails}
+            showLink={!!term.link}
           />
         ))}
       </div>

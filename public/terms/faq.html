@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자주 묻는 질문 (FAQ) | prog</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, "Noto Sans KR", sans-serif;
+            background: #f8f9fa;
+            color: #222;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 24px 80px;
+            min-height: 100vh;
+            background: #fff;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0;
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-top: 12px;
+            margin-bottom: 48px;
+        }
+
+        .top-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #4338ca;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        .faq-item {
+            margin-bottom: 32px;
+        }
+
+        .question {
+            background: #111827;
+            color: white;
+            padding: 20px 24px;
+            border-radius: 14px 14px 0 0;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .answer {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            padding: 24px;
+            border-radius: 0 0 14px 14px;
+            color: #374151;
+        }
+
+        .q-label {
+            color: #93c5fd;
+            font-weight: 800;
+            margin-right: 8px;
+        }
+
+        .a-label {
+            display: inline-block;
+            margin-bottom: 12px;
+            color: #2563eb;
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        ul {
+            margin-top: 12px;
+            margin-bottom: 12px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .notice {
+            margin-top: 12px;
+            padding: 12px 16px;
+            border-left: 4px solid #2563eb;
+            background: #eff6ff;
+            border-radius: 8px;
+        }
+
+        strong {
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px 60px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .question {
+                font-size: 16px;
+                padding: 18px;
+            }
+
+            .answer {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<main class="container">
+
+    <h1>자주 묻는 질문 (FAQ)</h1>
+    <p class="subtitle">
+        prog 이용자들이 가장 많이 묻는 질문을 정리했습니다.
+    </p>
+
+    <div class="top-badge">TOP 5 FAQ</div>
+
+    <!-- FAQ 1 -->
+    <div class="faq-item">
+        <div class="question">
+            <span class="q-label">Q1.</span>
+            로그인하지 않아도 기능을 사용할 수 있나요?
+        </div>
+
+        <div class="answer">
+            <div class="a-label">A.</div>
+
+            <p>
+                네, 로그인하지 않아도 프롬프트 열람 및 복사 기능은 자유롭게 이용하실 수 있습니다.
+            </p>
+
+            <p>다만 아래 기능은 로그인이 필요합니다.</p>
+
+            <ul>
+                <li>좋아요(평가)</li>
+                <li>댓글 작성</li>
+                <li>프롬프트 업로드</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- FAQ 2 -->
+    <div class="faq-item">
+        <div class="question">
+            <span class="q-label">Q2.</span>
+            프롬프트는 어떻게 복사하나요?
+        </div>
+
+        <div class="answer">
+            <div class="a-label">A.</div>
+
+            <p>
+                프롬프트 상세 페이지 우측 상단의
+                <strong>「복사하기」</strong>
+                버튼을 클릭하면 해당 프롬프트 전체가 즉시 클립보드에 저장됩니다.
+            </p>
+        </div>
+    </div>
+
+    <!-- FAQ 3 -->
+    <div class="faq-item">
+        <div class="question">
+            <span class="q-label">Q3.</span>
+            좋아요는 랭킹에 어떻게 반영되나요?
+        </div>
+
+        <div class="answer">
+            <div class="a-label">A.</div>
+
+            <p>
+                좋아요는 프롬프트 랭킹을 결정하는 핵심 지표입니다.
+            </p>
+
+            <ul>
+                <li>하나의 계정은 프롬프트당 1회만 좋아요를 누를 수 있습니다.</li>
+                <li>좋아요 수가 많을수록 상위 랭킹에 노출됩니다.</li>
+            </ul>
+
+            <div class="notice">
+                좋아요 수 ↑ → 인기 순위 상단 노출
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ 4 -->
+    <div class="faq-item">
+        <div class="question">
+            <span class="q-label">Q4.</span>
+            랭킹은 어떤 기준으로 정해지나요? 댓글도 반영되나요?
+        </div>
+
+        <div class="answer">
+            <div class="a-label">A.</div>
+
+            <p>
+                MVP 기준 랭킹은 아래 요소를 중심으로 산정됩니다.
+            </p>
+
+            <ul>
+                <li><strong>좋아요 수 (가중치 최상)</strong></li>
+            </ul>
+
+            <p>
+                조회수·댓글 등은 참고 정보로만 활용되며,
+                현재 랭킹 점수에는 직접 반영되지 않습니다.
+            </p>
+
+            <div class="notice">
+                ❗ 댓글은 품질 개선을 위한 정성적 피드백 영역이며,
+                현재 랭킹 알고리즘에는 포함되지 않습니다.
+            </div>
+
+            <p>
+                랭킹 산정 방식은 서비스 운영 정책에 따라 향후 변경될 수 있습니다.
+            </p>
+        </div>
+    </div>
+
+    <!-- FAQ 5 -->
+    <div class="faq-item">
+        <div class="question">
+            <span class="q-label">Q5.</span>
+            프롬프트는 누구나 업로드할 수 있나요?
+        </div>
+
+        <div class="answer">
+            <div class="a-label">A.</div>
+
+            <p>
+                네, 로그인한 모든 사용자는 프롬프트를 업로드할 수 있습니다.
+            </p>
+
+            <p>
+                다만 서비스 품질 유지를 위해 아래 정보는 필수 입력 항목입니다.
+            </p>
+
+            <ul>
+                <li>프롬프트 제목</li>
+                <li>프롬프트 본문 (Copy-ready)</li>
+                <li>설명 (프롬프트의 목적 및 사용 상황)</li>
+                <li>직군 또는 유형 태그</li>
+            </ul>
+
+            <p>
+                예시 Input / Output 정보는 선택 사항입니다.
+            </p>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>
