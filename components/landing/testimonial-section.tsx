@@ -123,7 +123,7 @@ function TestimonialCard({
           <span className="text-[14px] text-gray-900 font-bold leading-none mb-1">
             {card.name}
           </span>
-          <span className="text-[12px] text-gray-400 leading-none">
+          <span className="text-[12px] text-gray-700 leading-none">
             {card.role}
           </span>
         </div>

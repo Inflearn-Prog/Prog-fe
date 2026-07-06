@@ -63,7 +63,7 @@ function HeaderSearchMobile() {
     );
   }
   return (
-    <button onClick={() => setIsSearchOpen(true)}>
+    <button onClick={() => setIsSearchOpen(true)} aria-label="검색창 열기">
       <SearchIcon width={36} height={36} className="size-9" />
     </button>
   );
@@ -78,7 +78,7 @@ function HeaderMoreButton() {
   return (
     <Drawer direction="right">
       <DrawerTrigger asChild>
-        <button className="size-9">
+        <button className="size-9" aria-label="전체 메뉴 열기">
           <MenuIcon className="size-9" />
         </button>
       </DrawerTrigger>
@@ -87,7 +87,7 @@ function HeaderMoreButton() {
         <DrawerHeader className="flex items-center justify-between flex-row h-15 px-5 border-b">
           <DrawerTitle className="heading-small">전체 메뉴</DrawerTitle>
           <DrawerClose asChild>
-            <button>
+            <button aria-label="전체 메뉴 닫기">
               <XIcon width={24} height={24} className="size-6" />
             </button>
           </DrawerClose>

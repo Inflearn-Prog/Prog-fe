@@ -46,3 +46,7 @@ storybook-static
 
 .claude
 CLAUDE.md
+
+# lighthouse & cache
+lighthouse-report*.json
+.eslintcache
