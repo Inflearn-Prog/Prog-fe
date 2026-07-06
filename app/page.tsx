@@ -1,12 +1,29 @@
+import dynamic from "next/dynamic";
+
 import { Header } from "@/components/header/header";
-import {
-  ComparisonSection,
-  CtaSection,
-  HeroSection,
-  MobileBottomCta,
-  StatsSection,
-  TestimonialSection,
-} from "@/components/landing";
+import { HeroSection, StatsSection } from "@/components/landing";
+
+const TestimonialSection = dynamic(() =>
+  import("@/components/landing/testimonial-section").then(
+    (mod) => mod.TestimonialSection
+  )
+);
+
+const ComparisonSection = dynamic(() =>
+  import("@/components/landing/comparison-section").then(
+    (mod) => mod.ComparisonSection
+  )
+);
+
+const CtaSection = dynamic(() =>
+  import("@/components/landing/cta-section").then((mod) => mod.CtaSection)
+);
+
+const MobileBottomCta = dynamic(() =>
+  import("@/components/landing/mobile-bottom-cta").then(
+    (mod) => mod.MobileBottomCta
+  )
+);
 
 export default function Home() {
   return (
