@@ -1,7 +1,10 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { useState } from "react";
+
+import { promptQueries } from "@/queries/options/prompt-query";
 
 import { PromptStatus } from "../types";
 
@@ -14,15 +17,6 @@ interface PromptFiltersProps {
   onStatusFilter: (value: PromptStatus | "") => void;
 }
 
-const CATEGORY_OPTIONS = [
-  { value: "", label: "카테고리" },
-  { value: "1", label: "개발" },
-  { value: "2", label: "마케팅/콘텐츠" },
-  { value: "3", label: "서비스기획" },
-  { value: "4", label: "인사/총무" },
-  { value: "5", label: "디자인" },
-] as const;
-
 export function PromptFilters({
   keyword,
   categoryFilter,
@@ -32,6 +26,7 @@ export function PromptFilters({
   onStatusFilter,
 }: PromptFiltersProps) {
   const [inputValue, setInputValue] = useState(keyword);
+  const { data: categories = [] } = useQuery(promptQueries.categories());
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -58,9 +53,10 @@ export function PromptFilters({
         onChange={(e) => onCategoryFilter(e.target.value)}
         className="h-10 w-[160px] rounded-md border border-gray-200 bg-white px-3 text-sm outline-none focus:border-frog-600"
       >
-        {CATEGORY_OPTIONS.map(({ value, label }) => (
-          <option key={value} value={value}>
-            {label}
+        <option value="">카테고리</option>
+        {categories.map((c) => (
+          <option key={c.categoryId} value={String(c.categoryId)}>
+            {c.name}
           </option>
         ))}
       </select>

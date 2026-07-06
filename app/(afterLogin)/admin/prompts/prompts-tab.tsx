@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { toasts } from "@/components/shared/toast";
 import { Button } from "@/components/ui/button";
@@ -18,27 +18,11 @@ import {
   bulkUpdatePrompts,
   getAdminPrompts,
 } from "@/queries/api/admin";
+import { promptQueries } from "@/queries/options/prompt-query";
 
 import { PromptStatus } from "../types";
 import { formatDate } from "../utils";
 import { PromptFilters } from "./prompt-filters";
-
-const CATEGORY_OPTIONS = [
-  { value: "", label: "카테고리 변경" },
-  { value: "1", label: "개발" },
-  { value: "2", label: "마케팅/콘텐츠" },
-  { value: "3", label: "서비스기획" },
-  { value: "4", label: "인사/총무" },
-  { value: "5", label: "디자인" },
-] as const;
-
-const CATEGORY_NAME_TO_ID: Record<string, string> = {
-  개발: "1",
-  "마케팅/콘텐츠": "2",
-  서비스기획: "3",
-  "인사/총무": "4",
-  디자인: "5",
-};
 
 const STATUS_OPTIONS = [
   { value: "", label: "상태 변경" },
@@ -55,6 +39,14 @@ export function PromptsTab() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [bulkCategory, setBulkCategory] = useState("");
   const [bulkStatus, setBulkStatus] = useState("");
+
+  // 카테고리 진실원은 서버(/categories). 하드코딩 배열 대신 API로 통일.
+  const { data: categories = [] } = useQuery(promptQueries.categories());
+  // admin/prompts 응답은 categoryName(이름)만 주므로 이름 → categoryId 역매핑.
+  const categoryNameToId = useMemo(
+    () => new Map(categories.map((c) => [c.name, c.categoryId])),
+    [categories]
+  );
 
   const { data, isLoading } = useQuery({
     queryKey: [
@@ -202,9 +194,10 @@ export function PromptsTab() {
               disabled={isPending}
               className="h-10 w-[160px] rounded-md border border-gray-200 bg-white px-3 text-sm outline-none focus:border-frog-600"
             >
-              {CATEGORY_OPTIONS.map(({ value, label }) => (
-                <option key={value} value={value}>
-                  {label}
+              <option value="">카테고리 변경</option>
+              {categories.map((c) => (
+                <option key={c.categoryId} value={String(c.categoryId)}>
+                  {c.name}
                 </option>
               ))}
             </select>
@@ -300,19 +293,27 @@ export function PromptsTab() {
                   </TableCell>
                   <TableCell className="text-center">
                     <select
-                      value={CATEGORY_NAME_TO_ID[prompt.categoryName] ?? ""}
+                      value={String(
+                        categoryNameToId.get(prompt.categoryName) ?? ""
+                      )}
                       onChange={(e) =>
                         handleInlineCategory(prompt.promptId, e.target.value)
                       }
                       className="rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:border-frog-600"
                     >
-                      {CATEGORY_OPTIONS.filter((o) => o.value !== "").map(
-                        ({ value, label }) => (
-                          <option key={value} value={value}>
-                            {label}
-                          </option>
-                        )
+                      {/* categoryName이 현재 목록과 매칭되지 않으면(카테고리 변경·삭제
+                          등) controlled value("")에 대응하는 option이 없어 첫 항목이
+                          잘못 표시된다. 원래 이름을 비활성 placeholder로 노출한다. */}
+                      {!categoryNameToId.has(prompt.categoryName) && (
+                        <option value="" disabled>
+                          {prompt.categoryName || "카테고리 선택"}
+                        </option>
                       )}
+                      {categories.map((c) => (
+                        <option key={c.categoryId} value={String(c.categoryId)}>
+                          {c.name}
+                        </option>
+                      ))}
                     </select>
                   </TableCell>
                   <TableCell className="text-center">
