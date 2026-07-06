@@ -301,6 +301,14 @@ export function PromptsTab() {
                       }
                       className="rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:border-frog-600"
                     >
+                      {/* categoryName이 현재 목록과 매칭되지 않으면(카테고리 변경·삭제
+                          등) controlled value("")에 대응하는 option이 없어 첫 항목이
+                          잘못 표시된다. 원래 이름을 비활성 placeholder로 노출한다. */}
+                      {!categoryNameToId.has(prompt.categoryName) && (
+                        <option value="" disabled>
+                          {prompt.categoryName || "카테고리 선택"}
+                        </option>
+                      )}
                       {categories.map((c) => (
                         <option key={c.categoryId} value={String(c.categoryId)}>
                           {c.name}
