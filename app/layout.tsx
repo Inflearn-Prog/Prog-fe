@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { AuthWatcher } from "@/components/auth/auth-watcher";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { SITE_URL } from "@/lib/site";
 
 import AuthProvider from "./providers/auth-provider";
 import QueryProvider from "./providers/queryProvider";
@@ -19,6 +20,7 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "PROG - 현직자 프롬프트 공유 커뮤니티",
   description:
     "현직자들이 실제 사용한 프롬프트를 공유하는 커뮤니티. 자소서 작성부터 합격까지, PROG와 함께 도약하세요.",
