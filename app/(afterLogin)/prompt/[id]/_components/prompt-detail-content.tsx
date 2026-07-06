@@ -34,11 +34,7 @@ export function PromptDetailContent({ id, user }: PromptDetailContentProps) {
       <PostDetail promptId={id} prompt={prompt} user={user} />
 
       {user ? (
-        <CommentForm
-          promptId={id}
-          userIcon={null}
-          userName={nickname}
-        />
+        <CommentForm promptId={id} userIcon={null} userName={nickname} />
       ) : (
         <p className="body-medium text-gray-500 text-center py-4">
           로그인 후 댓글을 작성할 수 있습니다.

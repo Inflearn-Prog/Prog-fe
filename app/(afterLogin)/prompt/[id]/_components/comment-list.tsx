@@ -64,9 +64,7 @@ export function CommentList({
         (repliesByParent.get(b.commentId)?.length ?? 0) -
         (repliesByParent.get(a.commentId)?.length ?? 0);
       if (replyDiff !== 0) return replyDiff;
-      return (
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
   }, [sortType, topLevelComments, repliesByParent]);
 
