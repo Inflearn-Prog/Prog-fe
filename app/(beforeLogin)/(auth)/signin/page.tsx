@@ -15,7 +15,7 @@ export default function SignInPage() {
     try {
       setIsLoading(true);
       await signIn(provider, { callbackUrl: "/auth-callback" });
-    } catch (error) {
+    } catch {
       alert("로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
     } finally {
       setIsLoading(false);

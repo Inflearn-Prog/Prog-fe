@@ -73,8 +73,7 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
   const queryClient = useQueryClient();
   const { mutate: reportMutate } = useReportMutation();
 
-  const isOwner =
-    !!user?.id && String(user.id) === String(prompt.userId);
+  const isOwner = !!user?.id && String(user.id) === String(prompt.userId);
 
   const categoryLabel = prompt.category.name;
 
