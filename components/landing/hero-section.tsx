@@ -67,7 +67,7 @@ export function HeroSection() {
           </BaseButton>
         </div>
 
-        <p className="caption-medium text-gray-400 mt-4">
+        <p className="caption-medium text-gray-700 mt-4">
           가입 없이 프롬프트 탐색이 가능해요
         </p>
       </div>

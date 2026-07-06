@@ -33,7 +33,7 @@ export function ComparisonSection() {
                 <h3 className="text-[22px] font-bold text-gray-800 tracking-tight">
                   기존 방식
                 </h3>
-                <p className="text-[14px] text-gray-400">
+                <p className="text-[14px] text-gray-700">
                   막연하고 고통스러운 작업 시간
                 </p>
               </div>
@@ -49,7 +49,7 @@ export function ComparisonSection() {
                     <span className="text-[16px] font-bold text-gray-700 tracking-tight">
                       {item.title}
                     </span>
-                    <span className="text-[14px] text-gray-400 leading-relaxed">
+                    <span className="text-[14px] text-gray-700 leading-relaxed">
                       {item.description}
                     </span>
                   </div>
@@ -66,7 +66,7 @@ export function ComparisonSection() {
                 <h3 className="text-[22px] font-bold text-frog-600 tracking-tight">
                   PROG와 함께 도약하기
                 </h3>
-                <p className="text-[14px] text-frog-400">
+                <p className="text-[14px] text-frog-800">
                   데이터 기반의 논리적이고 빠른 결과
                 </p>
               </div>
@@ -82,7 +82,7 @@ export function ComparisonSection() {
                     <span className="text-[16px] font-bold text-frog-700 tracking-tight">
                       {item.title}
                     </span>
-                    <span className="text-[14px] text-frog-500/70 leading-relaxed">
+                    <span className="text-[14px] text-frog-800 leading-relaxed">
                       {item.description}
                     </span>
                   </div>
