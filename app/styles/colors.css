@@ -1,6 +1,11 @@
 @theme {
   --white: #fff;
   --black: #000;
+  --color-success: #04B014;
+  --color-warning: #FFAA00;
+  --color-error: #DC0000;
+  --color-kakao: #F9DB00;
+  --color-naver: #01C73C;
 
   /* Colors (gray) */
   --color-gray-*: initial;
@@ -31,6 +36,7 @@
   --color-frog-900: #0c1847;
   --color-frog-950: #00001a;
 }
+
 
 .bg-prog-100 {
   background-color: var(--color-frog-100);

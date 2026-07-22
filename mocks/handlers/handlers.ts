@@ -1,0 +1,17 @@
+import { authHandlers } from "./auth-handlers";
+import { mswHandlers } from "./msw-test";
+import { mypageHandlers } from "./mypage-handlers";
+import { nicknameHandlers } from "./nickname-handlers";
+import { onboardingHandlers } from "./onboarding-handlers";
+import { promptListHandlers } from "./prompt-list-handlers";
+import { termsHandlers } from "./terms-handlers";
+
+export const handlers = [
+  ...mswHandlers,
+  ...termsHandlers,
+  ...onboardingHandlers,
+  ...authHandlers,
+  ...nicknameHandlers,
+  ...mypageHandlers,
+  ...promptListHandlers,
+];

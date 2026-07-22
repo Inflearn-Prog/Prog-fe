@@ -16,20 +16,14 @@ export const useCounter = create<Counter>((set) => ({
     try {
       set({ count: val });
     } catch (error) {
-      console.error(
-        "카운터 값을 설정하는 중 에러 발생:",
-        error
-      );
+      console.error("카운터 값을 설정하는 중 에러 발생:", error);
     }
   },
   resetCount: () => {
     try {
       set({ count: INITIAL_COUNTER_VALUE });
     } catch (error) {
-      console.error(
-        "카운터 값을 리셋하는 중 에러 발생:",
-        error
-      );
+      console.error("카운터 값을 리셋하는 중 에러 발생:", error);
     }
   },
 }));
