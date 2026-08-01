@@ -82,7 +82,7 @@ export default auth((req) => {
     `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`, // 필요시 스타일에도 'nonce-${nonce}' 교체 가능
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https:",
-    `connect-src 'self' ${process.env.NEXT_PUBLIC_BACKEND_API_URL || ""}`,
+    `connect-src 'self' ${process.env.NEXT_PUBLIC_BACKEND_API_URL || ""} https://www.clarity.ms https://*.clarity.ms`,
     "frame-ancestors 'none'",
   ].join("; ");
 
