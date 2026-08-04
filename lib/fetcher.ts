@@ -1,5 +1,6 @@
 import ky from "ky";
 import { NextRequest } from "next/server";
+import type { Session } from "next-auth";
 
 export interface ApiResponse<T> {
   code: string;
@@ -42,6 +43,22 @@ let clientInMemoryToken: string | null = null;
 
 export const setFetcherToken = (token: string | null) => {
   clientInMemoryToken = token;
+};
+
+// 토큰이 만료되면 화면에 걸린 요청들이 한꺼번에 401 을 받는다. 각자 세션을 갱신하면
+// BE 가 두 번째부터를 리프레시 토큰 재사용으로 보고 전 기기 토큰을 폐기하므로,
+// 동시에 들어온 갱신은 한 번으로 묶는다.
+let sessionRefresh: Promise<Session | null> | null = null;
+
+const refreshSessionOnce = () => {
+  if (!sessionRefresh) {
+    sessionRefresh = import("next-auth/react")
+      .then(({ getSession }) => getSession())
+      .finally(() => {
+        sessionRefresh = null;
+      });
+  }
+  return sessionRefresh;
 };
 
 export const fetcher = ky.create({
@@ -126,17 +143,10 @@ export const fetcher = ky.create({
             ) {
               if (typeof window !== "undefined") {
                 try {
-                  const { getSession, signOut } =
-                    await import("next-auth/react");
-
-                  const event = new MessageEvent("message", {
-                    data: { trigger: "getSession", event: "session" },
-                  });
-                  window.dispatchEvent(event);
-
-                  const newSession = await getSession();
+                  const newSession = await refreshSessionOnce();
 
                   if (newSession?.error === "AccessTokenExpired") {
+                    const { signOut } = await import("next-auth/react");
                     await signOut({ callbackUrl: "/signin" });
                   } else if (newSession?.accessToken) {
                     setFetcherToken(newSession.accessToken);

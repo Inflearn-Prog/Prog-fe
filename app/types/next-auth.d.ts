@@ -25,9 +25,10 @@ declare module "next-auth" {
     email?: string;
   }
 
+  // 이 인터페이스의 값은 /api/auth/session 으로 브라우저에 그대로 나간다.
+  // refreshToken 을 다시 넣지 말 것 — 14일짜리 토큰이 JS 에 노출된다.
   interface Session {
     accessToken?: string;
-    refreshToken?: string;
     isNewUser?: boolean; // 가입 페이지 리다이렉트 판단용
     registrationStatus?: string;
     provider?: string; // 가입 시 백엔드 전달용
@@ -35,7 +36,6 @@ declare module "next-auth" {
     error?: string;
     user: {
       id?: string;
-      accessToken?: string;
     } & DefaultSession["user"];
   }
 }

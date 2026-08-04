@@ -5,6 +5,51 @@ import { JWT } from "next-auth/jwt";
 import KakaoProvider from "next-auth/providers/kakao";
 import NaverProvider from "next-auth/providers/naver";
 
+const REFRESH_TOKEN_COOKIE = "refresh_token";
+
+// BE 의 jwt.refresh-expiration(14일)과 맞춘다.
+const REFRESH_TOKEN_MAX_AGE = 14 * 24 * 60 * 60;
+
+/**
+ * BE 는 refresh_token 을 응답 바디가 아니라 Set-Cookie 로만 내려준다(@JsonIgnore).
+ * 이 요청을 보낸 주체가 브라우저가 아니라 Next 서버라서 쿠키가 자동 저장되지 않으므로 직접 꺼낸다.
+ */
+function readRefreshTokenFromResponse(response: Response): string | null {
+  const setCookies = response.headers.getSetCookie?.() ?? [];
+
+  for (const cookie of setCookies) {
+    if (!cookie.startsWith(`${REFRESH_TOKEN_COOKIE}=`)) continue;
+
+    const firstSegment = cookie.split(";")[0];
+    const eqIdx = firstSegment.indexOf("=");
+    const value = eqIdx >= 0 ? firstSegment.slice(eqIdx + 1) : "";
+
+    if (value) return value;
+  }
+
+  return null;
+}
+
+/**
+ * 콜백은 쿠키를 쓸 수 없는 컨텍스트(서버 컴포넌트·미들웨어)에서도 돈다.
+ * 그곳에서는 조용히 실패하고 false 를 준다. 호출부가 이어갈지 미룰지 판단한다.
+ */
+async function persistRefreshToken(value: string): Promise<boolean> {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set(REFRESH_TOKEN_COOKIE, value, {
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: REFRESH_TOKEN_MAX_AGE,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export const { handlers, auth, signIn, signOut, update } = NextAuth({
   providers: [
     KakaoProvider({
@@ -48,59 +93,28 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
 
         const resData = await response.json();
         if (resData.success) {
-          const { isNewUser, accessToken, refreshToken, registrationStatus } =
-            resData.data;
+          const { isNewUser, accessToken, registrationStatus } = resData.data;
 
-          const cookieStore = await cookies();
-          cookieStore.set("accessToken", accessToken, {
-            path: "/",
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 30 * 24 * 60 * 60, // 30일
-          });
+          // 1) BE 가 @JsonIgnore 를 떼면 바디로 내려온다.
+          // 2) 지금은 Set-Cookie 로만 오고, 이 요청은 Next 서버가 보낸 것이라 자동 저장되지 않는다.
+          const refreshToken =
+            (resData.data.refreshToken as string | undefined) ??
+            readRefreshTokenFromResponse(response);
 
-          // 1) 바디에 refreshToken이 있으면 그대로 저장 (BE가 @JsonIgnore를 제거한 경우)
           if (refreshToken) {
-            cookieStore.set("refresh_token", refreshToken, {
-              path: "/",
-              httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
-              sameSite: "lax",
-              maxAge: 30 * 24 * 60 * 60,
-            });
+            await persistRefreshToken(refreshToken);
           }
 
-          // 2) 바디에 없으면 Set-Cookie 헤더에서 파싱 (server-to-server fetch이므로 수동 처리 필요)
-          //    BE의 @JsonIgnore로 바디에서 제외되어도, Set-Cookie로는 내려오므로 여기서 읽어 저장
-          let resolvedRefreshToken = refreshToken;
-          if (!resolvedRefreshToken) {
-            const setCookieHeader = response.headers.getSetCookie?.();
-            if (setCookieHeader) {
-              for (const cookie of setCookieHeader) {
-                if (cookie.startsWith("refresh_token=")) {
-                  const firstSegment = cookie.split(";")[0];
-                  const eqIdx = firstSegment.indexOf("=");
-                  const refreshTokenValue =
-                    eqIdx >= 0 ? firstSegment.slice(eqIdx + 1) : "";
-                  if (refreshTokenValue) {
-                    resolvedRefreshToken = refreshTokenValue;
-                    cookieStore.set("refresh_token", refreshTokenValue, {
-                      httpOnly: true,
-                      secure: process.env.NODE_ENV === "production",
-                      sameSite: "lax",
-                      path: "/",
-                      maxAge: 30 * 24 * 60 * 60,
-                    });
-                  }
-                }
-              }
-            }
+          // 이전 버전이 심어둔 accessToken 쿠키를 정리한다. 읽는 곳이 없고 수명만 30일이었다.
+          try {
+            (await cookies()).delete("accessToken");
+          } catch {
+            // 쿠키 쓰기가 막힌 컨텍스트
           }
 
           // 신규 유저든 기존 유저든 일단 정보를 user 객체에 보관
           user.accessToken = accessToken;
-          user.refreshToken = resolvedRefreshToken;
+          user.refreshToken = refreshToken ?? undefined;
           user.isNewUser = isNewUser;
           user.registrationStatus = registrationStatus;
           user.provider = account.provider; // 소셜 제공자 정보 저장
@@ -179,9 +193,10 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
       }
       return token;
     },
+    // 여기에 담은 값은 /api/auth/session 응답으로 브라우저 JS 에 그대로 노출된다.
+    // 리프레시 토큰은 절대 올리지 않는다. 액세스 토큰도 최상위 하나로만 둔다.
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
-      session.refreshToken = token.refreshToken as string;
       session.registrationStatus = token.registrationStatus as string;
       session.isNewUser = token.isNewUser as boolean;
       session.provider = token.provider as string;
@@ -202,23 +217,58 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
   },
 });
 
+// BE 는 이미 쓴 리프레시 토큰이 다시 오면 탈취로 판단해 그 사용자의 전 기기 토큰을 폐기한다.
+// 만료 직후 여러 요청이 각자 갱신에 나서면 정상 사용자가 통째로 로그아웃되므로,
+// 같은 토큰에 대한 갱신은 하나로 묶는다.
+const inFlightRefreshes = new Map<string, Promise<JWT>>();
+
 async function refreshBackendToken(token: JWT): Promise<JWT> {
+  let refreshToken = token.refreshToken;
+
   try {
-    const cookieStore = await cookies();
-    let cookieString = cookieStore.toString();
+    refreshToken =
+      (await cookies()).get(REFRESH_TOKEN_COOKIE)?.value ?? refreshToken;
+  } catch {
+    // 쿠키를 읽을 수 없는 컨텍스트. NextAuth JWT 에 남은 값으로 진행한다.
+  }
 
-    // 브라우저 쿠키에 refresh_token이 없더라도 NextAuth 토큰에서 가져와 헤더에 추가
-    if (token.refreshToken && !cookieString.includes("refresh_token=")) {
-      cookieString += `${cookieString ? "; " : ""}refresh_token=${token.refreshToken}`;
-    }
+  if (!refreshToken) {
+    console.error("Token refresh error: no refresh token available");
+    return { ...token, error: "AccessTokenExpired" };
+  }
 
+  // BE 는 갱신할 때마다 리프레시 토큰을 교체하고 옛 토큰을 폐기한다.
+  // 교체분을 저장할 수 없는 곳에서 갱신하면 그 값을 잃고, 다음 갱신이 폐기된 토큰으로 나가
+  // 전 기기 로그아웃을 부른다. 지금 값을 그대로 다시 심어 쓰기 가능 여부를 확인하고,
+  // 불가능하면 미룬다. 쿠키를 쓸 수 있는 /api/auth/session 요청에서 갱신된다.
+  if (!(await persistRefreshToken(refreshToken))) {
+    return token;
+  }
+
+  const running = inFlightRefreshes.get(refreshToken);
+  if (running) return running;
+
+  const key = refreshToken;
+  const request = requestNewTokens(token, key).finally(() => {
+    inFlightRefreshes.delete(key);
+  });
+  inFlightRefreshes.set(key, request);
+
+  return request;
+}
+
+async function requestNewTokens(
+  token: JWT,
+  refreshToken: string
+): Promise<JWT> {
+  try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/refresh`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Cookie: cookieString,
+          Cookie: `${REFRESH_TOKEN_COOKIE}=${refreshToken}`,
         },
       }
     );
@@ -228,7 +278,6 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
     }
 
     const resData = await response.json();
-    // 2. 새 토큰 파싱
     const newAccessToken =
       typeof resData?.data === "string"
         ? resData.data
@@ -242,43 +291,17 @@ async function refreshBackendToken(token: JWT): Promise<JWT> {
 
     const decoded = jwtDecode<{ exp: number }>(newAccessToken);
 
-    // 새 accessToken을 쿠키에 저장
-    cookieStore.set("accessToken", newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 30 * 24 * 60 * 60, // 30일
-    });
-
-    // 백엔드가 Set-Cookie로 보낸 refresh_token을 Next.js 서버에서 수동 전달
-    let newRefreshToken = token.refreshToken;
-    const setCookieHeader = response.headers.getSetCookie?.();
-    if (setCookieHeader) {
-      for (const cookie of setCookieHeader) {
-        if (cookie.startsWith("refresh_token=")) {
-          const firstSegment = cookie.split(";")[0];
-          const eqIdx = firstSegment.indexOf("=");
-          const refreshTokenValue =
-            eqIdx >= 0 ? firstSegment.slice(eqIdx + 1) : "";
-          if (refreshTokenValue) {
-            newRefreshToken = refreshTokenValue;
-            cookieStore.set("refresh_token", refreshTokenValue, {
-              httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
-              sameSite: "lax",
-              path: "/",
-              maxAge: 30 * 24 * 60 * 60, // 30일
-            });
-          }
-        }
-      }
+    // BE 는 갱신할 때마다 리프레시 토큰도 새로 발급하고 옛 토큰을 폐기한다(로테이션).
+    // 새 값을 놓치면 다음 갱신이 폐기된 토큰으로 나가 전 기기 로그아웃을 부른다.
+    const rotated = readRefreshTokenFromResponse(response);
+    if (rotated) {
+      await persistRefreshToken(rotated);
     }
 
     return {
       ...token,
       accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
+      refreshToken: rotated ?? refreshToken,
       accessTokenExpires: decoded.exp * 1000,
       error: undefined,
     };
