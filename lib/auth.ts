@@ -36,6 +36,9 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
             body: JSON.stringify({
               provider: account.provider.toUpperCase(),
               accessToken: account.access_token,
+              // 탈퇴 시 소셜 연동을 끊으려면 서버가 리프레시 토큰을 보관해야 한다.
+              // 액세스 토큰은 약 1시간 뒤 만료되므로 탈퇴 시점에는 쓸 수 없다. (P2-22)
+              refreshToken: account.refresh_token,
             }),
           }
         );
