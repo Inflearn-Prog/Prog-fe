@@ -1,4 +1,4 @@
-import { ApiResponse, fetcher } from "@/lib/fetcher";
+import { fetcher } from "@/lib/fetcher";
 
 export const postAuth = async ({
   provider,
@@ -28,9 +28,8 @@ export const postAuth = async ({
   return response.json();
 };
 
-export const postLogout = async () => {
-  return await fetcher.post("auth/logout").json<ApiResponse<object>>();
-};
+// 로그아웃은 refresh_token 쿠키를 실어야 해서 서버에서 처리한다.
+// app/actions/auth-actions.ts 의 logoutOnServer 를 쓸 것.
 
 export interface WithdrawRequest {
   reason?: string;
