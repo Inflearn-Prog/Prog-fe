@@ -8,13 +8,14 @@ import {
   MyArticleCard,
 } from "@/components/mypage/articleCard";
 import { PaginationButton } from "@/components/pagination-button/pagination-button";
-import { toasts } from "@/components/shared/toast";
+import { useCopyPrompt } from "@/hooks/use-copy-prompt";
 import { useSubTabFilters } from "@/hooks/use-filters";
 import { useLikedPrompts, useUserPrompts } from "@/hooks/use-mypage";
 import { cn } from "@/lib/utils";
 
 export default function MypageActivitySection() {
   const router = useRouter();
+  const { copyById } = useCopyPrompt();
 
   const { currentSub, currentPage, handleSubTabChange, handlePageChange } =
     useSubTabFilters("mypage");
@@ -35,14 +36,9 @@ export default function MypageActivitySection() {
     enabled: !!userId && activeSub === "posted",
   });
 
-  const handleCopy = async (e: React.MouseEvent, content: string) => {
+  const handleCopy = (e: React.MouseEvent, promptId: number) => {
     e.stopPropagation();
-    try {
-      await navigator.clipboard.writeText(content);
-      toasts.success("프롬프트가 클립보드에 복사되었습니다!");
-    } catch {
-      alert("복사에 실패했습니다.");
-    }
+    copyById(promptId);
   };
 
   const handleCardClick = (id: number) => {
@@ -104,7 +100,7 @@ export default function MypageActivitySection() {
                 key={prompt.promptId}
                 title={prompt.title}
                 contentSummary={prompt.contentSummary}
-                onCopy={(e) => handleCopy(e, prompt.contentSummary)}
+                onCopy={(e) => handleCopy(e, prompt.promptId)}
                 onClick={() => handleCardClick(prompt.promptId)}
               />
             ) : (

@@ -8,7 +8,6 @@ import { PromptBase } from "@/app/types/type";
 import PromptCard from "@/components/prompt/prompt-card";
 import PromptCardSkeleton from "@/components/prompt/prompt-card-skeleton";
 import ReportModal from "@/components/prompt/report-modal";
-import { toasts } from "@/components/shared/toast";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useCopyPrompt } from "@/hooks/use-copy-prompt";
 import {
   useGetPrompts,
   useReportMutation,
@@ -30,19 +30,8 @@ export interface PromptInfo extends PromptBase {
   bookmarks?: number;
 }
 
-const handleCopy = async (content: string) => {
-  try {
-    const el = document.createElement("div");
-    el.innerHTML = content;
-    const plainText = el.textContent ?? "";
-    await navigator.clipboard.writeText(plainText);
-    toasts.success("프롬프트가 클립보드에 복사되었습니다!");
-  } catch {
-    alert("복사에 실패했습니다. 다시 시도해주세요.");
-  }
-};
-
 export default function RankingList({ category }: { category: string }) {
+  const { copyById } = useCopyPrompt();
   const { mutate } = useToggleLikeMutation();
   const { mutate: reportMutate } = useReportMutation();
   const { ref, inView } = useInView();
@@ -113,7 +102,7 @@ export default function RankingList({ category }: { category: string }) {
             {...prompt}
             isLiked={!!prompt.isLiked}
             onLike={handleLike}
-            onCopy={() => handleCopy(prompt.contentSummary || "")}
+            onCopy={() => copyById(prompt.promptId)}
             onReport={() =>
               setReport((prev) => ({
                 ...prev,

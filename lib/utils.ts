@@ -72,6 +72,19 @@ export function stripHtml(html: string) {
     .trim();
 }
 
+const BLOCK_CLOSE_TAG = /<\/(p|div|h[1-6]|li|blockquote|tr)>/gi;
+const BR_TAG = /<br\s*\/?>/gi;
+
+export function htmlToPlainText(html: string) {
+  if (!html) return "";
+  const withBreaks = html
+    .replace(BR_TAG, "\n")
+    .replace(BLOCK_CLOSE_TAG, "$&\n");
+  return stripHtml(withBreaks)
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 export const clearAuthCookiesClientSide = () => {
   const cookiesToClear = [
     "next-auth.session-token",

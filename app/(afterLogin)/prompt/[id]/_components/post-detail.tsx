@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useCopyPrompt } from "@/hooks/use-copy-prompt";
 import { useReportMutation } from "@/hooks/use-prompt-list";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,7 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
   const [report, setReport] = useState({ open: false, reason: "", detail: "" });
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const queryClient = useQueryClient();
+  const { copyContent } = useCopyPrompt();
   const { mutate: reportMutate } = useReportMutation();
 
   const isOwner = !!user?.id && String(user.id) === String(prompt.userId);
@@ -110,17 +112,9 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
     },
   });
 
-  const handleCopy = useCallback(async () => {
-    try {
-      const el = document.createElement("div");
-      el.innerHTML = prompt.content;
-      const plainText = el.textContent ?? "";
-      await navigator.clipboard.writeText(plainText);
-      toasts.success("프롬프트가 복사되었습니다.");
-    } catch {
-      toasts.error("클립보드 복사에 실패했습니다.");
-    }
-  }, [prompt.content]);
+  const handleCopy = useCallback(() => {
+    copyContent(prompt.content);
+  }, [copyContent, prompt.content]);
 
   const handleLikeClick = useCallback(() => {
     if (!user) {
