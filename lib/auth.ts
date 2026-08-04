@@ -189,7 +189,6 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
       session.error = token.error as string;
 
       if (session.user) {
-        session.user.accessToken = token.accessToken as string;
         session.user.id =
           (token.backendUserId as string) || (token.sub as string);
         session.user.email = token.email as string;

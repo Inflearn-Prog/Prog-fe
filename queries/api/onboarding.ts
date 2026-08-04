@@ -27,7 +27,7 @@ export async function postNickname(nickname: string, token: string) {
     let errorData;
     try {
       const result = await res.json();
-      errorData = result.data;
+      errorData = result.error;
     } catch {
       // JSON 파싱 실패 시 기본 에러
     }
@@ -58,7 +58,7 @@ export async function putBasic(
     let errorData;
     try {
       const result = await res.json();
-      errorData = result.data;
+      errorData = result.error;
     } catch {
       // JSON 파싱 실패 시 기본 에러
     }
@@ -87,7 +87,7 @@ export async function putCareer(params: PutCareerParams, token: string) {
     let errorData;
     try {
       const result = await res.json();
-      errorData = result.data;
+      errorData = result.error;
     } catch {
       // JSON 파싱 실패 시 기본 에러
     }
@@ -115,7 +115,7 @@ export async function postComplete(token: string) {
     let errorData;
     try {
       const result = await res.json();
-      errorData = result.data;
+      errorData = result.error;
     } catch {
       // JSON 파싱 실패 시 기본 에러
     }
