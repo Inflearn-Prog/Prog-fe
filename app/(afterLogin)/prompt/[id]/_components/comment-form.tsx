@@ -8,7 +8,7 @@ import { BaseButton } from "@/components/shared/button";
 import { toasts } from "@/components/shared/toast";
 import { promptQueries } from "@/queries/options/prompt-query";
 
-const MAX_COMMENT_LENGTH = 1000;
+import { MAX_COMMENT_LENGTH } from "../../constant";
 
 interface CommentFormProps {
   promptId: string | number;

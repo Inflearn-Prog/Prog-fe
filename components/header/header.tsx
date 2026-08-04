@@ -50,15 +50,13 @@ export function HeaderNavigation() {
               key={nav.href}
               className="text-gray-900 navigation-large hover:text-frog-600"
             >
-              <Link
-                href={nav.href}
-                {...(nav.newTab && {
-                  target: "_blank",
-                  rel: "noopener noreferrer",
-                })}
-              >
-                {nav.label}
-              </Link>
+              {nav.newTab ? (
+                <a href={nav.href} target="_blank" rel="noopener noreferrer">
+                  {nav.label}
+                </a>
+              ) : (
+                <Link href={nav.href}>{nav.label}</Link>
+              )}
             </li>
           );
         })}

@@ -36,6 +36,8 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
             body: JSON.stringify({
               provider: account.provider.toUpperCase(),
               accessToken: account.access_token,
+              // 서버가 탈퇴 시 소셜 연동 해제에 사용한다.
+              refreshToken: account.refresh_token,
             }),
           }
         );

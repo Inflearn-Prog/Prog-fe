@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useId } from "react";
 
 import { cn } from "@/lib/utils";
@@ -112,14 +111,14 @@ const CheckboxItem = ({
       />
     </div>
     {showLink && link && (
-      <Link
+      <a
         href={link}
         className={cn(TERMS_STYLES.SHOW_LINK, "whitespace-nowrap pt-1")}
         target="_blank"
         rel="noopener noreferrer"
       >
         보기
-      </Link>
+      </a>
     )}
   </div>
 );
