@@ -142,21 +142,35 @@ function LinkItem({
   label: string;
   newTab?: boolean;
 }) {
+  const inner = (
+    <>
+      <span className="label-medium">{label}</span>
+      <ChevronRightIcon
+        className="size-5"
+        color="#111111"
+        width={7}
+        height={5}
+      />
+    </>
+  );
+  const className = "h-12 flex items-center justify-between";
+
   return (
     <DrawerClose asChild>
-      <Link
-        className="h-12 flex items-center justify-between"
-        href={href}
-        {...(newTab && { target: "_blank", rel: "noopener noreferrer" })}
-      >
-        <span className="label-medium">{label}</span>
-        <ChevronRightIcon
-          className="size-5"
-          color="#111111"
-          width={7}
-          height={5}
-        />
-      </Link>
+      {newTab ? (
+        <a
+          className={className}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {inner}
+        </a>
+      ) : (
+        <Link className={className} href={href}>
+          {inner}
+        </Link>
+      )}
     </DrawerClose>
   );
 }
