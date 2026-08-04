@@ -58,7 +58,7 @@ export async function postTerms(termIds: number[], token: string) {
     let errorData: ApiErrorData | undefined;
 
     try {
-      const result = (await res.json()) as ApiResponse<ApiErrorData>;
+      const result = (await res.json()) as { error: ApiErrorData };
       errorData = result.error;
     } catch (error) {
       console.error("Failed to parse error response:", error);
