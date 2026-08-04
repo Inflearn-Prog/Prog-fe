@@ -19,10 +19,9 @@ import { useReportMutation } from "@/hooks/use-prompt-list";
 import { PromptCommentResponse } from "@/queries/api/prompts";
 import { promptQueries } from "@/queries/options/prompt-query";
 
+import { MAX_COMMENT_LENGTH } from "../../constant";
 import { CommentForm } from "./comment-form";
 import { formatCommentDate } from "./utils";
-
-const MAX_COMMENT_LENGTH = 1000;
 
 interface CommentItemProps {
   comment: PromptCommentResponse;

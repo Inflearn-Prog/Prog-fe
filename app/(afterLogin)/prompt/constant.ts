@@ -1,1 +1,2 @@
 export const MAX_BOARD_CONTENT_LENGTH = 5000;
+export const MAX_COMMENT_LENGTH = 255;
