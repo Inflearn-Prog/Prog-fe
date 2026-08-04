@@ -10,7 +10,7 @@ import { useGetPrompts } from "@/hooks/use-prompt-list";
 
 import { CommunityPromptItem } from "../../_types/community-type";
 import { CommunitySection } from "../_components/community";
-import { SortGroup } from "../_components/sort-group";
+import { SortGroup, SortType } from "../_components/sort-group";
 
 /** 슬러그 → categoryId 변환. 매핑 없으면 "all" 반환 */
 export function resolveCategoryParam(slug: string): string {
@@ -26,8 +26,9 @@ export function resolveCategoryParam(slug: string): string {
 export function CommunityListSection() {
   const { getParam } = useQueryParams();
   const categorySlug = getParam("category") || "all";
-  const sort = (getParam("sort") as "latest" | "likes") || "latest";
-  const isPopular = sort === "likes";
+  const rawSort = getParam("sort");
+  const sort: SortType = rawSort === "popular" ? "popular" : "latest";
+  const isPopular = sort === "popular";
 
   // 슬러그 → "1", "2" ... 또는 "all"
   // 인기순(/prompts/likeDesc)은 category 파라미터 없으므로 "all" 고정

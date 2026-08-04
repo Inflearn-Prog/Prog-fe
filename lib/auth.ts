@@ -60,6 +60,7 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
             maxAge: 30 * 24 * 60 * 60, // 30일
           });
 
+          // 1) 바디에 refreshToken이 있으면 그대로 저장 (BE가 @JsonIgnore를 제거한 경우)
           if (refreshToken) {
             cookieStore.set("refresh_token", refreshToken, {
               path: "/",
@@ -70,9 +71,36 @@ export const { handlers, auth, signIn, signOut, update } = NextAuth({
             });
           }
 
+          // 2) 바디에 없으면 Set-Cookie 헤더에서 파싱 (server-to-server fetch이므로 수동 처리 필요)
+          //    BE의 @JsonIgnore로 바디에서 제외되어도, Set-Cookie로는 내려오므로 여기서 읽어 저장
+          let resolvedRefreshToken = refreshToken;
+          if (!resolvedRefreshToken) {
+            const setCookieHeader = response.headers.getSetCookie?.();
+            if (setCookieHeader) {
+              for (const cookie of setCookieHeader) {
+                if (cookie.startsWith("refresh_token=")) {
+                  const firstSegment = cookie.split(";")[0];
+                  const eqIdx = firstSegment.indexOf("=");
+                  const refreshTokenValue =
+                    eqIdx >= 0 ? firstSegment.slice(eqIdx + 1) : "";
+                  if (refreshTokenValue) {
+                    resolvedRefreshToken = refreshTokenValue;
+                    cookieStore.set("refresh_token", refreshTokenValue, {
+                      httpOnly: true,
+                      secure: process.env.NODE_ENV === "production",
+                      sameSite: "lax",
+                      path: "/",
+                      maxAge: 30 * 24 * 60 * 60,
+                    });
+                  }
+                }
+              }
+            }
+          }
+
           // 신규 유저든 기존 유저든 일단 정보를 user 객체에 보관
           user.accessToken = accessToken;
-          user.refreshToken = refreshToken;
+          user.refreshToken = resolvedRefreshToken;
           user.isNewUser = isNewUser;
           user.registrationStatus = registrationStatus;
           user.provider = account.provider; // 소셜 제공자 정보 저장
