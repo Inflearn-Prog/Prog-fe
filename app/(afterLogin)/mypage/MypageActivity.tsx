@@ -13,6 +13,9 @@ import { useSubTabFilters } from "@/hooks/use-filters";
 import { useLikedPrompts, useUserPrompts } from "@/hooks/use-mypage";
 import { cn } from "@/lib/utils";
 
+// 한 페이지 노출 건수. useLikedPrompts/useUserPrompts 의 size 와 totalPages 계산이 이 값을 공유한다.
+const PAGE_SIZE = 4;
+
 export default function MypageActivitySection() {
   const router = useRouter();
   const { copyById } = useCopyPrompt();
@@ -28,11 +31,13 @@ export default function MypageActivitySection() {
   const { data: likedData, isLoading: isLikedLoading } = useLikedPrompts({
     userId: userId as string,
     page: currentPage,
+    size: PAGE_SIZE,
     enabled: !!userId && activeSub === "liked",
   });
   const { data: postedData, isLoading: isPostedLoading } = useUserPrompts({
     userId: userId as string,
     page: currentPage,
+    size: PAGE_SIZE,
     enabled: !!userId && activeSub === "posted",
   });
 
@@ -51,7 +56,10 @@ export default function MypageActivitySection() {
 
   const hasContent =
     currentData && currentData.prompts && currentData.prompts.length > 0;
-  const totalPages = currentData?.pageInfo?.totalPages ?? 0;
+  // BE 가 pageInfo 를 주면 그대로, 아니면(현재 실서버 응답은 totalCount 만) 계산한다. (P0-08)
+  const totalPages =
+    currentData?.pageInfo?.totalPages ??
+    Math.ceil((currentData?.totalCount ?? 0) / PAGE_SIZE);
 
   return (
     <div className="flex flex-col gap-6 w-full">

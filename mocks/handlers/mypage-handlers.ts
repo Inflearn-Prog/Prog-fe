@@ -40,7 +40,6 @@ export const mypageHandlers = [
   http.get(`${BASE_URL}/users/:userId/prompts`, ({ request, params }) => {
     const url = new URL(request.url);
     const page = Number(url.searchParams.get("page") || "0");
-    const size = Number(url.searchParams.get("size") || "4");
     const { userId } = params;
 
     return HttpResponse.json<UserPromptsResponse>({
@@ -58,20 +57,14 @@ export const mypageHandlers = [
             isLiked: true,
           },
         ],
-        pageInfo: {
-          currentPage: page,
-          pageSize: size,
-          totalElements: 45,
-          totalPages: Math.ceil(45 / size),
-          isLast: page >= 11,
-        },
+        // 실서버 응답 형태에 맞춰 totalCount 만 내려준다 (BE 는 pageInfo 미제공). (P0-08)
+        totalCount: 45,
       },
     });
   }),
   http.get(`${BASE_URL}/users/:userId/liked`, ({ request, params }) => {
     const url = new URL(request.url);
     const page = Number(url.searchParams.get("page") || "0");
-    const size = Number(url.searchParams.get("size") || "4");
     const { userId } = params;
 
     return HttpResponse.json<UserPromptsResponse>({
@@ -89,13 +82,8 @@ export const mypageHandlers = [
             isLiked: true,
           },
         ],
-        pageInfo: {
-          currentPage: page,
-          pageSize: size,
-          totalElements: 45,
-          totalPages: Math.ceil(45 / size),
-          isLast: page >= 11,
-        },
+        // 실서버 응답 형태에 맞춰 totalCount 만 내려준다 (BE 는 pageInfo 미제공). (P0-08)
+        totalCount: 45,
       },
     });
   }),
