@@ -13,6 +13,11 @@ export default auth((req) => {
 
   const isUsersRoute = /^\/users(\/|$)/.test(pathname);
 
+  // public/terms/*.html 은 앱 라우트가 아니라 정적 약관 문서다.
+  // 온보딩 리다이렉트에서 제외하지 않으면, 온보딩 중 "보기" 클릭 시
+  // 미들웨어가 /signup 으로 되돌려 약관 전문을 새 탭에서 볼 수 없다.
+  const isPublicTermsDoc = pathname.startsWith("/terms/");
+
   const bypassAuth = process.env.NEXT_PUBLIC_BYPASS_AUTH === "true";
   const isSignIn = bypassAuth ? true : !!session;
   const isNewUser = bypassAuth ? false : session?.isNewUser;
@@ -27,7 +32,7 @@ export default auth((req) => {
     pathname === ROUTES.auth.SIGNIN || pathname === ROUTES.auth.SIGNUP;
 
   // 로그인을 안 했는데 보호된 페이지(마이페이지)에 접근한 경우
-  if (!isUsersRoute) {
+  if (!isUsersRoute && !isPublicTermsDoc) {
     if (!isSignIn && isProtectedRoute) {
       const signInUrl = new URL(ROUTES.auth.SIGNIN, nextUrl.origin);
       signInUrl.searchParams.set("callbackUrl", pathname + nextUrl.search);
