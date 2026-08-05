@@ -19,12 +19,11 @@ import {
 } from "@/components/ui/dialog";
 import { useCopyPrompt } from "@/hooks/use-copy-prompt";
 import { useReportMutation } from "@/hooks/use-prompt-list";
+import { formatAbsolute } from "@/lib/datetime";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { promptApi, PromptResponse } from "@/queries/api/prompts";
 import { promptQueries } from "@/queries/options/prompt-query";
-
-import { formatCommentDate } from "./utils";
 
 interface PostDetailProps {
   promptId: string | number;
@@ -175,7 +174,7 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
             {categoryLabel}
           </span>
           <span className="label-small text-gray-900">
-            {formatCommentDate(prompt.createdAt)}
+            {formatAbsolute(prompt.createdAt)}
           </span>
         </div>
 
