@@ -179,7 +179,8 @@ export const useToggleLikeMutation = () => {
                       ? {
                           ...item,
                           isLiked: !isLiked,
-                          likes: isLiked
+                          // 카드가 렌더링하는 필드는 likeCount 이다. (PromptBase 에 likes 필드는 없음)
+                          likeCount: isLiked
                             ? Math.max((item.likeCount ?? 0) - 1, 0)
                             : (item.likeCount ?? 0) + 1,
                         }
