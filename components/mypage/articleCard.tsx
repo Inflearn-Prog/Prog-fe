@@ -1,7 +1,7 @@
 "use client";
 
 import { formatRelative } from "@/lib/datetime";
-import { stripHtml } from "@/lib/utils";
+import { cn, stripHtml } from "@/lib/utils";
 
 import { BaseButton } from "../shared/button";
 
@@ -35,10 +35,11 @@ export function LikedArticleCard({
 }: LikedArticleCardProps) {
   return (
     <article
-      className={STYLES.CARD_CONTAINER}
+      className={cn(STYLES.CARD_CONTAINER, onClick && "cursor-pointer")}
       {...(onClick && {
         role: "button",
         tabIndex: 0,
+        onClick,
         onKeyDown: (e: React.KeyboardEvent) => {
           if (e.key === "Enter" || e.key === " ") onClick();
         },
