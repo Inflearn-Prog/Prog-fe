@@ -5,12 +5,12 @@ import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 import { AuthProvider } from "@/app/(beforeLogin)/(auth)/constant";
+import { clearAuthCookies, logoutOnServer } from "@/app/actions/auth-actions";
 import UserProfile from "@/components/mypage/user-profile";
 import { BaseButton } from "@/components/shared/button";
 import { useUserProfile } from "@/hooks/use-mypage";
 import { ROUTES } from "@/lib/routes";
-import { clearAuthCookiesClientSide } from "@/lib/utils";
-import { deleteUserAccount, postLogout } from "@/queries/api/auth";
+import { deleteUserAccount } from "@/queries/api/auth";
 
 import MypageLeftSkeleton from "./MypageLeftSkeleton";
 
@@ -24,7 +24,7 @@ export default function MypageLeftSection() {
   const handleLogout = async () => {
     if (confirm("로그아웃 하시겠습니까?")) {
       try {
-        await postLogout();
+        await logoutOnServer();
         queryClient.clear();
         toast.success("로그아웃 되었습니다.");
       } catch {
@@ -52,7 +52,7 @@ export default function MypageLeftSection() {
       });
       await signOut({ redirect: false });
 
-      clearAuthCookiesClientSide();
+      await clearAuthCookies();
 
       queryClient.clear();
       alert("회원 탈퇴가 완료되었습니다.");
