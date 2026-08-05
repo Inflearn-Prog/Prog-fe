@@ -4,7 +4,7 @@ import { ThumbsUpIcon } from "lucide-react";
 import Link from "next/link";
 
 import { SearchEmpty } from "@/components/search/search-empty";
-import { formatRelativeDate } from "@/lib/format-date";
+import { formatRelative } from "@/lib/datetime";
 import { ROUTES } from "@/lib/routes";
 
 import { CommunityPromptItem } from "../../_types/community-type";
@@ -57,7 +57,7 @@ export function CommunityItem(props: CommunityPromptItem) {
 
       <div className="flex items-center label-small gap-x-4 text-gray-600">
         <p className="label-small p-0">{props.authorNickname}</p>
-        <p className="label-small p-0">{formatRelativeDate(props.createdAt)}</p>
+        <p className="label-small p-0">{formatRelative(props.createdAt)}</p>
 
         <div className="flex items-center gap-x-1.5">
           <ThumbsUpIcon size={18} fill={"currentColor"} strokeWidth={0} />

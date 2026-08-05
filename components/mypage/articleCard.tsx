@@ -1,6 +1,7 @@
 "use client";
 
-import { formatRelativeDate, stripHtml } from "@/lib/utils";
+import { formatRelative } from "@/lib/datetime";
+import { stripHtml } from "@/lib/utils";
 
 import { BaseButton } from "../shared/button";
 
@@ -82,7 +83,7 @@ export function MyArticleCard({
       {/* 하단 버튼 및 아이콘 */}
       <div className={STYLES.ACTION_BAR}>
         <div className="flex gap-2">
-          <p>{formatRelativeDate(createdAt)}</p>
+          <p>{formatRelative(createdAt)}</p>
         </div>
       </div>
     </article>

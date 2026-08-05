@@ -154,11 +154,15 @@ export default function MypageRightSection() {
         nickname: profile.basicInfo.nickname,
         introduction: profile.basicInfo.introduction || "",
       },
+      // BE 요청 DTO(UserProfileUpdateRequest.CareerInfo)의 필드명과 일치시킨다.
+      // 이전엔 currentStatus/targetJob/careerYear/education 로 보내 4개 전부 불일치 →
+      // Jackson 이 조용히 버려 저장이 안 되면서도 200 이 반환됐다(P0-07).
+      // 값은 이미 transformState 가 올바른 이름·숫자로 만들어 주므로 그대로 사용한다.
       careerInfo: {
-        currentStatus: careerPayload.currentStatuses || [currentState],
-        targetJob: careerPayload.targetJobRoles || targetJobs,
-        careerYear: Number(career),
-        education: educationLevel,
+        currentStatuses: careerPayload.currentStatuses,
+        targetJobRoles: careerPayload.targetJobRoles,
+        careerYears: careerPayload.careerYears,
+        educationLevel: careerPayload.educationLevel,
       },
       selfIntro: {
         experiences,

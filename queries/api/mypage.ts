@@ -44,10 +44,10 @@ export interface UpdateProfileRequest {
     introduction?: string | null;
   };
   careerInfo?: {
-    currentStatus?: string[] | null;
-    targetJob?: string[] | null;
-    careerYear?: number | null;
-    education?: string | null;
+    currentStatuses?: string[] | null;
+    targetJobRoles?: string[] | null;
+    careerYears?: number | null;
+    educationLevel?: string | null;
   };
   selfIntro?: {
     experiences?: string[] | null;

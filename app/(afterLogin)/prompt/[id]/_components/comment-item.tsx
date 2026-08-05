@@ -16,12 +16,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useReportMutation } from "@/hooks/use-prompt-list";
+import { formatAbsolute } from "@/lib/datetime";
 import { PromptCommentResponse } from "@/queries/api/prompts";
 import { promptQueries } from "@/queries/options/prompt-query";
 
 import { MAX_COMMENT_LENGTH } from "../../constant";
 import { CommentForm } from "./comment-form";
-import { formatCommentDate } from "./utils";
 
 interface CommentItemProps {
   comment: PromptCommentResponse;
@@ -150,7 +150,7 @@ export function CommentItem({
                 {comment.nickName}
               </span>
               <span className="label-small text-gray-600">
-                {formatCommentDate(comment.createdAt)}
+                {formatAbsolute(comment.createdAt)}
               </span>
             </div>
 

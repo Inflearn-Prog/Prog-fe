@@ -10,7 +10,7 @@ interface PromptType {
   likeCount: number;
   copyCount: number;
   authorNickname: string;
-  createdAt: string;
+  createdAt: string | null;
   updatedAt: string;
 }
 
