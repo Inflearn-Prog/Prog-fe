@@ -58,7 +58,10 @@ export interface PageInfo {
 
 export interface UserPromptsData {
   prompts: PromptItem[];
-  pageInfo: PageInfo;
+  // 실서버가 내려주는 전체 건수. pageInfo 미제공 시 이 값으로 totalPages 를 계산한다. (P0-08)
+  totalCount?: number;
+  // BE 페이징 규약 통일 시 제공 예정(현재 실서버는 미제공, mock 은 제공). 있으면 우선 사용.
+  pageInfo?: PageInfo;
 }
 
 export type UserPromptsResponse = ApiResponse<UserPromptsData>;
