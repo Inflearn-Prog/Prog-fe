@@ -1,0 +1,12 @@
+{
+  "01-heading": "<h2>헤딩</h2>\n",
+  "02-list": "<ul>\n<li>항목</li>\n</ul>\n<ol>\n<li>항목</li>\n</ol>\n",
+  "03-cjk-bold": "<p><strong>주의(중요)</strong>사항입니다</p>\n",
+  "04-soft-break": "<p>첫 줄<br>둘째 줄</p>\n",
+  "05-xss-script": "",
+  "06-xss-img": "<img src=\"x\">",
+  "07-angle-inline": "<p>if (x &lt; 10) return;</p>\n",
+  "08-legacy-html": "<p>안녕하세요</p><p>두번째 <strong>문단</strong></p>",
+  "09-code": "<pre><code class=\"language-js\">const a = 1;\n</code></pre>\n<p>인라인 <code>code</code> 도</p>\n",
+  "10-table": "<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>1</td>\n<td>2</td>\n</tr>\n</tbody></table>\n"
+}
