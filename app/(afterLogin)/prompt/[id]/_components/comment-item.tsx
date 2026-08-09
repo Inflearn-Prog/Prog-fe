@@ -59,8 +59,11 @@ export function CommentItem({
   }, [queryClient, promptId]);
 
   const { mutate: updateComment, isPending: isUpdating } = useMutation({
+    // 작성과 같은 규칙 — 앞뒤 공백은 떼고 보낸다.
     mutationFn: () =>
-      promptQueries.updateComment(comment.commentId, { comment: editValue }),
+      promptQueries.updateComment(comment.commentId, {
+        comment: editValue.trim(),
+      }),
     onSuccess: () => {
       setIsEditing(false);
       invalidateComments();
@@ -98,7 +101,10 @@ export function CommentItem({
   };
 
   const handleEditSave = () => {
-    if (!editValue.trim()) return;
+    if (!editValue.trim()) {
+      toasts.error("댓글 내용을 입력해주세요.");
+      return;
+    }
     updateComment();
   };
 
@@ -120,7 +126,7 @@ export function CommentItem({
         targetType: "COMMENT",
         targetId: String(comment.commentId),
         reason: report.reason,
-        reasonDetail: report.reason === "OTHER" ? report.detail : "",
+        reasonDetail: report.reason === "OTHER" ? report.detail.trim() : "",
       },
       { onSuccess: closeReportModal }
     );

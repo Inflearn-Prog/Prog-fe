@@ -29,13 +29,14 @@ export function CommentForm({
   const queryClient = useQueryClient();
 
   const { mutate: submitComment, isPending } = useMutation({
+    // 앞뒤 공백을 떼고 보낸다. 서버 @NotBlank 는 trim 후 판정하므로 "  하이  " 는 통과하는데,
+    // 그대로 저장되면 목록에서 들쭉날쭉하게 보인다.
     mutationFn: () => {
+      const body = { comment: comment.trim() };
       if (parentCommentId !== undefined) {
-        return promptQueries.createReply(promptId, parentCommentId, {
-          comment,
-        });
+        return promptQueries.createReply(promptId, parentCommentId, body);
       }
-      return promptQueries.createComment(promptId, { comment });
+      return promptQueries.createComment(promptId, body);
     },
     onSuccess: () => {
       setComment("");
@@ -55,7 +56,10 @@ export function CommentForm({
   };
 
   const handleSubmit = () => {
-    if (!comment.trim()) return;
+    if (!comment.trim()) {
+      toasts.error("댓글 내용을 입력해주세요.");
+      return;
+    }
     submitComment();
   };
 

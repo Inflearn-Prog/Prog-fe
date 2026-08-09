@@ -64,7 +64,7 @@ export default function RankingList({ category }: { category: string }) {
         targetType: "PROMPT",
         targetId: report.targetId,
         reason: report.reason,
-        reasonDetail: report.reason === "OTHER" ? report.detail : "",
+        reasonDetail: report.reason === "OTHER" ? report.detail.trim() : "",
       },
       {
         onSuccess: () => closeReportModal(),

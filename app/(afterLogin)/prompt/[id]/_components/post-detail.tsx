@@ -141,7 +141,7 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
         targetType: "PROMPT",
         targetId: String(promptId),
         reason: report.reason,
-        reasonDetail: report.reason === "OTHER" ? report.detail : "",
+        reasonDetail: report.reason === "OTHER" ? report.detail.trim() : "",
       },
       { onSuccess: closeReportModal }
     );

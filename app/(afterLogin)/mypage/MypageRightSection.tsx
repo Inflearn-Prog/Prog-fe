@@ -143,7 +143,7 @@ export default function MypageRightSection() {
 
     const careerPayload = transformState({
       currentState,
-      otherInput,
+      otherInput: otherInput.trim(),
       targetJobs,
       careerYears: career,
       educationLevel,
@@ -152,7 +152,7 @@ export default function MypageRightSection() {
     const payload: UpdateProfileRequest = {
       basicInfo: {
         nickname: profile.basicInfo.nickname,
-        introduction: profile.basicInfo.introduction || "",
+        introduction: (profile.basicInfo.introduction ?? "").trim(),
       },
       // BE 요청 DTO(UserProfileUpdateRequest.CareerInfo)의 필드명과 일치시킨다.
       // 이전엔 currentStatus/targetJob/careerYear/education 로 보내 4개 전부 불일치 →
@@ -164,9 +164,11 @@ export default function MypageRightSection() {
         careerYears: careerPayload.careerYears,
         educationLevel: careerPayload.educationLevel,
       },
+      // 공백만 남은 항목은 보내지 않는다. BE UserProfileUpdateRequest 에는 검증이 하나도
+      // 없어서, 여기서 안 거르면 빈 경험/키워드가 그대로 저장되고 화면에 빈 칩으로 남는다.
       selfIntro: {
-        experiences,
-        keywords,
+        experiences: experiences.map((v) => v.trim()).filter(Boolean),
+        keywords: keywords.map((v) => v.trim()).filter(Boolean),
       },
     };
 
