@@ -3,14 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Controller, FieldErrors, useForm } from "react-hook-form";
 
 import { Board } from "@/components/board/board";
 import { BaseButton } from "@/components/shared/button";
 import { BaseInput } from "@/components/shared/inputs";
 import { SelectBox } from "@/components/shared/select-box";
-import { cn } from "@/lib/utils";
+import { cn, isBlank, isBlankContent } from "@/lib/utils";
 import {
   PromptCreateRequest,
   PromptResponse,
@@ -18,7 +18,12 @@ import {
 } from "@/queries/api/prompts";
 import { promptQueries } from "@/queries/options/prompt-query";
 
-import { BoardFormData, boardSchema } from "../board-schema";
+import {
+  BLANK_CONTENT_MESSAGE,
+  BLANK_TITLE_MESSAGE,
+  BoardFormData,
+  boardSchema,
+} from "../board-schema";
 import usePromptQuery from "../hook/use-prompt-query";
 
 interface PromptFormProps {
@@ -44,6 +49,11 @@ export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
     },
   });
 
+  // 폼 전체에 걸리는 오류(빈 값 등)는 필드 밑이 아니라 폼 상단에 띄운다.
+  // 본문 에디터가 화면을 길게 먹어서, 필드 밑 메시지는 스크롤 밖으로 밀려 안 보인다.
+  const [formError, setFormError] = useState<string | null>(null);
+  const formTopRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (initialData) {
       form.reset({
@@ -54,27 +64,63 @@ export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
     }
   }, [initialData, form]);
 
+  // 사용자가 뭔가 고치기 시작하면 상단 경고는 치운다 — 이미 고친 걸 계속 지적하지 않도록.
+  useEffect(() => {
+    const subscription = form.watch(() => setFormError(null));
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   const { createPrompt, updatePrompt, isCreating, isUpdating } =
     usePromptQuery();
 
+  const rejectSubmit = (message: string) => {
+    setFormError(message);
+    formTopRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
   const handleSubmit = (data: BoardFormData) => {
+    // 마지막 관문. 서버 @NotBlank 는 trim 후에 판정하므로 보내는 값도 trim 해서 맞춘다.
+    // 스키마가 이미 걸러주지만, 여기서 한 번 더 보는 이유는 보내는 값 자체를 바꾸기 때문이다
+    // ("  제목  " 이 그대로 저장되면 목록·검색이 어긋난다).
+    const title = data.title.trim();
+    const content = data.content;
+
+    if (isBlank(title)) {
+      rejectSubmit(BLANK_TITLE_MESSAGE);
+      return;
+    }
+    if (isBlankContent(content)) {
+      rejectSubmit(BLANK_CONTENT_MESSAGE);
+      return;
+    }
+
+    setFormError(null);
     const categoryId = Number(data.category);
 
     if (isEdit && initialData) {
       const body: PromptUpdateRequest = {
-        title: data.title,
+        title,
         categoryId,
-        content: data.content,
+        content,
       };
       updatePrompt({ id: initialData.promptId, data: body });
     } else {
       const body: PromptCreateRequest = {
-        title: data.title,
+        title,
         categoryId,
-        content: data.content,
+        content,
       };
       createPrompt(body);
     }
+  };
+
+  // 스키마가 막은 경우에도 같은 자리에 이유를 띄운다. 제목→카테고리→본문 순으로 첫 건만.
+  const handleInvalid = (errors: FieldErrors<BoardFormData>) => {
+    const message =
+      errors.title?.message ??
+      errors.category?.message ??
+      errors.content?.message;
+    rejectSubmit(message ?? "입력값을 확인해주세요.");
   };
 
   const isPending = isCreating || isUpdating;
@@ -89,8 +135,20 @@ export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
   );
 
   return (
-    <form onSubmit={form.handleSubmit(handleSubmit)}>
+    <form onSubmit={form.handleSubmit(handleSubmit, handleInvalid)}>
       <div className={layout}>
+        <div ref={formTopRef} className="scroll-mt-24">
+          {formError && (
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="mb-4 rounded-[6px] border border-red-300 bg-red-50 px-4 py-3 body-medium text-red-600"
+            >
+              {formError}
+            </div>
+          )}
+        </div>
+
         <CLSBox
           text={
             form.formState.errors.title && (
@@ -177,10 +235,12 @@ export function PromptForm({ initialData, isEdit = false }: PromptFormProps) {
             취소
           </BaseButton>
 
+          {/* 버튼을 잠그지 않는다 — 잠그면 사용자는 "왜 안 눌리는지" 모른 채 막힌다.
+              누르게 두고, 막힌 이유를 폼 상단에 글로 말해준다. */}
           <BaseButton
             type="submit"
             className="w-full md:w-49.25"
-            disabled={!form.formState.isValid || isPending}
+            disabled={isPending}
           >
             {isEdit ? "수정하기" : "작성하기"}
           </BaseButton>
