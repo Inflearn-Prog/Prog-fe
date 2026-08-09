@@ -6,6 +6,7 @@ import { MAX_BOARD_CONTENT_LENGTH } from "@/app/(afterLogin)/prompt/constant";
 import { stripHtml } from "@/lib/utils";
 
 import { BoardSkeleton } from "../ui/skeleton";
+import { ContentViewer } from "./content-viewer";
 
 const QuillBoardDynamic = dynamic(
   async () => {
@@ -14,16 +15,6 @@ const QuillBoardDynamic = dynamic(
   {
     ssr: false,
     loading: () => <BoardSkeleton />,
-  }
-);
-
-const QuillViewerDynamic = dynamic(
-  async () => {
-    return import("./QuillHtmlViewer");
-  },
-  {
-    // ssr: false,
-    // loading: () => <BoardSkeleton />,
   }
 );
 export interface BoardProps {
@@ -61,5 +52,5 @@ export function Board({
 }
 
 export function BoardViewer({ content }: { content: string }) {
-  return <QuillViewerDynamic html={content} />;
+  return <ContentViewer content={content} />;
 }

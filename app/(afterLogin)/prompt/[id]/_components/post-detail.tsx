@@ -5,7 +5,7 @@ import { Siren, ThumbsUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
-import { QuillHtmlViewer } from "@/components/board/QuillHtmlViewer";
+import { ContentViewer } from "@/components/board/content-viewer";
 import { ProfIcon } from "@/components/profile-icon/profile-icon";
 import ReportModal from "@/components/prompt/report-modal";
 import { BaseButton } from "@/components/shared/button";
@@ -181,10 +181,7 @@ export function PostDetail({ promptId, prompt, user }: PostDetailProps) {
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <h1 className="heading-medium text-gray-900">{prompt.title}</h1>
-            <QuillHtmlViewer
-              html={prompt.content}
-              className="body-medium text-gray-900"
-            />
+            <ContentViewer content={prompt.content} />
           </div>
 
           <div className="flex items-end justify-between">
