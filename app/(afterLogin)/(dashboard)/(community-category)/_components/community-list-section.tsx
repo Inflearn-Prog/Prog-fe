@@ -55,6 +55,7 @@ export function CommunityListSection() {
           jobCategory: (item.category?.name ||
             "ETC") as CommunityPromptItem["jobCategory"],
           likeCount: item.likeCount || 0,
+          commentCount: item.commentCount || 0,
           copyCount: Number(item.copyCount || 0),
           authorNickname: item.userName || item.nickname || "익명",
           createdAt: item.createdAt ?? null,

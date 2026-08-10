@@ -25,6 +25,7 @@ export interface PromptBase {
   copyCount?: number;
   isLiked?: boolean;
   likeCount?: number;
+  commentCount?: number;
   createdAt: string;
   updatedAt?: string | null;
 }
