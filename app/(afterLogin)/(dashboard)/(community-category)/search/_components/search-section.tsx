@@ -40,6 +40,7 @@ export function SearchSection({ q: initialQ }: { q?: string }) {
           jobCategory: (item.category?.name ||
             "ETC") as CommunityPromptItem["jobCategory"],
           likeCount: item.likeCount || 0,
+          commentCount: item.commentCount || 0,
           copyCount: Number(item.copyCount || 0),
           authorNickname: item.nickname || item.userName || "익명",
           createdAt: item.createdAt ?? null,

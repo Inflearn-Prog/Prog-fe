@@ -8,6 +8,7 @@ interface PromptType {
   preview: string;
   jobCategory: "BACKEND" | "FRONTEND" | "AI" | "ETC";
   likeCount: number;
+  commentCount: number;
   copyCount: number;
   authorNickname: string;
   createdAt: string | null;
@@ -22,6 +23,7 @@ export type CommunityPromptItem = Pick<
   | "preview"
   | "jobCategory"
   | "likeCount"
+  | "commentCount"
   | "copyCount"
   | "authorNickname"
   | "createdAt"

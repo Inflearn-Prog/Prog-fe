@@ -51,8 +51,10 @@ export function CommunityItem(props: CommunityPromptItem) {
       href={ROUTES.prompt.DETAIL(props.id.toString())}
       className="py-4 px-3 flex items-center justify-between text-black gap-x-5 hover:bg-gray-50 transition-colors"
     >
+      {/* 제목 옆 [n]은 댓글 수. 오른쪽 아이콘이 이미 좋아요 수를 보여주므로 겹치지 않는다. */}
       <h3 className="label-large font-bold">
-        {props.title} [{props.likeCount}]
+        {props.title}
+        {props.commentCount > 0 && ` [${props.commentCount}]`}
       </h3>
 
       <div className="flex items-center label-small gap-x-4 text-gray-600">
